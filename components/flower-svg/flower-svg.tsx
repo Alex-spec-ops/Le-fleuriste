@@ -15,7 +15,14 @@ export function FlowerShapes({ shapes }: { shapes: readonly Shape[] }) {
         const key = `${shape.kind}-${index}`;
         switch (shape.kind) {
           case "path":
-            return <path key={key} d={shape.d} fill={shape.fill} opacity={shape.opacity} />;
+            return (
+              <path
+                key={key}
+                d={shape.d}
+                fill={shape.fill}
+                opacity={shape.opacity}
+              />
+            );
           case "circle":
             return (
               <circle
@@ -71,7 +78,12 @@ type FlowerSvgProps = {
 };
 
 /** Illustration complète d'une fleur, tige comprise par défaut. */
-export function FlowerSvg({ flower, label, withStem = true, className }: FlowerSvgProps) {
+export function FlowerSvg({
+  flower,
+  label,
+  withStem = true,
+  className,
+}: FlowerSvgProps) {
   const art = buildFlowerArt(flower, withStem);
   return (
     <svg

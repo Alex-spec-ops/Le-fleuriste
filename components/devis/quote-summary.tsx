@@ -66,7 +66,9 @@ export function QuoteSummary({
         throw new Error(message);
       }
       const savedReference =
-        typeof payload === "object" && payload !== null && "reference" in payload
+        typeof payload === "object" &&
+        payload !== null &&
+        "reference" in payload
           ? String((payload as { reference: unknown }).reference)
           : reference;
       setSentReference(savedReference);
@@ -76,7 +78,9 @@ export function QuoteSummary({
     } catch (error) {
       toast.error("L'envoi a échoué", {
         description:
-          error instanceof Error ? error.message : "Réessayez ou appelez-nous directement.",
+          error instanceof Error
+            ? error.message
+            : "Réessayez ou appelez-nous directement.",
       });
     } finally {
       setSending(false);
@@ -112,19 +116,27 @@ export function QuoteSummary({
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
           {[
             { label: "Version sobre", value: built.quote.range.low },
-            { label: "Recommandé", value: built.quote.range.recommended, highlight: true },
+            {
+              label: "Recommandé",
+              value: built.quote.range.recommended,
+              highlight: true,
+            },
             { label: "Version généreuse", value: built.quote.range.high },
           ].map((tier) => (
             <div
               key={tier.label}
               className={`rounded-xl border p-4 ${
-                tier.highlight ? "border-terracotta bg-terracotta/5" : "border-border bg-card"
+                tier.highlight
+                  ? "border-terracotta bg-terracotta/5"
+                  : "border-border bg-card"
               }`}
             >
               <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
                 {tier.label}
               </p>
-              <p className="mt-1.5 font-heading text-2xl">{formatEuro(tier.value)}</p>
+              <p className="mt-1.5 font-heading text-2xl">
+                {formatEuro(tier.value)}
+              </p>
             </div>
           ))}
         </div>
@@ -132,23 +144,41 @@ export function QuoteSummary({
 
       <section className="space-y-6">
         {built.quote.pieces.map((piece) => (
-          <article key={piece.pieceId} className="rounded-xl border border-border bg-card p-4">
+          <article
+            key={piece.pieceId}
+            className="rounded-xl border border-border bg-card p-4"
+          >
             <header className="flex flex-wrap items-baseline justify-between gap-2">
               <h3 className="font-heading text-lg">
                 {piece.label}
-                {piece.quantity > 1 ? <span className="text-muted-foreground"> × {piece.quantity}</span> : null}
+                {piece.quantity > 1 ? (
+                  <span className="text-muted-foreground">
+                    {" "}
+                    × {piece.quantity}
+                  </span>
+                ) : null}
               </h3>
               <p className="tabular-nums">{formatEuro(piece.total)}</p>
             </header>
 
             <table className="mt-3 w-full text-sm">
-              <caption className="sr-only">Composition de {piece.label}</caption>
+              <caption className="sr-only">
+                Composition de {piece.label}
+              </caption>
               <thead>
                 <tr className="text-left text-xs uppercase tracking-[0.14em] text-muted-foreground">
-                  <th scope="col" className="pb-1.5 font-normal">Fleur</th>
-                  <th scope="col" className="pb-1.5 text-right font-normal">Qté</th>
-                  <th scope="col" className="pb-1.5 text-right font-normal">P.U.</th>
-                  <th scope="col" className="pb-1.5 text-right font-normal">Sous-total</th>
+                  <th scope="col" className="pb-1.5 font-normal">
+                    Fleur
+                  </th>
+                  <th scope="col" className="pb-1.5 text-right font-normal">
+                    Qté
+                  </th>
+                  <th scope="col" className="pb-1.5 text-right font-normal">
+                    P.U.
+                  </th>
+                  <th scope="col" className="pb-1.5 text-right font-normal">
+                    Sous-total
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -158,19 +188,28 @@ export function QuoteSummary({
                       {line.nameFr}
                       {line.availability !== "en saison" ? (
                         <span className="ml-1.5 text-xs text-terracotta-strong">
-                          {line.availability === "import" ? "import" : "hors saison"}
+                          {line.availability === "import"
+                            ? "import"
+                            : "hors saison"}
                         </span>
                       ) : null}
                     </td>
-                    <td className="py-1.5 text-right tabular-nums">{line.quantity}</td>
+                    <td className="py-1.5 text-right tabular-nums">
+                      {line.quantity}
+                    </td>
                     <td className="py-1.5 text-right tabular-nums text-muted-foreground">
                       {formatEuro(line.unitPrice)}
                     </td>
-                    <td className="py-1.5 text-right tabular-nums">{formatEuro(line.total)}</td>
+                    <td className="py-1.5 text-right tabular-nums">
+                      {formatEuro(line.total)}
+                    </td>
                   </tr>
                 ))}
                 <tr className="border-t border-border">
-                  <td className="py-1.5 italic text-muted-foreground" colSpan={3}>
+                  <td
+                    className="py-1.5 italic text-muted-foreground"
+                    colSpan={3}
+                  >
                     Main-d&apos;œuvre par pièce
                   </td>
                   <td className="py-1.5 text-right tabular-nums">
@@ -187,7 +226,10 @@ export function QuoteSummary({
         <h3 className="font-heading text-lg">Récapitulatif</h3>
         <dl className="mt-3 space-y-1.5 text-sm">
           <Row label="Fleurs" value={formatEuro(built.quote.flowersTotal)} />
-          <Row label="Main-d'œuvre" value={formatEuro(built.quote.labourTotal)} />
+          <Row
+            label="Main-d'œuvre"
+            value={formatEuro(built.quote.labourTotal)}
+          />
           {built.quote.offSeasonSurcharge > 0 ? (
             <Row
               label="dont majoration hors saison"
@@ -195,15 +237,25 @@ export function QuoteSummary({
               muted
             />
           ) : null}
-          <Row label="Livraison sur le lieu" value={formatEuro(built.quote.delivery)} />
+          <Row
+            label="Livraison sur le lieu"
+            value={formatEuro(built.quote.delivery)}
+          />
           {built.quote.installation > 0 ? (
-            <Row label="Installation sur place" value={formatEuro(built.quote.installation)} />
+            <Row
+              label="Installation sur place"
+              value={formatEuro(built.quote.installation)}
+            />
           ) : null}
           <div className="flex items-baseline justify-between border-t border-border pt-2 font-medium">
             <dt>Total TTC</dt>
             <dd className="tabular-nums">{formatEuro(built.quote.total)}</dd>
           </div>
-          <Row label="dont TVA 20 %" value={formatEuro(built.quote.vatIncluded)} muted />
+          <Row
+            label="dont TVA 20 %"
+            value={formatEuro(built.quote.vatIncluded)}
+            muted
+          />
         </dl>
       </section>
 
@@ -256,7 +308,9 @@ export function QuoteSummary({
               className="mt-1.5"
               rows={3}
               value={contact.message ?? ""}
-              onChange={(event) => patchContact({ message: event.target.value })}
+              onChange={(event) =>
+                patchContact({ message: event.target.value })
+              }
             />
           </div>
         </div>
@@ -267,7 +321,9 @@ export function QuoteSummary({
             variant="outline"
             onClick={() => {
               downloadQuotePdf({ form, built, contact, reference });
-              toast.success("Devis téléchargé", { description: `${reference}.pdf` });
+              toast.success("Devis téléchargé", {
+                description: `${reference}.pdf`,
+              });
             }}
           >
             <Download aria-hidden /> Télécharger le PDF
@@ -278,6 +334,7 @@ export function QuoteSummary({
           <Button
             type="button"
             variant="ghost"
+            nativeButton={false}
             render={
               <a
                 href={`mailto:${SHOP.email}?subject=${encodeURIComponent(`Demande de devis ${reference}`)}&body=${mailBody}`}
@@ -291,23 +348,33 @@ export function QuoteSummary({
         {sentReference ? (
           <p className="mt-4 flex items-center gap-2 rounded-lg bg-sage-soft px-3 py-2.5 text-sm">
             <CheckCircle2 className="size-4 text-sage" aria-hidden />
-            Demande enregistrée sous la référence {sentReference}. Nous vous répondons sous deux
-            jours ouvrés.
+            Demande enregistrée sous la référence {sentReference}. Nous vous
+            répondons sous deux jours ouvrés.
           </p>
         ) : null}
 
         <p className="mt-4 text-xs text-muted-foreground">
-          Devis estimatif, non contractuel. Les prix sont susceptibles de varier selon la
-          disponibilité du marché aux fleurs.
+          Devis estimatif, non contractuel. Les prix sont susceptibles de varier
+          selon la disponibilité du marché aux fleurs.
         </p>
       </section>
     </div>
   );
 }
 
-function Row({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
+function Row({
+  label,
+  value,
+  muted,
+}: {
+  label: string;
+  value: string;
+  muted?: boolean;
+}) {
   return (
-    <div className={`flex items-baseline justify-between ${muted ? "text-muted-foreground" : ""}`}>
+    <div
+      className={`flex items-baseline justify-between ${muted ? "text-muted-foreground" : ""}`}
+    >
       <dt>{label}</dt>
       <dd className="tabular-nums">{value}</dd>
     </div>

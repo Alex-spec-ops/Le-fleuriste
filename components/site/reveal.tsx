@@ -23,7 +23,9 @@ export function Reveal({
     const element = ref.current;
     if (!element) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     if (reduced || typeof IntersectionObserver === "undefined") {
       element.dataset.visible = "true";
       return;

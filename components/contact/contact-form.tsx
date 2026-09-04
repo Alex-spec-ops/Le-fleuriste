@@ -25,12 +25,22 @@ const schema = z.object({
 
 type Values = z.infer<typeof schema>;
 
-const EMPTY: Values = { name: "", email: "", phone: "", subject: "", message: "" };
+const EMPTY: Values = {
+  name: "",
+  email: "",
+  phone: "",
+  subject: "",
+  message: "",
+};
 
 export function ContactForm() {
   const [values, setValues] = useState<Values>(EMPTY);
-  const [errors, setErrors] = useState<Partial<Record<keyof Values, string>>>({});
-  const [state, setState] = useState<"idle" | "sending" | "sent" | "failed">("idle");
+  const [errors, setErrors] = useState<Partial<Record<keyof Values, string>>>(
+    {},
+  );
+  const [state, setState] = useState<"idle" | "sending" | "sent" | "failed">(
+    "idle",
+  );
 
   const set = (key: keyof Values, value: string) =>
     setValues((current) => ({ ...current, [key]: value }));
@@ -71,8 +81,8 @@ export function ContactForm() {
           Message reçu
         </p>
         <p className="mt-2 text-sm">
-          Nous vous répondons sous deux jours ouvrés. Pour une demande urgente, appelez-nous au{" "}
-          {SHOP.phoneDisplay}.
+          Nous vous répondons sous deux jours ouvrés. Pour une demande urgente,
+          appelez-nous au {SHOP.phoneDisplay}.
         </p>
         <Button
           type="button"
@@ -137,11 +147,16 @@ export function ContactForm() {
           className="mt-1.5"
           value={values.message}
           aria-invalid={errors.message ? true : undefined}
-          aria-describedby={errors.message ? "contact-message-erreur" : undefined}
+          aria-describedby={
+            errors.message ? "contact-message-erreur" : undefined
+          }
           onChange={(event) => set("message", event.target.value)}
         />
         {errors.message ? (
-          <p id="contact-message-erreur" className="mt-1 text-xs text-destructive">
+          <p
+            id="contact-message-erreur"
+            className="mt-1 text-xs text-destructive"
+          >
             {errors.message}
           </p>
         ) : null}
@@ -151,15 +166,20 @@ export function ContactForm() {
         <Button type="submit" disabled={state === "sending"}>
           <Send aria-hidden /> {state === "sending" ? "Envoi…" : "Envoyer"}
         </Button>
-        <Button type="button" variant="ghost" render={<a href={mailto} />}>
+        <Button
+          type="button"
+          variant="ghost"
+          nativeButton={false}
+          render={<a href={mailto} />}
+        >
           Ouvrir dans ma messagerie
         </Button>
       </div>
 
       {state === "failed" ? (
         <p role="alert" className="text-sm text-destructive">
-          L&apos;envoi a échoué. Écrivez-nous directement à {SHOP.email} ou appelez le{" "}
-          {SHOP.phoneDisplay}.
+          L&apos;envoi a échoué. Écrivez-nous directement à {SHOP.email} ou
+          appelez le {SHOP.phoneDisplay}.
         </p>
       ) : null}
     </form>

@@ -43,3 +43,4 @@ next-env.d.ts
 # Demandes de devis et messages reçus (données personnelles)
 /data/demandes/
 /data/messages/
+!.env.example

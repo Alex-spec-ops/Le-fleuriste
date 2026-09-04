@@ -22,7 +22,9 @@ export function FlowerCard({ flower }: { flower: FlowerLite }) {
       >
         <div
           className="flex aspect-4/3 items-center justify-center px-6 py-4"
-          style={{ backgroundColor: `color-mix(in oklab, ${swatch.fill} 16%, var(--card))` }}
+          style={{
+            backgroundColor: `color-mix(in oklab, ${swatch.fill} 16%, var(--card))`,
+          }}
         >
           <FlowerThumb flower={flower} className="h-full w-auto max-h-40" />
         </div>
@@ -38,7 +40,9 @@ export function FlowerCard({ flower }: { flower: FlowerLite }) {
               {flower.nameFr}
             </Link>
           </h3>
-          <p className="mt-0.5 text-xs italic text-muted-foreground">{flower.nameLatin}</p>
+          <p className="mt-0.5 text-xs italic text-muted-foreground">
+            {flower.nameLatin}
+          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5">
@@ -51,7 +55,10 @@ export function FlowerCard({ flower }: { flower: FlowerLite }) {
             </Badge>
           ) : null}
           {flower.toxicPets ? (
-            <Badge variant="outline" className="font-normal text-muted-foreground">
+            <Badge
+              variant="outline"
+              className="font-normal text-muted-foreground"
+            >
               <Cat className="size-3" aria-hidden /> Toxique animaux
             </Badge>
           ) : null}
@@ -64,7 +71,9 @@ export function FlowerCard({ flower }: { flower: FlowerLite }) {
 
         <div className="mt-auto flex items-end justify-between gap-3 pt-1">
           <p className="text-sm">
-            <span className="font-medium">{formatEuro(flower.pricePerStem)}</span>
+            <span className="font-medium">
+              {formatEuro(flower.pricePerStem)}
+            </span>
             <span className="text-muted-foreground"> / {flower.unit}</span>
           </p>
           <QuantityControl

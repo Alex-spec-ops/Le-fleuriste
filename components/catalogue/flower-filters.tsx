@@ -8,7 +8,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { COLOR_SWATCHES, COLORS, SEASONS, type Category } from "@/lib/constants";
+import {
+  COLOR_SWATCHES,
+  COLORS,
+  SEASONS,
+  type Category,
+} from "@/lib/constants";
 import { activeFilterCount, toggle, type FilterState } from "@/lib/filter";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +38,8 @@ export function FlowerFilters({
   resultCount,
 }: Props) {
   const count = activeFilterCount(state);
-  const update = (patch: Partial<FilterState>) => onChange({ ...state, ...patch });
+  const update = (patch: Partial<FilterState>) =>
+    onChange({ ...state, ...patch });
 
   return (
     <div className="space-y-7">
@@ -84,7 +90,10 @@ export function FlowerFilters({
                 <span
                   aria-hidden
                   className="size-3 rounded-full border"
-                  style={{ backgroundColor: swatch.fill, borderColor: swatch.stroke }}
+                  style={{
+                    backgroundColor: swatch.fill,
+                    borderColor: swatch.stroke,
+                  }}
                 />
                 {color}
               </button>
@@ -98,25 +107,29 @@ export function FlowerFilters({
           Saison
         </legend>
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {SEASONS.filter((season) => season !== "toute l'année").map((season) => {
-            const selected = state.seasons.includes(season);
-            return (
-              <button
-                key={season}
-                type="button"
-                aria-pressed={selected}
-                onClick={() => update({ seasons: toggle(state.seasons, season) })}
-                className={cn(
-                  "rounded-full border px-3 py-1 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                  selected
-                    ? "border-foreground/40 bg-secondary"
-                    : "border-border text-muted-foreground hover:border-foreground/30",
-                )}
-              >
-                {season}
-              </button>
-            );
-          })}
+          {SEASONS.filter((season) => season !== "toute l'année").map(
+            (season) => {
+              const selected = state.seasons.includes(season);
+              return (
+                <button
+                  key={season}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() =>
+                    update({ seasons: toggle(state.seasons, season) })
+                  }
+                  className={cn(
+                    "rounded-full border px-3 py-1 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                    selected
+                      ? "border-foreground/40 bg-secondary"
+                      : "border-border text-muted-foreground hover:border-foreground/30",
+                  )}
+                >
+                  {season}
+                </button>
+              );
+            },
+          )}
         </div>
       </fieldset>
 
@@ -136,10 +149,15 @@ export function FlowerFilters({
                     update({ categories: toggle(state.categories, category) })
                   }
                 />
-                <Label htmlFor={id} className="flex-1 cursor-pointer text-sm font-normal">
+                <Label
+                  htmlFor={id}
+                  className="flex-1 cursor-pointer text-sm font-normal"
+                >
                   {category}
                 </Label>
-                <span className="text-xs tabular-nums text-muted-foreground">{categoryCount}</span>
+                <span className="text-xs tabular-nums text-muted-foreground">
+                  {categoryCount}
+                </span>
               </li>
             );
           })}
@@ -150,7 +168,9 @@ export function FlowerFilters({
         <Label htmlFor="prix-max" className="text-sm">
           Prix maximum à l&apos;unité
           <span className="ml-2 text-muted-foreground">
-            {state.maxPrice === null ? "sans limite" : `${state.maxPrice.toFixed(2)} €`}
+            {state.maxPrice === null
+              ? "sans limite"
+              : `${state.maxPrice.toFixed(2)} €`}
           </span>
         </Label>
         <Slider
@@ -162,7 +182,9 @@ export function FlowerFilters({
           value={[state.maxPrice ?? Math.ceil(maxPriceBound)]}
           onValueChange={(value) => {
             const next = firstValue(value);
-            update({ maxPrice: next >= Math.ceil(maxPriceBound) ? null : next });
+            update({
+              maxPrice: next >= Math.ceil(maxPriceBound) ? null : next,
+            });
           }}
         />
       </div>
@@ -171,7 +193,9 @@ export function FlowerFilters({
         <Label htmlFor="tenue-min" className="text-sm">
           Tenue en vase minimale
           <span className="ml-2 text-muted-foreground">
-            {state.minVaseLifeDays === null ? "peu importe" : `${state.minVaseLifeDays} jours`}
+            {state.minVaseLifeDays === null
+              ? "peu importe"
+              : `${state.minVaseLifeDays} jours`}
           </span>
         </Label>
         <Slider
@@ -198,7 +222,10 @@ export function FlowerFilters({
             checked={state.petSafe}
             onCheckedChange={(value) => update({ petSafe: value === true })}
           />
-          <Label htmlFor="pet-safe" className="cursor-pointer text-sm font-normal">
+          <Label
+            htmlFor="pet-safe"
+            className="cursor-pointer text-sm font-normal"
+          >
             Sans risque pour les animaux
           </Label>
         </div>
@@ -208,7 +235,10 @@ export function FlowerFilters({
             checked={state.lowAllergen}
             onCheckedChange={(value) => update({ lowAllergen: value === true })}
           />
-          <Label htmlFor="low-allergen" className="cursor-pointer text-sm font-normal">
+          <Label
+            htmlFor="low-allergen"
+            className="cursor-pointer text-sm font-normal"
+          >
             Faible risque allergène
           </Label>
         </div>
@@ -216,9 +246,14 @@ export function FlowerFilters({
           <Checkbox
             id="fragrant"
             checked={state.fragrantOnly}
-            onCheckedChange={(value) => update({ fragrantOnly: value === true })}
+            onCheckedChange={(value) =>
+              update({ fragrantOnly: value === true })
+            }
           />
-          <Label htmlFor="fragrant" className="cursor-pointer text-sm font-normal">
+          <Label
+            htmlFor="fragrant"
+            className="cursor-pointer text-sm font-normal"
+          >
             Fleurs parfumées uniquement
           </Label>
         </div>

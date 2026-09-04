@@ -14,6 +14,16 @@ export type OpeningDay = {
   readonly closes: string | null;
 };
 
+/**
+ * Une variable d'environnement déclarée mais laissée vide vaut une chaîne
+ * vide, pas `undefined` : sans ce garde-fou, un `.env.local` contenant
+ * `NEXT_PUBLIC_SITE_URL=` ferait échouer `new URL("")` au build.
+ */
+function envOr(value: string | undefined, fallback: string): string {
+  const trimmed = value?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : fallback;
+}
+
 export const SHOP = {
   name: "LE Fleuriste",
   tagline: "Artisan fleuriste, Paris 10ᵉ",
@@ -28,7 +38,7 @@ export const SHOP = {
   phoneHref: "+33612802139",
   email: "lefleuristedu10@gmail.com",
   /** Utilisé pour les métadonnées absolues (og:image, sitemap, JSON-LD). */
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://lefleuristedu10.fr",
+  siteUrl: envOr(process.env.NEXT_PUBLIC_SITE_URL, "https://lefleuristedu10.fr"),
   hours: [
     { label: "lundi", schemaDay: "Monday", opens: "07:00", closes: "19:00" },
     { label: "mardi", schemaDay: "Tuesday", opens: "07:00", closes: "19:00" },

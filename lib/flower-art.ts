@@ -399,6 +399,38 @@ const BUILDERS: Record<ShapeFamily, (colors: readonly Color[], random: () => num
 
 export type FlowerArtInput = Pick<Flower, "id" | "category" | "colors" | "role">;
 
+/** Deux décimales : le SVG n'a pas besoin de plus, et l'œil non plus. */
+function round(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+/**
+ * Arrondit les coordonnées d'une forme.
+ *
+ * Ce n'est pas qu'une question de propreté : un double comme
+ * 60.668685544951714 ne se sérialise pas de la même façon au rendu serveur et
+ * au rendu client, ce qui provoque une erreur d'hydratation React sur chaque
+ * pétale. Arrondir à la source supprime la classe de bug entière, et allège
+ * le HTML au passage.
+ */
+function roundShape(shape: Shape): Shape {
+  switch (shape.kind) {
+    case "circle":
+      return { ...shape, cx: round(shape.cx), cy: round(shape.cy), r: round(shape.r) };
+    case "ellipse":
+      return {
+        ...shape,
+        cx: round(shape.cx),
+        cy: round(shape.cy),
+        rx: round(shape.rx),
+        ry: round(shape.ry),
+        rotate: shape.rotate === undefined ? undefined : round(shape.rotate),
+      };
+    default:
+      return shape;
+  }
+}
+
 export function buildFlowerArt(flower: FlowerArtInput, withStem = true): FlowerArt {
   const random = makeRandom(hashSeed(flower.id));
   const family = shapeFamily(flower.category, flower.role);
@@ -445,7 +477,7 @@ export function buildFlowerArt(flower: FlowerArtInput, withStem = true): FlowerA
   }
   shapes.push(...head);
 
-  return { viewBox: ART_VIEWBOX, shapes, accent: tone.base };
+  return { viewBox: ART_VIEWBOX, shapes: shapes.map(roundShape), accent: tone.base };
 }
 
 /* -------------------------------------------------------------- sérialiseur */

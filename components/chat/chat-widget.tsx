@@ -6,9 +6,17 @@ import { Flower, Send, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
-import { SUGGESTIONS_SENTINEL, type ParsedSuggestion } from "@/lib/chat/marker-filter";
+import {
+  SUGGESTIONS_SENTINEL,
+  type ParsedSuggestion,
+} from "@/lib/chat/marker-filter";
 import { useBouquetStore } from "@/lib/store/bouquet-store";
 import { useChatStore, type ChatMessage } from "@/lib/store/chat-store";
 
@@ -48,7 +56,10 @@ export function ChatWidget() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
+    listRef.current?.scrollTo({
+      top: listRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages]);
 
   const send = async (text: string) => {
@@ -81,7 +92,9 @@ export function ChatWidget() {
         throw new Error("Le conseiller n'a pas pu répondre.");
       }
 
-      const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+      const reader = response.body
+        .pipeThrough(new TextDecoderStream())
+        .getReader();
       let buffer = "";
 
       while (true) {
@@ -98,7 +111,9 @@ export function ChatWidget() {
       let suggestions: ParsedSuggestion[] = [];
       if (cut !== -1) {
         try {
-          const parsed: unknown = JSON.parse(buffer.slice(cut + SUGGESTIONS_SENTINEL.length));
+          const parsed: unknown = JSON.parse(
+            buffer.slice(cut + SUGGESTIONS_SENTINEL.length),
+          );
           if (Array.isArray(parsed)) suggestions = parsed as ParsedSuggestion[];
         } catch {
           suggestions = [];
@@ -177,18 +192,21 @@ export function ChatWidget() {
           className="flex w-full flex-col gap-0 p-0 sm:max-w-md"
         >
           <SheetHeader className="border-b border-border">
-            <SheetTitle className="font-heading text-xl">Le conseil du fleuriste</SheetTitle>
+            <SheetTitle className="font-heading text-xl">
+              Le conseil du fleuriste
+            </SheetTitle>
             <p className="text-sm text-muted-foreground">
               Dites-nous pour qui et à quelle occasion : nous vous orientons.
             </p>
           </SheetHeader>
 
-          <div ref={listRef} className="scroll-soft flex-1 space-y-4 overflow-y-auto px-4 py-5">
+          <div
+            ref={listRef}
+            className="scroll-soft flex-1 space-y-4 overflow-y-auto px-4 py-5"
+          >
             {messages.length === 0 ? (
               <div>
-                <p className="text-sm text-muted-foreground">
-                  Par exemple :
-                </p>
+                <p className="text-sm text-muted-foreground">Par exemple :</p>
                 <ul className="mt-3 space-y-2">
                   {STARTERS.map((starter) => (
                     <li key={starter}>
@@ -281,13 +299,18 @@ export function ChatWidget() {
                 }}
                 className="min-h-16 resize-none"
               />
-              <Button type="submit" size="icon" disabled={streaming || draft.trim().length === 0}>
+              <Button
+                type="submit"
+                size="icon"
+                disabled={streaming || draft.trim().length === 0}
+              >
                 <Send aria-hidden />
                 <span className="sr-only">Envoyer</span>
               </Button>
             </div>
             <p className="mt-2 text-[0.7rem] text-muted-foreground">
-              Conseil indicatif. La disponibilité des fleurs est à confirmer avec la boutique.
+              Conseil indicatif. La disponibilité des fleurs est à confirmer
+              avec la boutique.
             </p>
           </form>
 

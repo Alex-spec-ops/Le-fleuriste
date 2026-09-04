@@ -21,21 +21,29 @@ export default function GlobalError({
       <p className="text-[0.72rem] uppercase tracking-[0.22em] text-terracotta-strong">
         Incident technique
       </p>
-      <h1 className="heading-display mt-4 text-4xl sm:text-5xl">Quelque chose s&apos;est cassé</h1>
+      <h1 className="heading-display mt-4 text-4xl sm:text-5xl">
+        Quelque chose s&apos;est cassé
+      </h1>
       <p className="mt-4 max-w-md text-muted-foreground">
-        Votre composition et votre devis sont conservés dans ce navigateur : vous ne perdez rien en
-        réessayant.
+        Votre composition et votre devis sont conservés dans ce navigateur :
+        vous ne perdez rien en réessayant.
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Button type="button" onClick={reset}>
           Réessayer
         </Button>
-        <Button render={<a href={`tel:${SHOP.phoneHref}`} />} variant="outline">
+        <Button
+          nativeButton={false}
+          render={<a href={`tel:${SHOP.phoneHref}`} />}
+          variant="outline"
+        >
           Appeler la boutique
         </Button>
       </div>
       {error.digest ? (
-        <p className="mt-6 text-xs text-muted-foreground">Référence technique : {error.digest}</p>
+        <p className="mt-6 text-xs text-muted-foreground">
+          Référence technique : {error.digest}
+        </p>
       ) : null}
     </div>
   );

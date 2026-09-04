@@ -73,20 +73,30 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
   }, [searchParams, patch, patchConstraints]);
 
   const totalPieces = useMemo(
-    () => Object.values(form.pieces).reduce((sum, quantity) => sum + (quantity ?? 0), 0),
+    () =>
+      Object.values(form.pieces).reduce(
+        (sum, quantity) => sum + (quantity ?? 0),
+        0,
+      ),
     [form.pieces],
   );
 
   const validateStep = (index: number): string | null => {
     switch (index) {
       case 1:
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(form.date)) return "Indiquez la date de l'événement.";
-        if (form.location.trim().length < 2) return "Indiquez au moins la ville.";
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(form.date))
+          return "Indiquez la date de l'événement.";
+        if (form.location.trim().length < 2)
+          return "Indiquez au moins la ville.";
         return null;
       case 3:
-        return totalPieces === 0 ? "Choisissez au moins une pièce florale." : null;
+        return totalPieces === 0
+          ? "Choisissez au moins une pièce florale."
+          : null;
       case 4:
-        return form.palette.length === 0 ? "Choisissez au moins une teinte." : null;
+        return form.palette.length === 0
+          ? "Choisissez au moins une teinte."
+          : null;
       default:
         return null;
     }
@@ -123,7 +133,11 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
             <RotateCcw aria-hidden /> Recommencer
           </Button>
         </div>
-        <Progress value={progress} className="mt-3" aria-label="Progression du devis" />
+        <Progress
+          value={progress}
+          className="mt-3"
+          aria-label="Progression du devis"
+        />
       </div>
 
       <div className="min-h-[22rem]">
@@ -193,13 +207,15 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
                 max={2000}
                 className="mt-1.5"
                 value={form.guests}
-                onChange={(event) => patch({ guests: Number(event.target.value) || 0 })}
+                onChange={(event) =>
+                  patch({ guests: Number(event.target.value) || 0 })
+                }
               />
             </div>
             <p className="mt-4 rounded-lg bg-secondary/60 px-3 py-2.5 text-sm">
               Pour {form.guests} invités, comptez environ{" "}
-              <strong>{suggestedTableCount(form.guests)} tables</strong>, donc autant de centres de
-              table.
+              <strong>{suggestedTableCount(form.guests)} tables</strong>, donc
+              autant de centres de table.
             </p>
             <Button
               type="button"
@@ -221,7 +237,10 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
         ) : null}
 
         {step === 3 ? (
-          <Step title="Quelles pièces florales ?" hint="Indiquez une quantité pour chacune.">
+          <Step
+            title="Quelles pièces florales ?"
+            hint="Indiquez une quantité pour chacune."
+          >
             <ul className="space-y-1.5">
               {EVENT_PIECES.map((piece) => {
                 const quantity = form.pieces[piece.id] ?? 0;
@@ -230,21 +249,28 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
                     key={piece.id}
                     className={cn(
                       "flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5",
-                      quantity > 0 ? "border-terracotta/50 bg-terracotta/5" : "border-border",
+                      quantity > 0
+                        ? "border-terracotta/50 bg-terracotta/5"
+                        : "border-border",
                     )}
                   >
                     <div className="min-w-0">
                       <p className="text-sm">{piece.label}</p>
                       <p className="text-xs text-muted-foreground">
-                        Main-d&apos;œuvre {formatEuro(piece.labour)} · environ {piece.defaultStems}{" "}
-                        tiges
+                        Main-d&apos;œuvre {formatEuro(piece.labour)} · environ{" "}
+                        {piece.defaultStems} tiges
                       </p>
                     </div>
                     <Stepper
                       value={quantity}
                       label={piece.label}
                       onChange={(next) =>
-                        patch({ pieces: { ...form.pieces, [piece.id as EventPieceId]: next } })
+                        patch({
+                          pieces: {
+                            ...form.pieces,
+                            [piece.id as EventPieceId]: next,
+                          },
+                        })
                       }
                     />
                   </li>
@@ -255,7 +281,10 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
         ) : null}
 
         {step === 4 ? (
-          <Step title="Votre palette" hint="Une à trois teintes, pas davantage : c'est plus lisible.">
+          <Step
+            title="Votre palette"
+            hint="Une à trois teintes, pas davantage : c'est plus lisible."
+          >
             <div className="flex flex-wrap gap-2">
               {COLORS.map((color) => {
                 const selected = form.palette.includes(color);
@@ -281,7 +310,10 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
                     <span
                       aria-hidden
                       className="size-4 rounded-full border"
-                      style={{ backgroundColor: swatch.fill, borderColor: swatch.stroke }}
+                      style={{
+                        backgroundColor: swatch.fill,
+                        borderColor: swatch.stroke,
+                      }}
                     />
                     {color}
                   </button>
@@ -323,7 +355,9 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
               step={50}
               value={[form.budget]}
               onValueChange={(value) =>
-                patch({ budget: Array.isArray(value) ? (value[0] ?? 150) : value })
+                patch({
+                  budget: Array.isArray(value) ? (value[0] ?? 150) : value,
+                })
               }
               aria-label="Budget indicatif"
             />
@@ -344,7 +378,9 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
                 <Switch
                   id="allergies"
                   checked={form.constraints.allergies}
-                  onCheckedChange={(value) => patchConstraints({ allergies: value })}
+                  onCheckedChange={(value) =>
+                    patchConstraints({ allergies: value })
+                  }
                 />
               </div>
               <div className="flex items-center justify-between gap-4 rounded-lg border border-border px-3 py-2.5">
@@ -381,7 +417,9 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
                   rows={3}
                   value={form.constraints.notes}
                   placeholder="Contraintes du lieu, horaires d'installation, souhaits particuliers…"
-                  onChange={(event) => patchConstraints({ notes: event.target.value })}
+                  onChange={(event) =>
+                    patchConstraints({ notes: event.target.value })
+                  }
                 />
               </div>
             </div>
@@ -423,7 +461,8 @@ const DESCRIPTIONS: Record<EventType, string> = {
   mariage: "Bouquet de mariée, cérémonie, tables, décor.",
   baptême: "Compositions douces, pastel, sans pollen fort.",
   anniversaire: "Une table, un décor, une atmosphère.",
-  "séminaire / entreprise": "Compositions structurées, longue tenue, tons neutres.",
+  "séminaire / entreprise":
+    "Compositions structurées, longue tenue, tons neutres.",
   funérailles: "Blanc, ivoire, vert. Formes sobres.",
   autre: "Dites-nous simplement ce que vous préparez.",
 };
@@ -450,7 +489,9 @@ function Step({
   return (
     <section>
       <h2 className="heading-display text-2xl sm:text-3xl">{title}</h2>
-      {hint ? <p className="mt-2 max-w-xl text-sm text-muted-foreground">{hint}</p> : null}
+      {hint ? (
+        <p className="mt-2 max-w-xl text-sm text-muted-foreground">{hint}</p>
+      ) : null}
       <div className="mt-6">{children}</div>
     </section>
   );
@@ -480,7 +521,9 @@ function ChoiceCard({
       )}
     >
       <span className="block font-heading text-lg capitalize">{label}</span>
-      <span className="mt-1 block text-sm text-muted-foreground">{description}</span>
+      <span className="mt-1 block text-sm text-muted-foreground">
+        {description}
+      </span>
     </button>
   );
 }
@@ -506,7 +549,10 @@ function Stepper({
       >
         <Minus aria-hidden />
       </Button>
-      <span className="min-w-8 text-center text-sm tabular-nums" aria-live="polite">
+      <span
+        className="min-w-8 text-center text-sm tabular-nums"
+        aria-live="polite"
+      >
         {value}
       </span>
       <Button
@@ -546,7 +592,10 @@ function FlowerSelector({
       .slice(0, 6);
   }, [query, flowers, selected]);
 
-  const byId = useMemo(() => new Map(flowers.map((flower) => [flower.id, flower])), [flowers]);
+  const byId = useMemo(
+    () => new Map(flowers.map((flower) => [flower.id, flower])),
+    [flowers],
+  );
   const inputId = `selecteur-${label.replace(/[^a-zA-Z]+/g, "-").toLowerCase()}`;
 
   return (

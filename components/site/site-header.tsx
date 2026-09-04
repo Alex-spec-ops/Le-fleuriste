@@ -43,7 +43,8 @@ export function SiteHeader() {
         <nav aria-label="Navigation principale" className="hidden lg:block">
           <ul className="flex items-center gap-7">
             {NAV.map((item) => {
-              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              const active =
+                pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <li key={item.href}>
                   <Link
@@ -70,6 +71,7 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2">
           <Button
+            nativeButton={false}
             render={<Link href="/composer" />}
             size="sm"
             className="hidden sm:inline-flex"
@@ -98,7 +100,8 @@ export function SiteHeader() {
         <nav aria-label="Navigation principale, version mobile">
           <ul className="mx-auto flex w-full max-w-6xl flex-col px-5 py-2 sm:px-8">
             {NAV.map((item) => {
-              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              const active =
+                pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <li key={item.href}>
                   <Link

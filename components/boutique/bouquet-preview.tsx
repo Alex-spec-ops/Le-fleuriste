@@ -1,5 +1,10 @@
 import { FlowerShapes } from "@/components/flower-svg/flower-svg";
-import { CANVAS, layoutBouquet, stemPath, type BouquetEntry } from "@/lib/bouquet-layout";
+import {
+  CANVAS,
+  layoutBouquet,
+  stemPath,
+  type BouquetEntry,
+} from "@/lib/bouquet-layout";
 import type { Wrapping } from "@/lib/constants";
 import { buildFlowerArt } from "@/lib/flower-art";
 
@@ -34,7 +39,11 @@ export function BouquetPreview({
       focusable="false"
     >
       {wrapping === "vase inclus" ? (
-        <path d="M168 358 L164 452 Q210 466 256 452 L252 358 Z" fill="#DCE4E6" opacity="0.75" />
+        <path
+          d="M168 358 L164 452 Q210 466 256 452 L252 358 Z"
+          fill="#DCE4E6"
+          opacity="0.75"
+        />
       ) : (
         <path d={`M${CANVAS.bindX} 352 L128 462 L292 462 Z`} fill={paper} />
       )}

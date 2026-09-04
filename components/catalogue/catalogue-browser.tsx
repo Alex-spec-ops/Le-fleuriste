@@ -6,7 +6,13 @@ import { SlidersHorizontal } from "lucide-react";
 import { FlowerCard } from "@/components/catalogue/flower-card";
 import { FlowerFilters } from "@/components/catalogue/flower-filters";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import type { Category } from "@/lib/constants";
 import { EMPTY_FILTERS, filterFlowers, type FilterState } from "@/lib/filter";
 import type { FlowerLite } from "@/lib/flowers";
@@ -31,7 +37,8 @@ export function CatalogueBrowser({
   const [sort, setSort] = useState<SortKey>("nom");
 
   const maxPriceBound = useMemo(
-    () => flowers.reduce((max, flower) => Math.max(max, flower.pricePerStem), 0),
+    () =>
+      flowers.reduce((max, flower) => Math.max(max, flower.pricePerStem), 0),
     [flowers],
   );
 
@@ -81,7 +88,10 @@ export function CatalogueBrowser({
             >
               <SlidersHorizontal aria-hidden /> Filtrer
             </SheetTrigger>
-            <SheetContent side="left" className="w-[88vw] max-w-sm overflow-y-auto">
+            <SheetContent
+              side="left"
+              className="w-[88vw] max-w-sm overflow-y-auto"
+            >
               <SheetHeader>
                 <SheetTitle>Filtrer le catalogue</SheetTitle>
               </SheetHeader>
@@ -89,7 +99,10 @@ export function CatalogueBrowser({
             </SheetContent>
           </Sheet>
 
-          <p className="hidden text-sm text-muted-foreground lg:block" aria-live="polite">
+          <p
+            className="hidden text-sm text-muted-foreground lg:block"
+            aria-live="polite"
+          >
             {results.length} fleur{results.length > 1 ? "s" : ""}
           </p>
 
@@ -116,8 +129,8 @@ export function CatalogueBrowser({
           <div className="rounded-xl border border-dashed border-border bg-card/60 px-6 py-16 text-center">
             <p className="font-heading text-xl">Aucune fleur ne correspond</p>
             <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
-              Essayez d&apos;élargir la fourchette de prix ou de retirer une couleur. Le catalogue
-              compte {flowers.length} variétés.
+              Essayez d&apos;élargir la fourchette de prix ou de retirer une
+              couleur. Le catalogue compte {flowers.length} variétés.
             </p>
             <Button
               type="button"

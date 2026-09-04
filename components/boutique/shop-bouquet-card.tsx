@@ -20,8 +20,13 @@ export function ShopBouquetCard({ bouquet }: { bouquet: ShopBouquet }) {
       const flower = getFlowerById(id);
       return flower ? { flower, quantity } : null;
     })
-    .filter((entry): entry is { flower: NonNullable<ReturnType<typeof getFlowerById>>; quantity: number } =>
-      entry !== null,
+    .filter(
+      (
+        entry,
+      ): entry is {
+        flower: NonNullable<ReturnType<typeof getFlowerById>>;
+        quantity: number;
+      } => entry !== null,
     );
 
   const quote = priceBouquet(entries, {
@@ -48,13 +53,19 @@ export function ShopBouquetCard({ bouquet }: { bouquet: ShopBouquet }) {
   return (
     <article className="card-lift flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card">
       <div className="bg-secondary/40 px-4 pt-4">
-        <BouquetPreview entries={entries} wrapping={bouquet.wrapping} className="h-56 w-full" />
+        <BouquetPreview
+          entries={entries}
+          wrapping={bouquet.wrapping}
+          className="h-56 w-full"
+        />
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div>
           <h3 className="font-heading text-xl">{bouquet.name}</h3>
-          <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{bouquet.pitch}</p>
+          <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+            {bouquet.pitch}
+          </p>
         </div>
 
         <ul className="flex flex-wrap gap-1.5">
@@ -77,12 +88,19 @@ export function ShopBouquetCard({ bouquet }: { bouquet: ShopBouquet }) {
 
         <div className="mt-auto flex items-end justify-between gap-3 pt-2">
           <p>
-            <span className="font-heading text-2xl">{formatEuro(quote.total)}</span>
+            <span className="font-heading text-2xl">
+              {formatEuro(quote.total)}
+            </span>
             <span className="block text-xs text-muted-foreground">
               taille {bouquet.size}, {bouquet.wrapping}
             </span>
           </p>
-          <Button render={<Link href={`/composer?b=${token}`} />} size="sm" variant="outline">
+          <Button
+            nativeButton={false}
+            render={<Link href={`/composer?b=${token}`} />}
+            size="sm"
+            variant="outline"
+          >
             Personnaliser
           </Button>
         </div>

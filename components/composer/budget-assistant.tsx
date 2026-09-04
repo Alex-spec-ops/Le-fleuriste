@@ -37,7 +37,9 @@ export function BudgetAssistant({
   const handwrittenCard = useBouquetStore((store) => store.handwrittenCard);
   const customRibbon = useBouquetStore((store) => store.customRibbon);
 
-  const [budget, setBudget] = useState<number>(() => Math.max(25, Math.round(currentTotal || 45)));
+  const [budget, setBudget] = useState<number>(() =>
+    Math.max(25, Math.round(currentTotal || 45)),
+  );
 
   const plan = useMemo(
     () => fitToBudget(items, catalog, options, budget),
@@ -54,12 +56,15 @@ export function BudgetAssistant({
         Ajuster au budget
       </h3>
       <p className="mt-1 text-sm text-muted-foreground">
-        Fixez une enveloppe : nous proposons les substitutions les plus proches avant de toucher
-        aux quantités.
+        Fixez une enveloppe : nous proposons les substitutions les plus proches
+        avant de toucher aux quantités.
       </p>
 
       <div className="mt-5">
-        <Label htmlFor="budget" className="flex items-baseline justify-between text-sm">
+        <Label
+          htmlFor="budget"
+          className="flex items-baseline justify-between text-sm"
+        >
           <span>Budget visé</span>
           <span className="font-heading text-xl">{formatEuro(budget)}</span>
         </Label>
@@ -70,7 +75,9 @@ export function BudgetAssistant({
           max={300}
           step={5}
           value={[budget]}
-          onValueChange={(value) => setBudget(Array.isArray(value) ? (value[0] ?? 15) : value)}
+          onValueChange={(value) =>
+            setBudget(Array.isArray(value) ? (value[0] ?? 15) : value)
+          }
         />
         <p className="mt-2 text-sm text-muted-foreground">
           Composition actuelle : {formatEuro(currentTotal)}
@@ -83,8 +90,9 @@ export function BudgetAssistant({
         </p>
       ) : withinBudget ? (
         <p className="mt-4 rounded-lg bg-sage-soft px-3 py-2.5 text-sm">
-          Vous êtes dans l&apos;enveloppe. Il vous reste {formatEuro(budget - currentTotal)} si vous
-          souhaitez enrichir la composition.
+          Vous êtes dans l&apos;enveloppe. Il vous reste{" "}
+          {formatEuro(budget - currentTotal)} si vous souhaitez enrichir la
+          composition.
         </p>
       ) : (
         <div className="mt-4 space-y-3">
@@ -95,7 +103,10 @@ export function BudgetAssistant({
           <ol className="space-y-1.5 text-sm">
             {plan.actions.map((action, index) => (
               <li key={`${action.kind}-${index}`} className="flex gap-2">
-                <ArrowRight className="mt-0.5 size-4 shrink-0 text-terracotta-strong" aria-hidden />
+                <ArrowRight
+                  className="mt-0.5 size-4 shrink-0 text-terracotta-strong"
+                  aria-hidden
+                />
                 <span>{describeAction(action)}</span>
               </li>
             ))}

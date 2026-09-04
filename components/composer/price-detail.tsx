@@ -47,11 +47,15 @@ export function PriceDetail({ quote }: { quote: BouquetQuote }) {
                   </span>
                 ) : null}
               </td>
-              <td className="py-1.5 text-right tabular-nums">{line.quantity}</td>
+              <td className="py-1.5 text-right tabular-nums">
+                {line.quantity}
+              </td>
               <td className="py-1.5 text-right tabular-nums text-muted-foreground">
                 {formatEuro(line.unitPrice)}
               </td>
-              <td className="py-1.5 text-right tabular-nums">{formatEuro(line.total)}</td>
+              <td className="py-1.5 text-right tabular-nums">
+                {formatEuro(line.total)}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -78,23 +82,40 @@ export function PriceDetail({ quote }: { quote: BouquetQuote }) {
           label={`Main-d'œuvre (${quote.stemCount} tiges)`}
           value={formatEuro(quote.labour)}
         />
-        <Row label={quote.wrapping.label} value={formatEuro(quote.wrapping.amount)} />
+        <Row
+          label={quote.wrapping.label}
+          value={formatEuro(quote.wrapping.amount)}
+        />
         {quote.extras.map((extra) => (
-          <Row key={extra.label} label={extra.label} value={formatEuro(extra.amount)} />
+          <Row
+            key={extra.label}
+            label={extra.label}
+            value={formatEuro(extra.amount)}
+          />
         ))}
-        <Row label={quote.delivery.label} value={formatEuro(quote.delivery.amount)} />
+        <Row
+          label={quote.delivery.label}
+          value={formatEuro(quote.delivery.amount)}
+        />
         <div className="flex items-baseline justify-between border-t border-border pt-2 font-medium">
           <dt>Total TTC</dt>
           <dd className="tabular-nums">{formatEuro(quote.total)}</dd>
         </div>
-        <Row label="dont TVA 20 %" value={formatEuro(quote.vatIncluded)} muted />
+        <Row
+          label="dont TVA 20 %"
+          value={formatEuro(quote.vatIncluded)}
+          muted
+        />
       </dl>
 
       {quote.warnings.length > 0 ? (
         <ul className="space-y-1.5 rounded-lg border border-terracotta/40 bg-terracotta/5 p-3 text-sm">
           {quote.warnings.map((warning) => (
             <li key={warning} className="flex gap-2">
-              <AlertTriangle className="mt-0.5 size-4 shrink-0 text-terracotta-strong" aria-hidden />
+              <AlertTriangle
+                className="mt-0.5 size-4 shrink-0 text-terracotta-strong"
+                aria-hidden
+              />
               <span>{warning}</span>
             </li>
           ))}
@@ -102,14 +123,22 @@ export function PriceDetail({ quote }: { quote: BouquetQuote }) {
       ) : null}
 
       <p className="text-xs text-muted-foreground">
-        Prix estimatif, non contractuel. Les tarifs varient selon la disponibilité du marché aux
-        fleurs.
+        Prix estimatif, non contractuel. Les tarifs varient selon la
+        disponibilité du marché aux fleurs.
       </p>
     </div>
   );
 }
 
-function Row({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
+function Row({
+  label,
+  value,
+  muted,
+}: {
+  label: string;
+  value: string;
+  muted?: boolean;
+}) {
   return (
     <div
       className={`flex items-baseline justify-between ${muted ? "text-muted-foreground" : ""}`}

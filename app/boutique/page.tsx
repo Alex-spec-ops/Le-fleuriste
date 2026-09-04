@@ -32,14 +32,22 @@ export default function BoutiquePage() {
         </ul>
 
         <div className="mt-14 rounded-2xl border border-border bg-secondary/40 px-6 py-10 text-center">
-          <h2 className="heading-display text-2xl">Rien qui vous corresponde ?</h2>
+          <h2 className="heading-display text-2xl">
+            Rien qui vous corresponde ?
+          </h2>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-            Composez le vôtre tige par tige, ou dites-nous simplement pour qui c&apos;est : nous
-            vous orientons.
+            Composez le vôtre tige par tige, ou dites-nous simplement pour qui
+            c&apos;est : nous vous orientons.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Button render={<Link href="/composer" />}>Composer mon bouquet</Button>
-            <Button render={<Link href="/catalogue" />} variant="outline">
+            <Button nativeButton={false} render={<Link href="/composer" />}>
+              Composer mon bouquet
+            </Button>
+            <Button
+              nativeButton={false}
+              render={<Link href="/catalogue" />}
+              variant="outline"
+            >
               Parcourir le catalogue
             </Button>
           </div>

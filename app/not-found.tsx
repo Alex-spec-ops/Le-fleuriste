@@ -12,11 +12,18 @@ export default function NotFound() {
         Cette page a fané
       </h1>
       <p className="mt-4 max-w-md text-muted-foreground">
-        Le lien que vous avez suivi ne mène nulle part. Le catalogue, lui, est toujours là.
+        Le lien que vous avez suivi ne mène nulle part. Le catalogue, lui, est
+        toujours là.
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <Button render={<Link href="/catalogue" />}>Voir le catalogue</Button>
-        <Button render={<Link href="/" />} variant="outline">
+        <Button nativeButton={false} render={<Link href="/catalogue" />}>
+          Voir le catalogue
+        </Button>
+        <Button
+          nativeButton={false}
+          render={<Link href="/" />}
+          variant="outline"
+        >
           Retour à l&apos;accueil
         </Button>
       </div>

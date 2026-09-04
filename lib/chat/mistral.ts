@@ -23,14 +23,30 @@ export type StreamEvent =
 
 export const MISTRAL_ENDPOINT = "https://api.mistral.ai/v1/chat/completions";
 
+/**
+ * Le cahier des charges indiquait « mistral-medium-3-5-26-04 », qui n'existe
+ * pas sur l'API : les identifiants réels de cette famille sont
+ * `mistral-medium-3-5`, `mistral-medium-2604` et `mistral-medium-latest`.
+ * On épingle la version plutôt que de suivre `latest`, pour que le ton du
+ * conseiller ne change pas sans prévenir.
+ */
+export const DEFAULT_MISTRAL_MODEL = "mistral-medium-3-5";
+
+/**
+ * Une variable d'environnement déclarée mais vide vaut une chaîne vide, pas
+ * `undefined` : on retombe explicitement sur le modèle par défaut.
+ */
 export function mistralModel(): string {
-  return process.env.MISTRAL_MODEL ?? "mistral-medium-3-5-26-04";
+  const configured = process.env.MISTRAL_MODEL?.trim();
+  return configured && configured.length > 0 ? configured : DEFAULT_MISTRAL_MODEL;
 }
 
 export class MistralError extends Error {
   constructor(
     message: string,
     readonly status: number,
+    /** Erreur sur laquelle réessayer ne servirait à rien (quota nul, clé invalide). */
+    readonly fatal = false,
   ) {
     super(message);
     this.name = "MistralError";
@@ -39,13 +55,24 @@ export class MistralError extends Error {
 
 const RETRYABLE = new Set([408, 409, 429, 500, 502, 503, 504]);
 
+/** Attente conseillée par le serveur, en millisecondes, si elle est fournie. */
+function retryAfterMs(response: Response): number | null {
+  const header = response.headers.get("retry-after");
+  if (!header) return null;
+  const seconds = Number(header);
+  if (Number.isFinite(seconds)) return Math.min(15000, Math.max(0, seconds * 1000));
+  const date = Date.parse(header);
+  return Number.isNaN(date) ? null : Math.min(15000, Math.max(0, date - Date.now()));
+}
+
 /** Appel avec délai maximal, réessais et repli exponentiel. */
 async function callWithRetry(
   body: Record<string, unknown>,
   apiKey: string,
-  { attempts = 3, timeoutMs = 30000 } = {},
+  { attempts = 4, timeoutMs = 30000 } = {},
 ): Promise<Response> {
   let lastError: unknown = null;
+  let waitMs = 0;
 
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     const controller = new AbortController();
@@ -64,6 +91,16 @@ async function callWithRetry(
 
       if (response.ok) return response;
 
+      // Quota du compte à zéro : réessayer ne changera rien dans la seconde.
+      // Mieux vaut basculer tout de suite sur la réponse de repli.
+      if (response.status === 429 && response.headers.get("x-ratelimit-limit-req-minute") === "0") {
+        throw new MistralError(
+          "Le compte Mistral n'a aucun quota de requêtes : activez le plan de votre espace de travail sur console.mistral.ai.",
+          429,
+          true,
+        );
+      }
+
       if (!RETRYABLE.has(response.status) || attempt === attempts - 1) {
         const detail = await response.text().catch(() => "");
         throw new MistralError(
@@ -72,15 +109,22 @@ async function callWithRetry(
         );
       }
       lastError = new MistralError(`Statut ${response.status}`, response.status);
+      // Une limite de débit demande une pause franche : le repli court d'une
+      // erreur réseau ne suffit pas, et l'API indique souvent le délai.
+      const base = response.status === 429 ? 1500 : 400;
+      waitMs = retryAfterMs(response) ?? base * 2 ** attempt;
     } catch (error) {
-      if (error instanceof MistralError && !RETRYABLE.has(error.status)) throw error;
+      if (error instanceof MistralError && (error.fatal || !RETRYABLE.has(error.status))) {
+        throw error;
+      }
       lastError = error;
+      waitMs = 400 * 2 ** attempt;
       if (attempt === attempts - 1) break;
     } finally {
       clearTimeout(timer);
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 400 * 2 ** attempt));
+    await new Promise((resolve) => setTimeout(resolve, waitMs));
   }
 
   throw lastError instanceof Error

@@ -10,7 +10,12 @@ import { FlowerThumb } from "@/components/flower-svg/flower-svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CATEGORIES, COLOR_SWATCHES, type Category } from "@/lib/constants";
-import { EMPTY_FILTERS, activeFilterCount, filterFlowers, type FilterState } from "@/lib/filter";
+import {
+  EMPTY_FILTERS,
+  activeFilterCount,
+  filterFlowers,
+  type FilterState,
+} from "@/lib/filter";
 import type { FlowerLite } from "@/lib/flowers";
 import { formatEuro } from "@/lib/pricing";
 import { useBouquetStore } from "@/lib/store/bouquet-store";
@@ -32,11 +37,15 @@ export function FlowerPicker({
   const items = useBouquetStore((state) => state.items);
 
   const maxPriceBound = useMemo(
-    () => flowers.reduce((max, flower) => Math.max(max, flower.pricePerStem), 0),
+    () =>
+      flowers.reduce((max, flower) => Math.max(max, flower.pricePerStem), 0),
     [flowers],
   );
 
-  const results = useMemo(() => filterFlowers(flowers, filters), [flowers, filters]);
+  const results = useMemo(
+    () => filterFlowers(flowers, filters),
+    [flowers, filters],
+  );
 
   const grouped = useMemo(() => {
     const map = new Map<Category, FlowerLite[]>();
@@ -48,13 +57,16 @@ export function FlowerPicker({
     for (const list of map.values()) {
       list.sort((a, b) => a.nameFr.localeCompare(b.nameFr, "fr"));
     }
-    return CATEGORIES.filter((category) => map.has(category)).map((category) => ({
-      category,
-      flowers: map.get(category) ?? [],
-    }));
+    return CATEGORIES.filter((category) => map.has(category)).map(
+      (category) => ({
+        category,
+        flowers: map.get(category) ?? [],
+      }),
+    );
   }, [results]);
 
-  const searching = filters.search.trim().length > 0 || activeFilterCount(filters) > 0;
+  const searching =
+    filters.search.trim().length > 0 || activeFilterCount(filters) > 0;
   const chosen = Object.keys(items).length;
 
   return (
@@ -68,7 +80,9 @@ export function FlowerPicker({
           <Input
             type="search"
             value={filters.search}
-            onChange={(event) => setFilters({ ...filters, search: event.target.value })}
+            onChange={(event) =>
+              setFilters({ ...filters, search: event.target.value })
+            }
             placeholder="Chercher une fleur, un cultivar…"
             aria-label="Rechercher une fleur dans le catalogue"
             className="pl-9"
@@ -84,11 +98,15 @@ export function FlowerPicker({
             onClick={() => setShowFilters((value) => !value)}
           >
             <SlidersHorizontal aria-hidden /> Filtres
-            {activeFilterCount(filters) > 0 ? ` (${activeFilterCount(filters)})` : ""}
+            {activeFilterCount(filters) > 0
+              ? ` (${activeFilterCount(filters)})`
+              : ""}
           </Button>
           <p className="text-xs text-muted-foreground" aria-live="polite">
             {results.length} fleur{results.length > 1 ? "s" : ""}
-            {chosen > 0 ? ` · ${chosen} variété${chosen > 1 ? "s" : ""} au bouquet` : ""}
+            {chosen > 0
+              ? ` · ${chosen} variété${chosen > 1 ? "s" : ""} au bouquet`
+              : ""}
           </p>
         </div>
 
@@ -108,7 +126,9 @@ export function FlowerPicker({
       <div className="scroll-soft mt-4 flex-1 overflow-y-auto pr-1">
         {grouped.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border px-4 py-10 text-center">
-            <p className="text-sm">Aucune fleur ne correspond à cette recherche.</p>
+            <p className="text-sm">
+              Aucune fleur ne correspond à cette recherche.
+            </p>
             <Button
               type="button"
               variant="outline"
@@ -123,7 +143,9 @@ export function FlowerPicker({
           <ul className="space-y-2">
             {grouped.map(({ category, flowers: list }) => (
               <li key={category}>
-                <details open={searching || list.some((flower) => items[flower.id])}>
+                <details
+                  open={searching || list.some((flower) => items[flower.id])}
+                >
                   <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2.5 text-sm hover:bg-secondary/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
                     <span className="flex items-center gap-2">
                       <ChevronDown
@@ -167,7 +189,8 @@ export function FlowerPicker({
                               {flower.nameFr}
                             </Link>
                             <span className="block text-xs text-muted-foreground">
-                              {formatEuro(flower.pricePerStem)} / {flower.unit} ·{" "}
+                              {formatEuro(flower.pricePerStem)} / {flower.unit}{" "}
+                              ·{" "}
                               {flower.season.includes("toute l'année")
                                 ? "toute l'année"
                                 : flower.season.join(", ")}

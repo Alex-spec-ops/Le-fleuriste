@@ -16,7 +16,10 @@ import {
 import { toast } from "sonner";
 
 import { BouquetOptions } from "@/components/composer/bouquet-options";
-import { BouquetCanvas, exportBouquetPng } from "@/components/composer/bouquet-canvas";
+import {
+  BouquetCanvas,
+  exportBouquetPng,
+} from "@/components/composer/bouquet-canvas";
 import { BudgetAssistant } from "@/components/composer/budget-assistant";
 import { AnimatedPrice } from "@/components/composer/animated-price";
 import { FlowerPicker } from "@/components/composer/flower-picker";
@@ -27,7 +30,11 @@ import { analyseHarmony } from "@/lib/bouquet-harmony";
 import { decodeBouquet, encodeBouquet } from "@/lib/bouquet-share";
 import { BOUQUET_TEMPLATES } from "@/lib/bouquet-templates";
 import type { FlowerLite } from "@/lib/flowers";
-import { formatEuro, priceBouquet, type BouquetOptions as PricingOptions } from "@/lib/pricing";
+import {
+  formatEuro,
+  priceBouquet,
+  type BouquetOptions as PricingOptions,
+} from "@/lib/pricing";
 import { useBouquetStore } from "@/lib/store/bouquet-store";
 import { useChatStore } from "@/lib/store/chat-store";
 
@@ -60,7 +67,10 @@ export function Composer({
 
   const openChat = useChatStore((state) => state.openWith);
 
-  const byId = useMemo(() => new Map(flowers.map((flower) => [flower.id, flower])), [flowers]);
+  const byId = useMemo(
+    () => new Map(flowers.map((flower) => [flower.id, flower])),
+    [flowers],
+  );
 
   const entries = useMemo(
     () =>
@@ -69,7 +79,10 @@ export function Composer({
           const flower = byId.get(flowerId);
           return flower && quantity > 0 ? { flower, quantity } : null;
         })
-        .filter((entry): entry is { flower: FlowerLite; quantity: number } => entry !== null),
+        .filter(
+          (entry): entry is { flower: FlowerLite; quantity: number } =>
+            entry !== null,
+        ),
     [items, byId],
   );
 
@@ -86,7 +99,10 @@ export function Composer({
     [size, wrapping, delivery, style, handwrittenCard, customRibbon],
   );
 
-  const quote = useMemo(() => priceBouquet(entries, pricingOptions), [entries, pricingOptions]);
+  const quote = useMemo(
+    () => priceBouquet(entries, pricingOptions),
+    [entries, pricingOptions],
+  );
   const harmony = useMemo(() => analyseHarmony(entries), [entries]);
 
   // Un lien partagé prime sur la composition sauvegardée localement.
@@ -120,7 +136,9 @@ export function Composer({
     const url = `${window.location.origin}/composer?b=${token}`;
     try {
       await navigator.clipboard.writeText(url);
-      toast.success("Lien copié", { description: "Il rouvre exactement cette composition." });
+      toast.success("Lien copié", {
+        description: "Il rouvre exactement cette composition.",
+      });
     } catch {
       toast.info("Copiez ce lien", { description: url });
     }
@@ -180,7 +198,9 @@ export function Composer({
                 size="sm"
                 onClick={() => {
                   clear();
-                  toast("Bouquet vidé", { description: "Vous pouvez annuler cette action." });
+                  toast("Bouquet vidé", {
+                    description: "Vous pouvez annuler cette action.",
+                  });
                 }}
                 disabled={entries.length === 0}
               >
@@ -194,7 +214,10 @@ export function Composer({
                 onClick={async () => {
                   if (!svgRef.current) return;
                   try {
-                    await exportBouquetPng(svgRef.current, "bouquet-le-fleuriste.png");
+                    await exportBouquetPng(
+                      svgRef.current,
+                      "bouquet-le-fleuriste.png",
+                    );
                     toast.success("Image enregistrée");
                   } catch {
                     toast.error("L'export d'image a échoué sur ce navigateur.");
@@ -212,13 +235,20 @@ export function Composer({
               >
                 <Link2 aria-hidden /> Partager
               </Button>
-              <Button type="button" variant="outline" size="sm" onClick={askFlorist}>
-                <MessageCircleHeart aria-hidden /> Demander l&apos;avis du fleuriste
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={askFlorist}
+              >
+                <MessageCircleHeart aria-hidden /> Demander l&apos;avis du
+                fleuriste
               </Button>
             </div>
 
             <p className="mt-3 text-sm text-muted-foreground">
-              {quote.stemCount} tige{quote.stemCount > 1 ? "s" : ""} · {entries.length} variété
+              {quote.stemCount} tige{quote.stemCount > 1 ? "s" : ""} ·{" "}
+              {entries.length} variété
               {entries.length > 1 ? "s" : ""}
               {size !== "moyen" ? ` · taille ${size}` : ""}
             </p>
@@ -313,7 +343,10 @@ export function Composer({
             <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
               Total estimé TTC
             </p>
-            <AnimatedPrice value={quote.total} className="font-heading text-3xl" />
+            <AnimatedPrice
+              value={quote.total}
+              className="font-heading text-3xl"
+            />
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -325,12 +358,17 @@ export function Composer({
               onClick={() => setDetailOpen((value) => !value)}
             >
               <ChevronDown
-                className={detailOpen ? "rotate-180 transition-transform" : "transition-transform"}
+                className={
+                  detailOpen
+                    ? "rotate-180 transition-transform"
+                    : "transition-transform"
+                }
                 aria-hidden
               />
               {detailOpen ? "Masquer le détail" : "Voir le détail"}
             </Button>
             <Button
+              nativeButton={false}
               render={
                 <Link
                   href={`/devis?bouquet=${encodeBouquet({

@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, FileText, Flower2, MessageCircleHeart, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  FileText,
+  Flower2,
+  MessageCircleHeart,
+  Sparkles,
+} from "lucide-react";
 
 import { BouquetPreview } from "@/components/boutique/bouquet-preview";
 import { FlowerThumb } from "@/components/flower-svg/flower-svg";
@@ -51,7 +57,9 @@ const TOOLS = [
 export default function HomePage() {
   const season = seasonForDate(new Date());
   const inSeason = getAllFlowers()
-    .filter((flower) => flower.season.includes(season) && !flower.offSeasonImport)
+    .filter(
+      (flower) => flower.season.includes(season) && !flower.offSeasonImport,
+    )
     .sort((a, b) => a.pricePerStem - b.pricePerStem)
     .slice(0, 6);
 
@@ -62,8 +70,13 @@ export default function HomePage() {
           const flower = getFlowerById(id);
           return flower ? { flower, quantity } : null;
         })
-        .filter((entry): entry is { flower: NonNullable<ReturnType<typeof getFlowerById>>; quantity: number } =>
-          entry !== null,
+        .filter(
+          (
+            entry,
+          ): entry is {
+            flower: NonNullable<ReturnType<typeof getFlowerById>>;
+            quantity: number;
+          } => entry !== null,
         )
     : [];
 
@@ -80,20 +93,30 @@ export default function HomePage() {
             pour une personne précise.
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            Nous composons à la main, avec ce que le marché offre vraiment cette semaine. Et si vous
-            ne savez pas par où commencer, dites-nous simplement pour qui c&apos;est.
+            Nous composons à la main, avec ce que le marché offre vraiment cette
+            semaine. Et si vous ne savez pas par où commencer, dites-nous
+            simplement pour qui c&apos;est.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button render={<Link href="/composer" />} size="lg">
+            <Button
+              nativeButton={false}
+              render={<Link href="/composer" />}
+              size="lg"
+            >
               Composer votre bouquet <ArrowRight aria-hidden />
             </Button>
-            <Button render={<Link href="/devis" />} size="lg" variant="outline">
+            <Button
+              nativeButton={false}
+              render={<Link href="/devis" />}
+              size="lg"
+              variant="outline"
+            >
               Demander un devis
             </Button>
           </div>
           <p className="mt-6 text-sm text-muted-foreground">
-            {getAllFlowers().length} variétés au catalogue · prix affiché avant commande · devis PDF
-            immédiat
+            {getAllFlowers().length} variétés au catalogue · prix affiché avant
+            commande · devis PDF immédiat
           </p>
         </div>
 
@@ -118,7 +141,10 @@ export default function HomePage() {
                   href={tool.href}
                   className="card-lift block h-full rounded-xl border border-border bg-card p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
-                  <tool.icon className="size-5 text-terracotta-strong" aria-hidden />
+                  <tool.icon
+                    className="size-5 text-terracotta-strong"
+                    aria-hidden
+                  />
                   <h2 className="mt-3 font-heading text-lg">{tool.title}</h2>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                     {tool.body}
@@ -138,13 +164,20 @@ export default function HomePage() {
                 <p className="text-[0.72rem] uppercase tracking-[0.22em] text-terracotta-strong">
                   En ce moment
                 </p>
-                <h2 className="heading-display mt-2 text-3xl">La saison est {season}</h2>
+                <h2 className="heading-display mt-2 text-3xl">
+                  La saison est {season}
+                </h2>
                 <p className="mt-2 max-w-xl text-muted-foreground">
-                  Ces fleurs sont à leur meilleur prix et à leur meilleure tenue en ce moment, sans
-                  import.
+                  Ces fleurs sont à leur meilleur prix et à leur meilleure tenue
+                  en ce moment, sans import.
                 </p>
               </div>
-              <Button render={<Link href="/catalogue" />} variant="outline" size="sm">
+              <Button
+                nativeButton={false}
+                render={<Link href="/catalogue" />}
+                variant="outline"
+                size="sm"
+              >
                 Voir tout le catalogue
               </Button>
             </div>
@@ -166,7 +199,9 @@ export default function HomePage() {
                     >
                       <FlowerThumb flower={flower} className="h-20 w-auto" />
                     </span>
-                    <span className="mt-2.5 block truncate text-sm">{flower.nameFr}</span>
+                    <span className="mt-2.5 block truncate text-sm">
+                      {flower.nameFr}
+                    </span>
                     <span className="block text-xs text-muted-foreground">
                       {formatEuro(flower.pricePerStem)} / {flower.unit}
                     </span>
@@ -181,8 +216,15 @@ export default function HomePage() {
       <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="heading-display text-3xl">Trois bouquets que nous préparons souvent</h2>
-            <Button render={<Link href="/boutique" />} variant="outline" size="sm">
+            <h2 className="heading-display text-3xl">
+              Trois bouquets que nous préparons souvent
+            </h2>
+            <Button
+              nativeButton={false}
+              render={<Link href="/boutique" />}
+              variant="outline"
+              size="sm"
+            >
               Toute la sélection
             </Button>
           </div>
@@ -210,14 +252,18 @@ export default function HomePage() {
         <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
           {REVIEWS.length > 0 ? (
             <>
-              <h2 className="heading-display text-3xl">Ce qu&apos;en disent nos clients</h2>
+              <h2 className="heading-display text-3xl">
+                Ce qu&apos;en disent nos clients
+              </h2>
               <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {REVIEWS.map((review) => (
                   <li
                     key={`${review.author}-${review.date}`}
                     className="rounded-xl border border-border bg-card p-5"
                   >
-                    <blockquote className="text-sm leading-relaxed">« {review.text} »</blockquote>
+                    <blockquote className="text-sm leading-relaxed">
+                      « {review.text} »
+                    </blockquote>
                     <p className="mt-3 text-xs text-muted-foreground">
                       {review.author} — {review.occasion}
                     </p>
@@ -229,15 +275,18 @@ export default function HomePage() {
             <>
               <h2 className="heading-display text-3xl">Nos engagements</h2>
               <p className="mt-2 max-w-xl text-muted-foreground">
-                Nous ne publions pas d&apos;avis tant que nous n&apos;en avons pas reçu de véritables.
-                En attendant, voici ce sur quoi nous nous engageons.
+                Nous ne publions pas d&apos;avis tant que nous n&apos;en avons
+                pas reçu de véritables. En attendant, voici ce sur quoi nous
+                nous engageons.
               </p>
               <ul className="mt-8 grid gap-5 sm:grid-cols-3">
                 {COMMITMENTS.map((commitment, index) => (
                   <li key={commitment.title}>
                     <Reveal delayMs={index * 70}>
                       <div className="h-full rounded-xl border border-border bg-card p-5">
-                        <h3 className="font-heading text-lg">{commitment.title}</h3>
+                        <h3 className="font-heading text-lg">
+                          {commitment.title}
+                        </h3>
                         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                           {commitment.body}
                         </p>
@@ -257,10 +306,18 @@ export default function HomePage() {
         lead="Le conseiller en bas de l'écran comprend l'occasion avant de proposer quoi que ce soit. Il ne recommande que des fleurs réellement disponibles à l'atelier."
       >
         <div className="flex flex-wrap gap-3">
-          <Button render={<Link href="/contact" />} variant="outline">
+          <Button
+            nativeButton={false}
+            render={<Link href="/contact" />}
+            variant="outline"
+          >
             Nous écrire
           </Button>
-          <Button render={<a href={`tel:${SHOP.phoneHref}`} />} variant="ghost">
+          <Button
+            nativeButton={false}
+            render={<a href={`tel:${SHOP.phoneHref}`} />}
+            variant="ghost"
+          >
             {SHOP.phoneDisplay}
           </Button>
         </div>

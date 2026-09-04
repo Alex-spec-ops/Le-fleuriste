@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertTriangle, ArrowLeft, Cat, Droplets, Ruler, Wind } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Cat,
+  Droplets,
+  Ruler,
+  Wind,
+} from "lucide-react";
 
 import { QuantityControl } from "@/components/bouquet/quantity-control";
 import { FlowerCard } from "@/components/catalogue/flower-card";
@@ -33,12 +40,18 @@ export async function generateMetadata({
     openGraph: {
       title: `${flower.nameFr} — ${flower.nameLatin}`,
       description: flower.description,
-      images: [{ url: flower.imageUrl, width: 200, height: 320, alt: flower.nameFr }],
+      images: [
+        { url: flower.imageUrl, width: 200, height: 320, alt: flower.nameFr },
+      ],
     },
   };
 }
 
-export default async function FlowerPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function FlowerPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   const flower = getFlowerById(id);
   if (!flower) notFound();
@@ -59,10 +72,26 @@ export default async function FlowerPage({ params }: { params: Promise<{ id: str
     .slice(0, 3);
 
   const facts = [
-    { icon: Droplets, label: "Tenue en vase", value: `${flower.vaseLifeDays[0]} à ${flower.vaseLifeDays[1]} jours` },
-    { icon: Ruler, label: "Hauteur de tige", value: `${flower.stemHeightCm[0]} à ${flower.stemHeightCm[1]} cm` },
-    { icon: Wind, label: "Parfum", value: flower.fragrance === "aucune" ? "sans parfum" : flower.fragrance },
-    { icon: AlertTriangle, label: "Risque allergène", value: flower.allergenRisk },
+    {
+      icon: Droplets,
+      label: "Tenue en vase",
+      value: `${flower.vaseLifeDays[0]} à ${flower.vaseLifeDays[1]} jours`,
+    },
+    {
+      icon: Ruler,
+      label: "Hauteur de tige",
+      value: `${flower.stemHeightCm[0]} à ${flower.stemHeightCm[1]} cm`,
+    },
+    {
+      icon: Wind,
+      label: "Parfum",
+      value: flower.fragrance === "aucune" ? "sans parfum" : flower.fragrance,
+    },
+    {
+      icon: AlertTriangle,
+      label: "Risque allergène",
+      value: flower.allergenRisk,
+    },
   ];
 
   return (
@@ -71,6 +100,7 @@ export default async function FlowerPage({ params }: { params: Promise<{ id: str
 
       <div className="mx-auto w-full max-w-6xl px-5 pt-10 sm:px-8">
         <Button
+          nativeButton={false}
           render={<Link href="/catalogue" />}
           variant="ghost"
           size="sm"
@@ -83,7 +113,9 @@ export default async function FlowerPage({ params }: { params: Promise<{ id: str
       <article className="mx-auto grid w-full max-w-6xl gap-12 px-5 pb-16 pt-6 sm:px-8 lg:grid-cols-[minmax(0,420px)_1fr]">
         <div
           className="flex items-center justify-center rounded-2xl border border-border p-8"
-          style={{ backgroundColor: `color-mix(in oklab, ${swatch.fill} 18%, var(--card))` }}
+          style={{
+            backgroundColor: `color-mix(in oklab, ${swatch.fill} 18%, var(--card))`,
+          }}
         >
           <FlowerSvg
             flower={flower}
@@ -96,10 +128,16 @@ export default async function FlowerPage({ params }: { params: Promise<{ id: str
           <p className="text-[0.72rem] uppercase tracking-[0.22em] text-terracotta-strong">
             {flower.category}
           </p>
-          <h1 className="heading-display mt-2 text-4xl sm:text-5xl">{flower.nameFr}</h1>
-          <p className="mt-1 text-base italic text-muted-foreground">{flower.nameLatin}</p>
+          <h1 className="heading-display mt-2 text-4xl sm:text-5xl">
+            {flower.nameFr}
+          </h1>
+          <p className="mt-1 text-base italic text-muted-foreground">
+            {flower.nameLatin}
+          </p>
 
-          <p className="mt-6 max-w-prose text-lg leading-relaxed">{flower.description}</p>
+          <p className="mt-6 max-w-prose text-lg leading-relaxed">
+            {flower.description}
+          </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-4">
             <p className="font-heading text-3xl">
@@ -113,7 +151,11 @@ export default async function FlowerPage({ params }: { params: Promise<{ id: str
               flowerName={flower.nameFr}
               unit={flower.unit}
             />
-            <Button render={<Link href="/composer" />} variant="outline">
+            <Button
+              nativeButton={false}
+              render={<Link href="/composer" />}
+              variant="outline"
+            >
               Ouvrir le composeur
             </Button>
           </div>
@@ -125,7 +167,11 @@ export default async function FlowerPage({ params }: { params: Promise<{ id: str
               </dt>
               <dd className="mt-2 flex flex-wrap gap-1.5">
                 {flower.season.map((season) => (
-                  <Badge key={season} variant="secondary" className="font-normal">
+                  <Badge
+                    key={season}
+                    variant="secondary"
+                    className="font-normal"
+                  >
                     {season}
                   </Badge>
                 ))}
@@ -196,7 +242,11 @@ export default async function FlowerPage({ params }: { params: Promise<{ id: str
               </dt>
               <dd className="mt-2 flex flex-wrap gap-1.5">
                 {flower.symbolism.map((meaning) => (
-                  <Badge key={meaning} variant="outline" className="font-normal">
+                  <Badge
+                    key={meaning}
+                    variant="outline"
+                    className="font-normal"
+                  >
                     {meaning}
                   </Badge>
                 ))}
@@ -209,7 +259,11 @@ export default async function FlowerPage({ params }: { params: Promise<{ id: str
               </dt>
               <dd className="mt-2 flex flex-wrap gap-1.5">
                 {flower.occasions.map((occasion) => (
-                  <Badge key={occasion} variant="secondary" className="font-normal">
+                  <Badge
+                    key={occasion}
+                    variant="secondary"
+                    className="font-normal"
+                  >
                     {occasion}
                   </Badge>
                 ))}

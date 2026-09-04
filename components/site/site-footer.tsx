@@ -34,17 +34,25 @@ export function SiteFooter() {
           <address className="mt-5 space-y-1 text-sm not-italic text-foreground/80">
             <p>{address}</p>
             <p>
-              <a className="hover:text-terracotta-strong" href={`tel:${SHOP.phoneHref}`}>
+              <a
+                className="hover:text-terracotta-strong"
+                href={`tel:${SHOP.phoneHref}`}
+              >
                 {SHOP.phoneDisplay}
               </a>
             </p>
             <p>
-              <a className="hover:text-terracotta-strong" href={`mailto:${SHOP.email}`}>
+              <a
+                className="hover:text-terracotta-strong"
+                href={`mailto:${SHOP.email}`}
+              >
                 {SHOP.email}
               </a>
             </p>
           </address>
-          <p className="mt-4 text-sm text-muted-foreground">{formatOpeningSummary()}</p>
+          <p className="mt-4 text-sm text-muted-foreground">
+            {formatOpeningSummary()}
+          </p>
         </div>
 
         {COLUMNS.map((column) => (
@@ -55,7 +63,10 @@ export function SiteFooter() {
             <ul className="mt-4 space-y-2 text-sm">
               {column.links.map((link) => (
                 <li key={link.href}>
-                  <Link className="text-foreground/80 hover:text-terracotta-strong" href={link.href}>
+                  <Link
+                    className="text-foreground/80 hover:text-terracotta-strong"
+                    href={link.href}
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -68,11 +79,12 @@ export function SiteFooter() {
       <div className="border-t border-border/70">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-5 py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <p>
-            © {new Date().getFullYear()} {SHOP.name}. Fleurs coupées, compositions et décors floraux.
+            © {new Date().getFullYear()} {SHOP.name}. Fleurs coupées,
+            compositions et décors floraux.
           </p>
           <p>
-            Les prix affichés en ligne sont estimatifs et varient selon les arrivages du marché aux
-            fleurs.
+            Les prix affichés en ligne sont estimatifs et varient selon les
+            arrivages du marché aux fleurs.
           </p>
         </div>
       </div>

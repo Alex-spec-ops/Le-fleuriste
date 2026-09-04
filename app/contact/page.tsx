@@ -37,19 +37,26 @@ export default function ContactPage() {
                 {SHOP.postalCode} {SHOP.city} — {SHOP.district}
               </p>
               <p>
-                <a className="hover:text-terracotta-strong" href={`tel:${SHOP.phoneHref}`}>
+                <a
+                  className="hover:text-terracotta-strong"
+                  href={`tel:${SHOP.phoneHref}`}
+                >
                   {SHOP.phoneDisplay}
                 </a>
               </p>
               <p>
-                <a className="hover:text-terracotta-strong" href={`mailto:${SHOP.email}`}>
+                <a
+                  className="hover:text-terracotta-strong"
+                  href={`mailto:${SHOP.email}`}
+                >
                   {SHOP.email}
                 </a>
               </p>
             </address>
             {SHOP.streetAddress === null ? (
               <p className="mt-3 text-xs text-muted-foreground">
-                L&apos;adresse précise de l&apos;atelier vous est communiquée à la prise de commande.
+                L&apos;adresse précise de l&apos;atelier vous est communiquée à
+                la prise de commande.
               </p>
             ) : null}
           </section>
@@ -59,11 +66,19 @@ export default function ContactPage() {
               Horaires
             </h2>
             <table className="mt-3 w-full text-sm">
-              <caption className="sr-only">Horaires d&apos;ouverture de la boutique</caption>
+              <caption className="sr-only">
+                Horaires d&apos;ouverture de la boutique
+              </caption>
               <tbody>
                 {SHOP.hours.map((day) => (
-                  <tr key={day.label} className="border-b border-border/70 last:border-0">
-                    <th scope="row" className="py-1.5 text-left font-normal capitalize">
+                  <tr
+                    key={day.label}
+                    className="border-b border-border/70 last:border-0"
+                  >
+                    <th
+                      scope="row"
+                      className="py-1.5 text-left font-normal capitalize"
+                    >
                       {day.label}
                     </th>
                     <td className="py-1.5 text-right tabular-nums text-muted-foreground">

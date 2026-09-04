@@ -47,7 +47,8 @@ const GALLERY: GalleryPiece[] = [
   {
     id: "mariage-champetre",
     title: "Mariage champêtre, juin",
-    caption: "Roses de jardin, renoncules papillon et beaucoup de verdure. Palette pêche et crème.",
+    caption:
+      "Roses de jardin, renoncules papillon et beaucoup de verdure. Palette pêche et crème.",
     wrapping: "kraft simple",
     items: {
       "rose-peach-avalanche": 9,
@@ -59,7 +60,8 @@ const GALLERY: GalleryPiece[] = [
   {
     id: "ceremonie-blanche",
     title: "Cérémonie blanc et vert, septembre",
-    caption: "Hortensia jade, roses Avalanche et santini. Une composition qui tient toute la journée.",
+    caption:
+      "Hortensia jade, roses Avalanche et santini. Une composition qui tient toute la journée.",
     wrapping: "vase inclus",
     items: {
       "hortensia-magical-jade": 2,
@@ -71,7 +73,8 @@ const GALLERY: GalleryPiece[] = [
   {
     id: "table-automne",
     title: "Table d'automne, octobre",
-    caption: "Dahlias Café au Lait, roses Toffee et chrysanthèmes araignée bronze.",
+    caption:
+      "Dahlias Café au Lait, roses Toffee et chrysanthèmes araignée bronze.",
     wrapping: "papier de soie",
     items: {
       "dahlia-cafe-au-lait": 3,
@@ -91,8 +94,14 @@ export default function EvenementsPage() {
         lead="Nous travaillons les mariages, les baptêmes, les séminaires et les cérémonies d'adieu. Vous obtenez un devis détaillé en ligne, puis nous l'affinons ensemble."
       >
         <div className="flex flex-wrap gap-3">
-          <Button render={<Link href="/devis" />}>Chiffrer mon événement</Button>
-          <Button render={<Link href="/contact" />} variant="outline">
+          <Button nativeButton={false} render={<Link href="/devis" />}>
+            Chiffrer mon événement
+          </Button>
+          <Button
+            nativeButton={false}
+            render={<Link href="/contact" />}
+            variant="outline"
+          >
             Prendre rendez-vous
           </Button>
         </div>
@@ -104,7 +113,9 @@ export default function EvenementsPage() {
             <li key={step.title}>
               <Reveal delayMs={index * 70}>
                 <div className="h-full rounded-xl border border-border bg-card p-5">
-                  <p className="font-heading text-3xl text-terracotta">{index + 1}</p>
+                  <p className="font-heading text-3xl text-terracotta">
+                    {index + 1}
+                  </p>
                   <h2 className="mt-2 font-heading text-lg">{step.title}</h2>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                     {step.body}
@@ -120,8 +131,8 @@ export default function EvenementsPage() {
         <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
           <h2 className="heading-display text-3xl">Trois réalisations types</h2>
           <p className="mt-2 max-w-xl text-muted-foreground">
-            Illustrations produites à partir des compositions réelles : chaque fleur dessinée existe
-            au catalogue, avec son prix.
+            Illustrations produites à partir des compositions réelles : chaque
+            fleur dessinée existe au catalogue, avec son prix.
           </p>
           <ul className="mt-8 grid gap-6 sm:grid-cols-3">
             {GALLERY.map((piece, index) => {
@@ -152,7 +163,9 @@ export default function EvenementsPage() {
                       />
                       <figcaption className="border-t border-border p-4">
                         <p className="font-heading text-lg">{piece.title}</p>
-                        <p className="mt-1 text-sm text-muted-foreground">{piece.caption}</p>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {piece.caption}
+                        </p>
                       </figcaption>
                     </figure>
                   </Reveal>
@@ -164,10 +177,13 @@ export default function EvenementsPage() {
       </section>
 
       <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
-        <h2 className="heading-display text-3xl">Les pièces que nous réalisons</h2>
+        <h2 className="heading-display text-3xl">
+          Les pièces que nous réalisons
+        </h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Les montants ci-dessous sont la main-d&apos;œuvre : le montage, la structure et la
-          finition. Le prix des fleurs s&apos;y ajoute, selon la palette et la saison retenues.
+          Les montants ci-dessous sont la main-d&apos;œuvre : le montage, la
+          structure et la finition. Le prix des fleurs s&apos;y ajoute, selon la
+          palette et la saison retenues.
         </p>
 
         <div className="mt-8 overflow-x-auto">
@@ -195,7 +211,9 @@ export default function EvenementsPage() {
                   <td className="py-2.5 text-right tabular-nums text-muted-foreground">
                     {piece.defaultStems} tiges
                   </td>
-                  <td className="py-2.5 text-right tabular-nums">{formatEuro(piece.labour)}</td>
+                  <td className="py-2.5 text-right tabular-nums">
+                    {formatEuro(piece.labour)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -203,12 +221,16 @@ export default function EvenementsPage() {
         </div>
 
         <p className="mt-6 text-xs text-muted-foreground">
-          Livraison sur le lieu de l&apos;événement et installation sur place sont facturées à part.
-          Devis estimatif, non contractuel.
+          Livraison sur le lieu de l&apos;événement et installation sur place
+          sont facturées à part. Devis estimatif, non contractuel.
         </p>
 
         <div className="mt-10">
-          <Button render={<Link href="/devis" />} size="lg">
+          <Button
+            nativeButton={false}
+            render={<Link href="/devis" />}
+            size="lg"
+          >
             Obtenir mon devis détaillé
           </Button>
         </div>
