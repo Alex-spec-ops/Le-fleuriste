@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Karla } from "next/font/google";
 
+import { ChatWidget } from "@/components/chat/chat-widget";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 import { LocalBusinessJsonLd } from "@/components/site/json-ld";
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <SiteFooter />
+        <ChatWidget />
         <Toaster position="bottom-center" />
         <LocalBusinessJsonLd />
       </body>

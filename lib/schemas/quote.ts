@@ -3,7 +3,25 @@ import { z } from "zod";
 import { COLORS, EVENT_TYPES, STYLES } from "@/lib/constants";
 import { EVENT_PIECES } from "@/lib/pricing";
 
-const PIECE_IDS = EVENT_PIECES.map((piece) => piece.id) as [string, ...string[]];
+const PIECE_IDS: readonly string[] = EVENT_PIECES.map((piece) => piece.id);
+
+/**
+ * Quantités par pièce florale. Un enregistrement partiel : seules les pièces
+ * réellement demandées sont présentes, et toute clé inconnue est rejetée.
+ */
+const piecesSchema = z
+  .record(z.string(), z.number().int().min(0).max(400))
+  .superRefine((pieces, ctx) => {
+    for (const key of Object.keys(pieces)) {
+      if (!PIECE_IDS.includes(key)) {
+        ctx.addIssue({
+          code: "custom",
+          path: [key],
+          message: `Pièce florale inconnue : ${key}`,
+        });
+      }
+    }
+  });
 
 /** Formulaire de devis événementiel, validé côté navigateur et côté serveur. */
 export const quoteFormSchema = z.object({
@@ -15,7 +33,7 @@ export const quoteFormSchema = z.object({
     .refine((value) => !Number.isNaN(Date.parse(value)), "Cette date n'existe pas."),
   location: z.string().trim().min(2, "Indiquez au moins la ville.").max(120),
   guests: z.number().int().min(0).max(2000),
-  pieces: z.record(z.enum(PIECE_IDS), z.number().int().min(0).max(400)),
+  pieces: piecesSchema,
   palette: z.array(z.enum(COLORS)).min(1, "Choisissez au moins une teinte.").max(3),
   style: z.enum(STYLES),
   budget: z.number().min(150).max(30000),

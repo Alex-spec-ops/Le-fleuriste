@@ -9,11 +9,11 @@ import {
 import type { FlowerLite } from "@/lib/flowers";
 import {
   availabilityOf,
+  eventPiece,
   findSubstitution,
   priceEventQuote,
   type EventPieceId,
   type EventQuote,
-  type EventPieceRequest,
 } from "@/lib/pricing";
 import type { QuoteForm } from "@/lib/schemas/quote";
 
@@ -106,6 +106,17 @@ function isLoud(color: Color): boolean {
   return color === "fuchsia" || color === "orange" || color === "rose vif";
 }
 
+/**
+ * Contraintes de sécurité : ce sont des exclusions fermes, pas des malus.
+ * Un client qui annonce un chat ne doit trouver aucun lys dans son devis.
+ */
+function isAllowed(flower: FlowerLite, form: QuoteForm): boolean {
+  if (form.constraints.excludedFlowerIds.includes(flower.id)) return false;
+  if (form.constraints.pets && flower.toxicPets) return false;
+  if (form.constraints.allergies && flower.allergenRisk === "élevé") return false;
+  return true;
+}
+
 function pickByRole(
   catalog: readonly FlowerLite[],
   role: Role,
@@ -114,20 +125,34 @@ function pickByRole(
   season: Season,
   occasion: Occasion,
 ): FlowerLite[] {
-  for (const candidateRole of ROLE_FALLBACK[role]) {
-    const ranked = catalog
-      .filter((flower) => flower.role === candidateRole && flower.unit !== "pot")
-      .map((flower) => ({ flower, score: scoreFlower(flower, form, season, occasion) }))
-      .filter((entry) => Number.isFinite(entry.score))
-      .sort((a, b) => b.score - a.score || a.flower.id.localeCompare(b.flower.id));
-    if (ranked.length > 0) {
-      return ranked.slice(0, count).map((entry) => entry.flower);
+  // Deux passes : d'abord en respectant les contraintes, puis, seulement si
+  // aucune fleur ne subsiste, en les relâchant pour ne pas rendre un devis vide.
+  for (const strict of [true, false]) {
+    for (const candidateRole of ROLE_FALLBACK[role]) {
+      const ranked = catalog
+        .filter(
+          (flower) =>
+            flower.role === candidateRole &&
+            flower.unit !== "pot" &&
+            (strict ? isAllowed(flower, form) : !form.constraints.excludedFlowerIds.includes(flower.id)),
+        )
+        .map((flower) => ({ flower, score: scoreFlower(flower, form, season, occasion) }))
+        .filter((entry) => Number.isFinite(entry.score))
+        .sort((a, b) => b.score - a.score || a.flower.id.localeCompare(b.flower.id));
+      if (ranked.length > 0) {
+        return ranked.slice(0, count).map((entry) => entry.flower);
+      }
     }
   }
   return [];
 }
 
-export type BuiltPiece = EventPieceRequest & { stems: number };
+/** Une pièce florale et sa composition, avec les fiches complètes du catalogue. */
+export type CatalogPieceRequest = {
+  pieceId: EventPieceId;
+  quantity: number;
+  composition: { flower: FlowerLite; quantity: number }[];
+};
 
 export function buildComposition(
   pieceId: EventPieceId,
@@ -171,7 +196,7 @@ export type BudgetNote = { message: string };
 
 export type BuiltQuote = {
   season: Season;
-  requests: EventPieceRequest[];
+  requests: CatalogPieceRequest[];
   quote: EventQuote;
   adjustments: string[];
 };
@@ -185,34 +210,21 @@ export function buildQuote(form: QuoteForm, catalog: readonly FlowerLite[]): Bui
   const season = form.date ? seasonForDate(new Date(form.date)) : seasonForDate(new Date());
   const adjustments: string[] = [];
 
-  let requests: EventPieceRequest[] = (
+  let requests: CatalogPieceRequest[] = (
     Object.entries(form.pieces) as [EventPieceId, number][]
   )
     .filter(([, quantity]) => quantity > 0)
-    .map(([pieceId, quantity]) => {
-      const defaultStems =
-        (
-          {
-            "bouquet-mariee": 24,
-            "bouquet-demoiselle": 12,
-            boutonniere: 3,
-            "centre-table-bas": 15,
-            "centre-table-haut": 28,
-            arche: 120,
-            "chemin-table": 30,
-            "decor-ceremonie": 60,
-            "composition-accueil": 22,
-            "fleurs-voiture": 18,
-            petales: 6,
-          } as Record<EventPieceId, number>
-        )[pieceId] ?? 15;
-
-      return {
+    .map(([pieceId, quantity]) => ({
+      pieceId,
+      quantity,
+      composition: buildComposition(
         pieceId,
-        quantity,
-        composition: buildComposition(pieceId, defaultStems, catalog, form, season),
-      };
-    });
+        eventPiece(pieceId).defaultStems,
+        catalog,
+        form,
+        season,
+      ),
+    }));
 
   let quote = priceEventQuote(requests, { season, style: form.style });
 
@@ -235,7 +247,11 @@ export function buildQuote(form: QuoteForm, catalog: readonly FlowerLite[]): Bui
       .sort((a, b) => b.weight - a.weight)[0];
 
     if (!heaviest) break;
-    const substitution = findSubstitution(heaviest.item.flower, catalog);
+    // La substitution reste soumise aux mêmes contraintes de sécurité.
+    const substitution = findSubstitution(
+      heaviest.item.flower,
+      catalog.filter((flower) => isAllowed(flower, form)),
+    );
     if (!substitution) {
       substituted.add(heaviest.item.flower.id);
       continue;

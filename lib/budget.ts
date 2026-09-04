@@ -91,7 +91,9 @@ export function fitToBudget(
     }
 
     // Plus de substitution possible : on réduit la ligne la plus lourde.
-    const heaviest = lines[0];
+    // On ne descend jamais sous une tige tant qu'il reste une seule variété :
+    // vider le bouquet ne serait pas un arbitrage, ce serait un abandon.
+    const heaviest = lines.find((line) => line.quantity > 1) ?? (lines.length > 1 ? lines[0] : undefined);
     if (!heaviest) break;
     const to = heaviest.quantity - 1;
     const next = { ...working };
