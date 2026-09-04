@@ -124,16 +124,23 @@ export function ChatWidget() {
   };
 
   // Un autre écran a pu préremplir le champ : on l'envoie dès l'ouverture.
+  // L'envoi est différé d'une microtâche pour ne pas déclencher de rendu en
+  // cascade depuis le corps de l'effet.
   const autoSent = useRef<string | null>(null);
+  const sendRef = useRef(send);
+
+  useEffect(() => {
+    sendRef.current = send;
+  });
+
   useEffect(() => {
     if (!open || !draft || streaming) return;
     if (autoSent.current === draft) return;
     if (messages.length > 0 && messages.at(-1)?.role === "user") return;
     autoSent.current = draft;
-    void send(draft);
-    // send est stable pour cet usage : il ne dépend que du store.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, draft]);
+    const prompt = draft;
+    queueMicrotask(() => void sendRef.current(prompt));
+  }, [open, draft, streaming, messages]);
 
   const applySuggestion = (suggestion: ParsedSuggestion) => {
     replaceBouquet({
@@ -156,11 +163,12 @@ export function ChatWidget() {
       <Button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-4 right-4 z-40 h-12 gap-2 rounded-full px-5 shadow-lg"
+        className="fixed bottom-4 right-4 z-50 size-12 gap-2 rounded-full p-0 shadow-lg sm:h-12 sm:w-auto sm:px-5"
         aria-haspopup="dialog"
+        aria-label="Ouvrir le conseil du fleuriste"
       >
         <Flower aria-hidden />
-        Conseil fleuriste
+        <span className="hidden sm:inline">Conseil fleuriste</span>
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>

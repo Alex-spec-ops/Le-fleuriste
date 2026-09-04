@@ -20,38 +20,37 @@ export function AnimatedPrice({
   durationMs?: number;
 }) {
   const reduced = useReducedMotion();
-  const [displayed, setDisplayed] = useState(value);
+  const [animated, setAnimated] = useState(value);
   const frame = useRef<number | null>(null);
-  const from = useRef(value);
+  const origin = useRef(value);
 
   useEffect(() => {
-    if (reduced) {
-      setDisplayed(value);
-      return;
-    }
+    if (reduced) return;
 
+    const from = origin.current;
+    const delta = value - from;
     const start = performance.now();
-    const origin = from.current;
-    const delta = value - origin;
-    if (Math.abs(delta) < 0.005) {
-      setDisplayed(value);
-      return;
-    }
 
     const step = (now: number) => {
       const progress = Math.min(1, (now - start) / durationMs);
       const eased = 1 - (1 - progress) ** 3;
-      setDisplayed(origin + delta * eased);
-      if (progress < 1) frame.current = requestAnimationFrame(step);
-      else from.current = value;
+      setAnimated(from + delta * eased);
+      if (progress < 1) {
+        frame.current = requestAnimationFrame(step);
+      } else {
+        origin.current = value;
+        frame.current = null;
+      }
     };
 
     frame.current = requestAnimationFrame(step);
     return () => {
       if (frame.current !== null) cancelAnimationFrame(frame.current);
-      from.current = value;
+      origin.current = value;
     };
   }, [value, durationMs, reduced]);
+
+  const displayed = reduced ? value : animated;
 
   return (
     <span className={className}>

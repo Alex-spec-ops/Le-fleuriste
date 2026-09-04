@@ -64,7 +64,7 @@ const ROLE_FALLBACK: Record<Role, Role[]> = {
   focale: ["focale", "secondaire"],
   secondaire: ["secondaire", "focale", "remplissage"],
   remplissage: ["remplissage", "secondaire", "feuillage"],
-  feuillage: ["feuillage", "structure", "remplissage"],
+  feuillage: ["feuillage", "structure", "remplissage", "secondaire"],
   structure: ["structure", "feuillage", "focale"],
 };
 
@@ -125,23 +125,20 @@ function pickByRole(
   season: Season,
   occasion: Occasion,
 ): FlowerLite[] {
-  // Deux passes : d'abord en respectant les contraintes, puis, seulement si
-  // aucune fleur ne subsiste, en les relâchant pour ne pas rendre un devis vide.
-  for (const strict of [true, false]) {
-    for (const candidateRole of ROLE_FALLBACK[role]) {
-      const ranked = catalog
-        .filter(
-          (flower) =>
-            flower.role === candidateRole &&
-            flower.unit !== "pot" &&
-            (strict ? isAllowed(flower, form) : !form.constraints.excludedFlowerIds.includes(flower.id)),
-        )
-        .map((flower) => ({ flower, score: scoreFlower(flower, form, season, occasion) }))
-        .filter((entry) => Number.isFinite(entry.score))
-        .sort((a, b) => b.score - a.score || a.flower.id.localeCompare(b.flower.id));
-      if (ranked.length > 0) {
-        return ranked.slice(0, count).map((entry) => entry.flower);
-      }
+  // On descend la liste des rôles de repli, mais jamais les contraintes de
+  // sécurité : si aucune fleur sûre ne convient, le rôle est simplement
+  // abandonné et les autres absorbent les tiges.
+  for (const candidateRole of ROLE_FALLBACK[role]) {
+    const ranked = catalog
+      .filter(
+        (flower) =>
+          flower.role === candidateRole && flower.unit !== "pot" && isAllowed(flower, form),
+      )
+      .map((flower) => ({ flower, score: scoreFlower(flower, form, season, occasion) }))
+      .filter((entry) => Number.isFinite(entry.score))
+      .sort((a, b) => b.score - a.score || a.flower.id.localeCompare(b.flower.id));
+    if (ranked.length > 0) {
+      return ranked.slice(0, count).map((entry) => entry.flower);
     }
   }
   return [];

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Minus, Plus, RotateCcw, X } from "lucide-react";
 import { toast } from "sonner";
@@ -53,12 +53,14 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
   const [error, setError] = useState<string | null>(null);
 
   // Composition venue du composeur : ses fleurs deviennent des fleurs imposées.
-  const [imported, setImported] = useState(false);
+  // Un ref plutôt qu'un état : l'import n'a rien à afficher, il ne doit donc
+  // pas déclencher de rendu supplémentaire.
+  const imported = useRef(false);
   useEffect(() => {
-    if (imported) return;
+    if (imported.current) return;
     const token = searchParams.get("bouquet");
     if (!token) return;
-    setImported(true);
+    imported.current = true;
     const bouquet = decodeBouquet(token);
     if (!bouquet) return;
     const ids = Object.keys(bouquet.items).slice(0, 30);
@@ -68,7 +70,7 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
     toast.success("Composition reprise du composeur", {
       description: `${ids.length} variété${ids.length > 1 ? "s" : ""} ajoutée${ids.length > 1 ? "s" : ""} aux fleurs imposées.`,
     });
-  }, [searchParams, imported, patch, patchConstraints]);
+  }, [searchParams, patch, patchConstraints]);
 
   const totalPieces = useMemo(
     () => Object.values(form.pieces).reduce((sum, quantity) => sum + (quantity ?? 0), 0),

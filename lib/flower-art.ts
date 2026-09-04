@@ -407,7 +407,9 @@ export function buildFlowerArt(flower: FlowerArtInput, withStem = true): FlowerA
 
   const shapes: Shape[] = [];
   if (withStem && family !== "feuillage") {
-    const bend = (random() - 0.5) * 14;
+    // Arrondi volontaire : la courbe de tige est écrite telle quelle dans le
+    // SVG, autant ne pas y transporter seize décimales.
+    const bend = Math.round((random() - 0.5) * 140) / 10;
     shapes.push({
       kind: "stroke",
       d: `M50 74 C${50 + bend} 100 ${50 - bend} 128 50 158`,

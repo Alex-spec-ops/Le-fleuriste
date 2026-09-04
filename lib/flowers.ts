@@ -128,8 +128,24 @@ export function searchFlowers(query: FlowerQuery): Flower[] {
 export type FlowerLite = Omit<Flower, "description" | "symbolism" | "imageUrl">;
 
 export function toFlowerLite(flower: Flower): FlowerLite {
-  const { description: _description, symbolism: _symbolism, imageUrl: _imageUrl, ...rest } = flower;
-  return rest;
+  return {
+    id: flower.id,
+    nameFr: flower.nameFr,
+    nameLatin: flower.nameLatin,
+    category: flower.category,
+    colors: flower.colors,
+    season: flower.season,
+    pricePerStem: flower.pricePerStem,
+    unit: flower.unit,
+    vaseLifeDays: flower.vaseLifeDays,
+    occasions: flower.occasions,
+    fragrance: flower.fragrance,
+    stemHeightCm: flower.stemHeightCm,
+    role: flower.role,
+    allergenRisk: flower.allergenRisk,
+    toxicPets: flower.toxicPets,
+    offSeasonImport: flower.offSeasonImport,
+  };
 }
 
 export function getCatalogForClient(): FlowerLite[] {

@@ -127,8 +127,14 @@ export function analyseHarmony(entries: readonly HarmonyInput[]): HarmonyNote[] 
     });
   }
 
+  // Les avertissements sur le pollen et les animaux renseignent le
+  // destinataire, pas l'équilibre du bouquet : ils n'empêchent pas le compliment.
+  const balanceNotes = notes.filter(
+    (note) => note.id !== "toxique-animaux" && note.id !== "allergenes",
+  );
+
   if (
-    notes.length === 0 &&
+    balanceNotes.length === 0 &&
     totalStems >= 9 &&
     focal > 0 &&
     green > 0 &&

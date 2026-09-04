@@ -4,18 +4,23 @@ import { getCatalogForClient, getFlowerById } from "@/lib/flowers";
 import { priceBouquet, type BouquetOptions } from "@/lib/pricing";
 import { buildQuote, suggestedTableCount } from "@/lib/quote-builder";
 import { buildQuoteReference } from "@/lib/quote-pdf";
-import { EMPTY_QUOTE_FORM, quoteFormSchema, quoteRequestSchema } from "@/lib/schemas/quote";
+import {
+  EMPTY_QUOTE_FORM,
+  quoteFormSchema,
+  quoteRequestSchema,
+  type QuoteForm,
+} from "@/lib/schemas/quote";
 
 const catalog = getCatalogForClient();
 
-const baseForm = {
+const baseForm: QuoteForm = {
   ...EMPTY_QUOTE_FORM,
   date: "2026-06-13",
   location: "Paris",
   guests: 80,
   pieces: { "bouquet-mariee": 1, "centre-table-bas": 10, boutonniere: 6 },
-  palette: ["blanc", "rose pâle"] as const,
-  style: "romantique" as const,
+  palette: ["blanc", "rose pâle"],
+  style: "romantique",
   budget: 2000,
 };
 

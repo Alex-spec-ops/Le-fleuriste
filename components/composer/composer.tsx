@@ -307,7 +307,8 @@ export function Composer({
           </div>
         ) : null}
 
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-3 sm:px-8">
+        {/* La marge à droite laisse passer le bouton flottant du conseiller. */}
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-3 pr-20 sm:px-8 sm:pr-8">
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
               Total estimé TTC
