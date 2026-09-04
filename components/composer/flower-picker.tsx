@@ -7,6 +7,7 @@ import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
 import { QuantityControl } from "@/components/bouquet/quantity-control";
 import { FlowerFilters } from "@/components/catalogue/flower-filters";
 import { FlowerThumb } from "@/components/flower-svg/flower-svg";
+import { EmptySprig } from "@/components/ornament/botanical";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CATEGORIES, COLOR_SWATCHES, type Category } from "@/lib/constants";
@@ -126,6 +127,7 @@ export function FlowerPicker({
       <div className="scroll-soft mt-4 flex-1 overflow-y-auto pr-1">
         {grouped.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border px-4 py-10 text-center">
+            <EmptySprig className="mb-3 h-20 w-20" />
             <p className="text-sm">
               Aucune fleur ne correspond à cette recherche.
             </p>

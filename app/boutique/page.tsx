@@ -17,6 +17,7 @@ export default function BoutiquePage() {
   return (
     <>
       <PageHeader
+        route="/boutique"
         eyebrow="La boutique"
         title="Nos bouquets prêts à commander"
         lead="Huit compositions que nous préparons régulièrement. Chacune est modifiable : ouvrez-la dans le composeur pour l'ajuster à votre goût et à votre budget."

@@ -51,7 +51,7 @@ export function ShopBouquetCard({ bouquet }: { bouquet: ShopBouquet }) {
   });
 
   return (
-    <article className="card-lift flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card">
+    <article className="card-lift card-petal flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card">
       <div className="bg-secondary/40 px-4 pt-4">
         <BouquetPreview
           entries={entries}

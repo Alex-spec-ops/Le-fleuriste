@@ -19,6 +19,7 @@ export default function DevisPage() {
   return (
     <>
       <PageHeader
+        route="/devis"
         eyebrow="Devis événementiel"
         title="Chiffrons votre événement"
         lead="Une question par écran, cinq minutes, et vous repartez avec un devis détaillé en PDF. Rien n'est engageant : c'est une base de discussion."

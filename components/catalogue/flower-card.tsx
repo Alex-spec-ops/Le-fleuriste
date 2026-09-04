@@ -15,7 +15,7 @@ export function FlowerCard({ flower }: { flower: FlowerLite }) {
   const yearRound = flower.season.includes("toute l'année");
 
   return (
-    <article className="card-lift group flex flex-col overflow-hidden rounded-xl border border-border bg-card">
+    <article className="card-lift card-petal group flex flex-col overflow-hidden rounded-xl border border-border bg-card">
       <Link
         href={`/catalogue/${flower.id}`}
         className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"

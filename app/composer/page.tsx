@@ -32,6 +32,7 @@ export default function ComposerPage() {
   return (
     <>
       <PageHeader
+        route="/composer"
         eyebrow="Le composeur"
         title="Composez votre bouquet"
         lead="Ajoutez des fleurs, le bouquet se dessine et le prix suit. Rien n'est commandé tant que vous ne nous l'avez pas envoyé."

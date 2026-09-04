@@ -18,6 +18,7 @@ export default function CataloguePage() {
   return (
     <>
       <PageHeader
+        route="/catalogue"
         eyebrow="Le catalogue"
         title="Toutes les fleurs de l'atelier"
         lead={`${flowers.length} variétés, avec pour chacune sa saison réelle, sa tenue en vase, son prix à l'unité et ses précautions. Cliquez sur une fleur pour l'ajouter à votre bouquet.`}

@@ -89,6 +89,7 @@ export default function EvenementsPage() {
   return (
     <>
       <PageHeader
+        route="/evenements"
         eyebrow="Mariages et événements"
         title="Un décor floral, chiffré avant d'être promis"
         lead="Nous travaillons les mariages, les baptêmes, les séminaires et les cérémonies d'adieu. Vous obtenez un devis détaillé en ligne, puis nous l'affinons ensemble."

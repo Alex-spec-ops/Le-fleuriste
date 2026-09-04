@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { SlidersHorizontal } from "lucide-react";
 
 import { FlowerCard } from "@/components/catalogue/flower-card";
+import { EmptySprig } from "@/components/ornament/botanical";
 import { FlowerFilters } from "@/components/catalogue/flower-filters";
 import { Button } from "@/components/ui/button";
 import {
@@ -127,6 +128,7 @@ export function CatalogueBrowser({
 
         {results.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border bg-card/60 px-6 py-16 text-center">
+            <EmptySprig className="mb-4 h-24 w-24" />
             <p className="font-heading text-xl">Aucune fleur ne correspond</p>
             <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
               Essayez d&apos;élargir la fourchette de prix ou de retirer une

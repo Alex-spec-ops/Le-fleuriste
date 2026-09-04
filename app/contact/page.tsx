@@ -15,6 +15,7 @@ export default function ContactPage() {
   return (
     <>
       <PageHeader
+        route="/contact"
         eyebrow="Contact"
         title="Écrivez-nous, passez, appelez"
         lead="Pour une commande simple, le téléphone reste le plus rapide. Pour un événement, le formulaire de devis nous fait gagner un échange."

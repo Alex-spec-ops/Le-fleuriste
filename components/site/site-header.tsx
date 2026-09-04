@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
+import { PetalMark } from "@/components/ornament/botanical";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SHOP } from "@/lib/shop";
@@ -35,7 +36,8 @@ export function SiteHeader() {
           <span className="font-heading text-2xl font-medium tracking-tight sm:text-[1.7rem]">
             {SHOP.name}
           </span>
-          <span className="mt-0.5 text-[0.68rem] uppercase tracking-[0.22em] text-muted-foreground">
+          <span className="mt-0.5 flex items-center gap-1.5 text-[0.68rem] uppercase tracking-[0.22em] text-muted-foreground">
+            <PetalMark className="text-sage" />
             Paris 10ᵉ
           </span>
         </Link>

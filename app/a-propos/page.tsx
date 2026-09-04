@@ -24,6 +24,7 @@ export default function AProposPage() {
   return (
     <>
       <PageHeader
+        route="/a-propos"
         eyebrow="L'atelier"
         title="Un métier de marché, pas de catalogue"
         lead="Nous achetons ce qui est beau le jour où nous l'achetons. C'est pour cela que le site vous dit la saison réelle de chaque fleur, et vous prévient quand une variété vient de loin."

@@ -1,5 +1,10 @@
 import Link from "next/link";
 
+import {
+  CornerSprig,
+  PetalBorder,
+  PetalMark,
+} from "@/components/ornament/botanical";
 import { SHOP, formatOpeningSummary, formatPostalAddress } from "@/lib/shop";
 
 const COLUMNS = [
@@ -26,8 +31,11 @@ export function SiteFooter() {
   const address = formatPostalAddress();
 
   return (
-    <footer className="mt-24 border-t border-border bg-secondary/50">
-      <div className="mx-auto grid w-full max-w-6xl gap-12 px-5 py-14 sm:px-8 md:grid-cols-[1.3fr_1fr_1fr]">
+    <footer className="botanical mt-24 overflow-hidden border-t border-border bg-secondary/50">
+      <PetalBorder className="-mt-px rotate-180" />
+      <CornerSprig corner="bottom-right" seed="pied-de-page" size={200} />
+
+      <div className="relative mx-auto grid w-full max-w-6xl gap-12 px-5 py-14 sm:px-8 md:grid-cols-[1.3fr_1fr_1fr]">
         <div>
           <p className="font-heading text-2xl">{SHOP.name}</p>
           <p className="mt-1 text-sm text-muted-foreground">{SHOP.tagline}</p>
@@ -57,7 +65,8 @@ export function SiteFooter() {
 
         {COLUMNS.map((column) => (
           <nav key={column.title} aria-label={column.title}>
-            <p className="text-[0.72rem] uppercase tracking-[0.2em] text-muted-foreground">
+            <p className="flex items-center gap-2 text-[0.72rem] uppercase tracking-[0.2em] text-muted-foreground">
+              <PetalMark className="text-sage" />
               {column.title}
             </p>
             <ul className="mt-4 space-y-2 text-sm">

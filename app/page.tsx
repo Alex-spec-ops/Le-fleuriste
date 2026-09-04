@@ -10,7 +10,15 @@ import {
 
 import { BouquetPreview } from "@/components/boutique/bouquet-preview";
 import { FlowerThumb } from "@/components/flower-svg/flower-svg";
-import { PageHeader } from "@/components/site/page-header";
+import {
+  BotanicalRule,
+  CornerSprig,
+  PetalBorder,
+  PetalMark,
+  WreathArc,
+} from "@/components/ornament/botanical";
+import { PageEmblem } from "@/components/ornament/page-emblem";
+import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { Reveal } from "@/components/site/reveal";
 import { Button } from "@/components/ui/button";
 import { COMMITMENTS, REVIEWS } from "@/data/avis";
@@ -54,84 +62,103 @@ const TOOLS = [
   },
 ] as const;
 
+function entriesOf(items: Record<string, number>) {
+  return Object.entries(items)
+    .map(([id, quantity]) => {
+      const flower = getFlowerById(id);
+      return flower ? { flower, quantity } : null;
+    })
+    .filter(
+      (
+        entry,
+      ): entry is {
+        flower: NonNullable<ReturnType<typeof getFlowerById>>;
+        quantity: number;
+      } => entry !== null,
+    );
+}
+
 export default function HomePage() {
   const season = seasonForDate(new Date());
   const inSeason = getAllFlowers()
-    .filter(
-      (flower) => flower.season.includes(season) && !flower.offSeasonImport,
-    )
+    .filter((flower) => flower.season.includes(season) && !flower.offSeasonImport)
     .sort((a, b) => a.pricePerStem - b.pricePerStem)
     .slice(0, 6);
 
   const hero = SHOP_BOUQUETS[0];
-  const heroEntries = hero
-    ? Object.entries(hero.items)
-        .map(([id, quantity]) => {
-          const flower = getFlowerById(id);
-          return flower ? { flower, quantity } : null;
-        })
-        .filter(
-          (
-            entry,
-          ): entry is {
-            flower: NonNullable<ReturnType<typeof getFlowerById>>;
-            quantity: number;
-          } => entry !== null,
-        )
-    : [];
+  const heroEntries = hero ? entriesOf(hero.items) : [];
 
   return (
     <>
-      <section className="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 pb-8 pt-14 sm:px-8 sm:pt-20 lg:grid-cols-[1.05fr_0.95fr]">
-        <div>
-          <p className="text-[0.72rem] uppercase tracking-[0.22em] text-terracotta-strong">
-            {SHOP.tagline}
-          </p>
-          <h1 className="heading-display mt-4 text-5xl sm:text-6xl">
-            Des fleurs choisies
-            <br />
-            pour une personne précise.
-          </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            Nous composons à la main, avec ce que le marché offre vraiment cette
-            semaine. Et si vous ne savez pas par où commencer, dites-nous
-            simplement pour qui c&apos;est.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button
-              nativeButton={false}
-              render={<Link href="/composer" />}
-              size="lg"
-            >
-              Composer votre bouquet <ArrowRight aria-hidden />
-            </Button>
-            <Button
-              nativeButton={false}
-              render={<Link href="/devis" />}
-              size="lg"
-              variant="outline"
-            >
-              Demander un devis
-            </Button>
-          </div>
-          <p className="mt-6 text-sm text-muted-foreground">
-            {getAllFlowers().length} variétés au catalogue · prix affiché avant
-            commande · devis PDF immédiat
-          </p>
-        </div>
+      {/* ------------------------------------------------------------- hero */}
+      <section className="botanical overflow-hidden">
+        <CornerSprig corner="top-left" seed="accueil-gauche" size={190} />
+        <CornerSprig corner="bottom-right" seed="accueil-droite" size={160} />
 
-        <Reveal className="justify-self-center">
-          <div className="rounded-3xl border border-border bg-card p-6">
-            <BouquetPreview
-              entries={heroEntries}
-              wrapping={hero?.wrapping ?? "kraft simple"}
-              className="h-[22rem] w-full sm:h-[26rem]"
-              label="Illustration d'un bouquet composé à l'atelier"
-            />
+        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-5 pb-10 pt-14 sm:px-8 sm:pt-20 lg:grid-cols-[1.05fr_0.95fr]">
+          <PageEmblem route="/" className="-left-24 top-4 -z-10 w-72 opacity-[0.05]" />
+
+          <div>
+            <p className="eyebrow">
+              <PetalMark />
+              {SHOP.tagline}
+            </p>
+            <h1 className="heading-display mt-4 text-5xl sm:text-6xl">
+              Des fleurs choisies
+              <br />
+              pour une personne précise.
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+              Nous composons à la main, avec ce que le marché offre vraiment cette
+              semaine. Et si vous ne savez pas par où commencer, dites-nous simplement
+              pour qui c&apos;est.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button nativeButton={false} render={<Link href="/composer" />} size="lg">
+                Composer votre bouquet <ArrowRight aria-hidden />
+              </Button>
+              <Button
+                nativeButton={false}
+                render={<Link href="/devis" />}
+                size="lg"
+                variant="outline"
+              >
+                Demander un devis
+              </Button>
+            </div>
+
+            <BotanicalRule className="mt-9 max-w-md" />
+
+            <p className="mt-5 text-sm text-muted-foreground">
+              {getAllFlowers().length} variétés au catalogue · prix affiché avant
+              commande · devis PDF immédiat
+            </p>
           </div>
-        </Reveal>
+
+          <Reveal className="justify-self-center">
+            <figure className="relative">
+              <WreathArc className="-top-6 scale-110" />
+              <div className="rounded-[2rem] border border-border bg-card p-6 shadow-[var(--shadow-petal)]">
+                <div className="rounded-[1.5rem] border border-border/60 bg-secondary/25 p-3">
+                  <BouquetPreview
+                    entries={heroEntries}
+                    wrapping={hero?.wrapping ?? "kraft simple"}
+                    className="h-[21rem] w-full sm:h-[25rem]"
+                    label="Illustration d'un bouquet composé à l'atelier"
+                  />
+                </div>
+              </div>
+              {hero ? (
+                <figcaption className="mt-3 text-center text-xs text-muted-foreground">
+                  « {hero.name} » — illustration d&apos;après la composition réelle
+                </figcaption>
+              ) : null}
+            </figure>
+          </Reveal>
+        </div>
       </section>
 
+      {/* ------------------------------------------------------- les outils */}
       <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {TOOLS.map((tool, index) => (
@@ -139,14 +166,14 @@ export default function HomePage() {
               <Reveal delayMs={index * 70}>
                 <Link
                   href={tool.href}
-                  className="card-lift block h-full rounded-xl border border-border bg-card p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  className="card-lift card-petal block h-full rounded-xl border border-border bg-card p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
-                  <tool.icon
-                    className="size-5 text-terracotta-strong"
-                    aria-hidden
-                  />
-                  <h2 className="mt-3 font-heading text-lg">{tool.title}</h2>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                  <span className="relative z-10 flex items-center gap-2 text-terracotta-strong">
+                    <tool.icon className="size-5" aria-hidden />
+                    <PetalMark className="opacity-50" />
+                  </span>
+                  <h2 className="relative z-10 mt-3 font-heading text-lg">{tool.title}</h2>
+                  <p className="relative z-10 mt-1.5 text-sm leading-relaxed text-muted-foreground">
                     {tool.body}
                   </p>
                 </Link>
@@ -156,31 +183,28 @@ export default function HomePage() {
         </ul>
       </section>
 
-      <section className="border-y border-border bg-secondary/40">
-        <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
+      {/* --------------------------------------------------------- la saison */}
+      <section className="botanical overflow-hidden border-y border-border bg-secondary/40">
+        <CornerSprig corner="top-right" seed="saison" size={176} />
+        <CornerSprig corner="bottom-left" seed="saison-bas" size={148} />
+
+        <div className="relative mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
           <Reveal>
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-[0.72rem] uppercase tracking-[0.22em] text-terracotta-strong">
-                  En ce moment
-                </p>
-                <h2 className="heading-display mt-2 text-3xl">
-                  La saison est {season}
-                </h2>
-                <p className="mt-2 max-w-xl text-muted-foreground">
-                  Ces fleurs sont à leur meilleur prix et à leur meilleure tenue
-                  en ce moment, sans import.
-                </p>
-              </div>
-              <Button
-                nativeButton={false}
-                render={<Link href="/catalogue" />}
-                variant="outline"
-                size="sm"
-              >
-                Voir tout le catalogue
-              </Button>
-            </div>
+            <SectionHeading
+              eyebrow="En ce moment"
+              title={`La saison est ${season}`}
+              lead="Ces fleurs sont à leur meilleur prix et à leur meilleure tenue en ce moment, sans import."
+              actions={
+                <Button
+                  nativeButton={false}
+                  render={<Link href="/catalogue" />}
+                  variant="outline"
+                  size="sm"
+                >
+                  Voir tout le catalogue
+                </Button>
+              }
+            />
           </Reveal>
 
           <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
@@ -189,20 +213,20 @@ export default function HomePage() {
                 <Reveal delayMs={index * 50}>
                   <Link
                     href={`/catalogue/${flower.id}`}
-                    className="card-lift block rounded-xl border border-border bg-card p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                    className="card-lift card-petal block rounded-xl border border-border bg-card p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                   >
                     <span
-                      className="flex h-24 items-center justify-center rounded-lg"
+                      className="relative z-10 flex h-24 items-center justify-center rounded-lg"
                       style={{
                         backgroundColor: `color-mix(in oklab, ${COLOR_SWATCHES[flower.colors[0]].fill} 20%, var(--card))`,
                       }}
                     >
                       <FlowerThumb flower={flower} className="h-20 w-auto" />
                     </span>
-                    <span className="mt-2.5 block truncate text-sm">
+                    <span className="relative z-10 mt-2.5 block truncate text-sm">
                       {flower.nameFr}
                     </span>
-                    <span className="block text-xs text-muted-foreground">
+                    <span className="relative z-10 block text-xs text-muted-foreground">
                       {formatEuro(flower.pricePerStem)} / {flower.unit}
                     </span>
                   </Link>
@@ -211,36 +235,51 @@ export default function HomePage() {
             ))}
           </ul>
         </div>
+
+        <PetalBorder className="-mb-px" />
       </section>
 
+      {/* ----------------------------------------------------- la sélection */}
       <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
         <Reveal>
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="heading-display text-3xl">
-              Trois bouquets que nous préparons souvent
-            </h2>
-            <Button
-              nativeButton={false}
-              render={<Link href="/boutique" />}
-              variant="outline"
-              size="sm"
-            >
-              Toute la sélection
-            </Button>
-          </div>
+          <SectionHeading
+            eyebrow="La sélection"
+            title="Trois bouquets que nous préparons souvent"
+            actions={
+              <Button
+                nativeButton={false}
+                render={<Link href="/boutique" />}
+                variant="outline"
+                size="sm"
+              >
+                Toute la sélection
+              </Button>
+            }
+          />
         </Reveal>
+
         <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {SHOP_BOUQUETS.slice(1, 4).map((bouquet, index) => (
             <li key={bouquet.id}>
               <Reveal delayMs={index * 70}>
                 <Link
                   href="/boutique"
-                  className="card-lift block h-full rounded-xl border border-border bg-card p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  className="card-lift card-petal block h-full overflow-hidden rounded-xl border border-border bg-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
-                  <h3 className="font-heading text-xl">{bouquet.name}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {bouquet.pitch}
-                  </p>
+                  <span className="relative z-10 block bg-secondary/40 px-4 pt-4">
+                    <BouquetPreview
+                      entries={entriesOf(bouquet.items)}
+                      wrapping={bouquet.wrapping}
+                      seed={index * 9 + 5}
+                      className="h-48 w-full"
+                    />
+                  </span>
+                  <span className="relative z-10 block p-5">
+                    <span className="block font-heading text-xl">{bouquet.name}</span>
+                    <span className="mt-2 block text-sm leading-relaxed text-muted-foreground">
+                      {bouquet.pitch}
+                    </span>
+                  </span>
                 </Link>
               </Reveal>
             </li>
@@ -248,20 +287,22 @@ export default function HomePage() {
         </ul>
       </section>
 
-      <section className="border-t border-border bg-secondary/40">
-        <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
+      {/* --------------------------------------------- avis ou engagements */}
+      <section className="botanical overflow-hidden border-t border-border bg-secondary/40">
+        <CornerSprig corner="top-left" seed="engagements" size={168} />
+
+        <div className="relative mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
           {REVIEWS.length > 0 ? (
             <>
-              <h2 className="heading-display text-3xl">
-                Ce qu&apos;en disent nos clients
-              </h2>
+              <SectionHeading eyebrow="Vos retours" title="Ce qu'en disent nos clients" />
               <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {REVIEWS.map((review) => (
                   <li
                     key={`${review.author}-${review.date}`}
                     className="rounded-xl border border-border bg-card p-5"
                   >
-                    <blockquote className="text-sm leading-relaxed">
+                    <PetalMark className="text-terracotta" />
+                    <blockquote className="mt-3 text-sm leading-relaxed">
                       « {review.text} »
                     </blockquote>
                     <p className="mt-3 text-xs text-muted-foreground">
@@ -273,21 +314,21 @@ export default function HomePage() {
             </>
           ) : (
             <>
-              <h2 className="heading-display text-3xl">Nos engagements</h2>
-              <p className="mt-2 max-w-xl text-muted-foreground">
-                Nous ne publions pas d&apos;avis tant que nous n&apos;en avons
-                pas reçu de véritables. En attendant, voici ce sur quoi nous
-                nous engageons.
-              </p>
+              <SectionHeading
+                eyebrow="La maison"
+                title="Nos engagements"
+                lead="Nous ne publions pas d'avis tant que nous n'en avons pas reçu de véritables. En attendant, voici ce sur quoi nous nous engageons."
+              />
               <ul className="mt-8 grid gap-5 sm:grid-cols-3">
                 {COMMITMENTS.map((commitment, index) => (
                   <li key={commitment.title}>
                     <Reveal delayMs={index * 70}>
-                      <div className="h-full rounded-xl border border-border bg-card p-5">
-                        <h3 className="font-heading text-lg">
+                      <div className="card-petal h-full rounded-xl border border-border bg-card p-5">
+                        <PetalMark className="relative z-10 text-terracotta" />
+                        <h3 className="relative z-10 mt-3 font-heading text-lg">
                           {commitment.title}
                         </h3>
-                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                        <p className="relative z-10 mt-2 text-sm leading-relaxed text-muted-foreground">
                           {commitment.body}
                         </p>
                       </div>
@@ -304,13 +345,10 @@ export default function HomePage() {
         eyebrow="Un doute ?"
         title="Dites-nous simplement pour qui c'est"
         lead="Le conseiller en bas de l'écran comprend l'occasion avant de proposer quoi que ce soit. Il ne recommande que des fleurs réellement disponibles à l'atelier."
+        rule={false}
       >
         <div className="flex flex-wrap gap-3">
-          <Button
-            nativeButton={false}
-            render={<Link href="/contact" />}
-            variant="outline"
-          >
+          <Button nativeButton={false} render={<Link href="/contact" />} variant="outline">
             Nous écrire
           </Button>
           <Button
