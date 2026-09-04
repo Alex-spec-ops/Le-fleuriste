@@ -67,7 +67,13 @@ export function Sprig({
   const p2: Point = { x: 96, y: 12 + random() * 12 };
 
   const stem = `M${r(p0.x)} ${r(p0.y)} Q${r(p1.x)} ${r(p1.y)} ${r(p2.x)} ${r(p2.y)}`;
-  const leaves: { cx: number; cy: number; rx: number; ry: number; rotate: number }[] = [];
+  const leaves: {
+    cx: number;
+    cy: number;
+    rx: number;
+    ry: number;
+    rotate: number;
+  }[] = [];
 
   for (let index = 0; index < leafPairs; index += 1) {
     const t = 0.16 + (index / Math.max(1, leafPairs - 1)) * 0.72;
@@ -80,8 +86,14 @@ export function Sprig({
     const spread = 38 + random() * 16;
 
     leaves.push({
-      cx: r(point.x + Math.cos(((angle + side * spread) * Math.PI) / 180) * length * 0.5),
-      cy: r(point.y + Math.sin(((angle + side * spread) * Math.PI) / 180) * length * 0.5),
+      cx: r(
+        point.x +
+          Math.cos(((angle + side * spread) * Math.PI) / 180) * length * 0.5,
+      ),
+      cy: r(
+        point.y +
+          Math.sin(((angle + side * spread) * Math.PI) / 180) * length * 0.5,
+      ),
       rx: r(length * 0.5),
       ry: r(length * 0.19),
       rotate: r(angle + side * spread),
@@ -125,7 +137,13 @@ export function Sprig({
               transform={`rotate(${angle + 90} ${r(tip.x + Math.cos((angle * Math.PI) / 180) * 4.4)} ${r(tip.y + Math.sin((angle * Math.PI) / 180) * 4.4)})`}
             />
           ))}
-          <circle cx={r(tip.x)} cy={r(tip.y)} r={2.6} fill={color} opacity={0.75} />
+          <circle
+            cx={r(tip.x)}
+            cy={r(tip.y)}
+            r={2.6}
+            fill={color}
+            opacity={0.75}
+          />
         </g>
       ) : null}
     </g>
@@ -159,7 +177,7 @@ export function CornerSprig({
       viewBox="0 0 120 120"
       width={size}
       height={size}
-      className={`pointer-events-none absolute ${position} text-sage opacity-[0.18] ${className ?? ""}`}
+      className={`pointer-events-none absolute -z-10 ${position} text-sage opacity-[0.18] ${className ?? ""}`}
       aria-hidden
       focusable="false"
     >
@@ -176,7 +194,10 @@ export function CornerSprig({
  */
 export function BotanicalRule({ className }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-4 text-sage ${className ?? ""}`} aria-hidden>
+    <div
+      className={`flex items-center gap-4 text-sage ${className ?? ""}`}
+      aria-hidden
+    >
       <span className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
       <svg viewBox="0 0 120 44" width="86" height="32" focusable="false">
         <g transform="translate(2 0) scale(0.34) translate(0 -8)">
@@ -295,7 +316,12 @@ export function EmptySprig({ className }: { className?: string }) {
         strokeWidth={1.4}
         opacity={0.45}
       />
-      <path d="M52 108 L88 108" stroke="currentColor" strokeWidth={1.4} opacity={0.45} />
+      <path
+        d="M52 108 L88 108"
+        stroke="currentColor"
+        strokeWidth={1.4}
+        opacity={0.45}
+      />
     </svg>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ContactForm } from "@/components/contact/contact-form";
+import { PetalMark } from "@/components/ornament/botanical";
 import { PageHeader } from "@/components/site/page-header";
 import { SHOP } from "@/lib/shop";
 
@@ -29,7 +30,8 @@ export default function ContactPage() {
 
         <aside className="space-y-8">
           <section>
-            <h2 className="text-[0.72rem] uppercase tracking-[0.2em] text-muted-foreground">
+            <h2 className="flex items-center gap-2 text-[0.72rem] uppercase tracking-[0.2em] text-muted-foreground">
+              <PetalMark className="text-sage" />
               Coordonnées
             </h2>
             <address className="mt-3 space-y-1.5 text-sm not-italic">
@@ -63,7 +65,8 @@ export default function ContactPage() {
           </section>
 
           <section>
-            <h2 className="text-[0.72rem] uppercase tracking-[0.2em] text-muted-foreground">
+            <h2 className="flex items-center gap-2 text-[0.72rem] uppercase tracking-[0.2em] text-muted-foreground">
+              <PetalMark className="text-sage" />
               Horaires
             </h2>
             <table className="mt-3 w-full text-sm">
@@ -94,7 +97,8 @@ export default function ContactPage() {
           </section>
 
           <section>
-            <h2 className="text-[0.72rem] uppercase tracking-[0.2em] text-muted-foreground">
+            <h2 className="flex items-center gap-2 text-[0.72rem] uppercase tracking-[0.2em] text-muted-foreground">
+              <PetalMark className="text-sage" />
               Livraison
             </h2>
             <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">

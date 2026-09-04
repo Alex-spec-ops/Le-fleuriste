@@ -4,6 +4,7 @@ import { rawCatalog } from "@/data/catalog";
 import { CATEGORIES, COLOR_SWATCHES, COLORS } from "@/lib/constants";
 import { buildFlowerArt, flowerSvgMarkup, hashSeed, shapeFamily } from "@/lib/flower-art";
 import { getAllFlowers, getCatalogCsvIndex, getFlowerById, searchFlowers } from "@/lib/flowers";
+import { PAGE_EMBLEM, emblemFor } from "@/lib/page-emblem";
 import { flowerCatalogSchema, isValidBotanicalName } from "@/lib/schemas/flower";
 
 describe("intégrité du catalogue", () => {
@@ -157,5 +158,23 @@ describe("illustrations paramétriques", () => {
   it("hache les identifiants de façon stable", () => {
     expect(hashSeed("rose-avalanche")).toBe(hashSeed("rose-avalanche"));
     expect(hashSeed("rose-avalanche")).not.toBe(hashSeed("rose-akito"));
+  });
+});
+
+describe("emblèmes de page", () => {
+  it("désigne une fleur réellement au catalogue pour chaque page", () => {
+    for (const [route, emblem] of Object.entries(PAGE_EMBLEM)) {
+      expect(getFlowerById(emblem.flowerId), `${route} → ${emblem.flowerId}`).toBeDefined();
+      expect(emblem.why.length).toBeGreaterThan(10);
+    }
+  });
+
+  it("ne réutilise jamais la même fleur sur deux pages", () => {
+    const ids = Object.values(PAGE_EMBLEM).map((emblem) => emblem.flowerId);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("renvoie null pour une route sans emblème", () => {
+    expect(emblemFor("/route-inexistante")).toBeNull();
   });
 });

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { BouquetPreview } from "@/components/boutique/bouquet-preview";
-import { PageHeader } from "@/components/site/page-header";
+import { CornerSprig, PetalMark } from "@/components/ornament/botanical";
+import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { Reveal } from "@/components/site/reveal";
 import { Button } from "@/components/ui/button";
 import type { Wrapping } from "@/lib/constants";
@@ -113,9 +114,10 @@ export default function EvenementsPage() {
           {STEPS.map((step, index) => (
             <li key={step.title}>
               <Reveal delayMs={index * 70}>
-                <div className="h-full rounded-xl border border-border bg-card p-5">
-                  <p className="font-heading text-3xl text-terracotta">
+                <div className="card-petal h-full rounded-xl border border-border bg-card p-5">
+                  <p className="flex items-baseline gap-2 font-heading text-3xl text-terracotta">
                     {index + 1}
+                    <PetalMark className="translate-y-[-2px] opacity-70" />
                   </p>
                   <h2 className="mt-2 font-heading text-lg">{step.title}</h2>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
@@ -128,9 +130,14 @@ export default function EvenementsPage() {
         </ol>
       </section>
 
-      <section className="border-y border-border bg-secondary/40">
+      <section className="botanical overflow-hidden border-y border-border bg-secondary/40">
+        <CornerSprig corner="top-right" seed="realisations" size={172} />
+        <CornerSprig corner="bottom-left" seed="realisations-bas" size={140} />
         <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
-          <h2 className="heading-display text-3xl">Trois réalisations types</h2>
+          <SectionHeading
+            eyebrow="Nos réalisations"
+            title="Trois réalisations types"
+          />
           <p className="mt-2 max-w-xl text-muted-foreground">
             Illustrations produites à partir des compositions réelles : chaque
             fleur dessinée existe au catalogue, avec son prix.

@@ -13,7 +13,13 @@ import {
 import { QuantityControl } from "@/components/bouquet/quantity-control";
 import { FlowerCard } from "@/components/catalogue/flower-card";
 import { FlowerSvg } from "@/components/flower-svg/flower-svg";
+import {
+  BotanicalRule,
+  CornerSprig,
+  PetalMark,
+} from "@/components/ornament/botanical";
 import { FlowerJsonLd } from "@/components/site/json-ld";
+import { SectionHeading } from "@/components/site/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { COLOR_SWATCHES } from "@/lib/constants";
@@ -111,21 +117,37 @@ export default async function FlowerPage({
       </div>
 
       <article className="mx-auto grid w-full max-w-6xl gap-12 px-5 pb-16 pt-6 sm:px-8 lg:grid-cols-[minmax(0,420px)_1fr]">
-        <div
-          className="flex items-center justify-center rounded-2xl border border-border p-8"
-          style={{
-            backgroundColor: `color-mix(in oklab, ${swatch.fill} 18%, var(--card))`,
-          }}
-        >
-          <FlowerSvg
-            flower={flower}
-            label={`Illustration de ${flower.nameFr}`}
-            className="h-[26rem] w-auto max-w-full"
-          />
+        <div className="botanical self-start">
+          <div
+            className="botanical flex items-center justify-center overflow-hidden rounded-2xl border border-border p-8"
+            style={{
+              backgroundColor: `color-mix(in oklab, ${swatch.fill} 18%, var(--card))`,
+            }}
+          >
+            <CornerSprig
+              corner="top-left"
+              seed={`fiche-${flower.id}`}
+              size={124}
+              className="opacity-[0.16]"
+            />
+            <CornerSprig
+              corner="bottom-right"
+              seed={`fiche-bas-${flower.id}`}
+              size={104}
+              className="opacity-[0.13]"
+            />
+            <FlowerSvg
+              flower={flower}
+              label={`Illustration de ${flower.nameFr}`}
+              className="relative h-[26rem] w-auto max-w-full"
+            />
+          </div>
+          <BotanicalRule className="mt-5" />
         </div>
 
         <div>
-          <p className="text-[0.72rem] uppercase tracking-[0.22em] text-terracotta-strong">
+          <p className="eyebrow">
+            <PetalMark />
             {flower.category}
           </p>
           <h1 className="heading-display mt-2 text-4xl sm:text-5xl">
@@ -162,7 +184,8 @@ export default async function FlowerPage({
 
           <dl className="mt-9 grid gap-x-8 gap-y-5 sm:grid-cols-2">
             <div className="sm:col-span-2">
-              <dt className="text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+              <dt className="flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+                <PetalMark className="text-sage" />
                 Saison de disponibilité
               </dt>
               <dd className="mt-2 flex flex-wrap gap-1.5">
@@ -184,7 +207,8 @@ export default async function FlowerPage({
             </div>
 
             <div className="sm:col-span-2">
-              <dt className="text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+              <dt className="flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+                <PetalMark className="text-sage" />
                 Couleurs
               </dt>
               <dd className="mt-2 flex flex-wrap gap-1.5">
@@ -230,14 +254,16 @@ export default async function FlowerPage({
             </div>
 
             <div>
-              <dt className="text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+              <dt className="flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+                <PetalMark className="text-sage" />
                 Rôle dans un bouquet
               </dt>
               <dd className="mt-1 text-sm">{flower.role}</dd>
             </div>
 
             <div className="sm:col-span-2">
-              <dt className="text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+              <dt className="flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+                <PetalMark className="text-sage" />
                 Ce qu&apos;elle dit
               </dt>
               <dd className="mt-2 flex flex-wrap gap-1.5">
@@ -254,7 +280,8 @@ export default async function FlowerPage({
             </div>
 
             <div className="sm:col-span-2">
-              <dt className="text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+              <dt className="flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
+                <PetalMark className="text-sage" />
                 Occasions
               </dt>
               <dd className="mt-2 flex flex-wrap gap-1.5">
@@ -275,7 +302,7 @@ export default async function FlowerPage({
 
       {related.length > 0 ? (
         <section className="mx-auto w-full max-w-6xl px-5 pb-20 sm:px-8">
-          <h2 className="heading-display text-2xl">Dans le même esprit</h2>
+          <SectionHeading eyebrow="À rapprocher" title="Dans le même esprit" />
           <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((candidate) => (
               <li key={candidate.id}>

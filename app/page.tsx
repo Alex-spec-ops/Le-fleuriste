@@ -81,7 +81,9 @@ function entriesOf(items: Record<string, number>) {
 export default function HomePage() {
   const season = seasonForDate(new Date());
   const inSeason = getAllFlowers()
-    .filter((flower) => flower.season.includes(season) && !flower.offSeasonImport)
+    .filter(
+      (flower) => flower.season.includes(season) && !flower.offSeasonImport,
+    )
     .sort((a, b) => a.pricePerStem - b.pricePerStem)
     .slice(0, 6);
 
@@ -96,7 +98,10 @@ export default function HomePage() {
         <CornerSprig corner="bottom-right" seed="accueil-droite" size={160} />
 
         <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-5 pb-10 pt-14 sm:px-8 sm:pt-20 lg:grid-cols-[1.05fr_0.95fr]">
-          <PageEmblem route="/" className="-left-24 top-4 -z-10 w-72 opacity-[0.05]" />
+          <PageEmblem
+            route="/"
+            className="-left-24 top-4 -z-10 w-72 opacity-[0.05]"
+          />
 
           <div>
             <p className="eyebrow">
@@ -109,12 +114,16 @@ export default function HomePage() {
               pour une personne précise.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              Nous composons à la main, avec ce que le marché offre vraiment cette
-              semaine. Et si vous ne savez pas par où commencer, dites-nous simplement
-              pour qui c&apos;est.
+              Nous composons à la main, avec ce que le marché offre vraiment
+              cette semaine. Et si vous ne savez pas par où commencer,
+              dites-nous simplement pour qui c&apos;est.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button nativeButton={false} render={<Link href="/composer" />} size="lg">
+              <Button
+                nativeButton={false}
+                render={<Link href="/composer" />}
+                size="lg"
+              >
                 Composer votre bouquet <ArrowRight aria-hidden />
               </Button>
               <Button
@@ -130,8 +139,8 @@ export default function HomePage() {
             <BotanicalRule className="mt-9 max-w-md" />
 
             <p className="mt-5 text-sm text-muted-foreground">
-              {getAllFlowers().length} variétés au catalogue · prix affiché avant
-              commande · devis PDF immédiat
+              {getAllFlowers().length} variétés au catalogue · prix affiché
+              avant commande · devis PDF immédiat
             </p>
           </div>
 
@@ -150,7 +159,8 @@ export default function HomePage() {
               </div>
               {hero ? (
                 <figcaption className="mt-3 text-center text-xs text-muted-foreground">
-                  « {hero.name} » — illustration d&apos;après la composition réelle
+                  « {hero.name} » — illustration d&apos;après la composition
+                  réelle
                 </figcaption>
               ) : null}
             </figure>
@@ -172,7 +182,9 @@ export default function HomePage() {
                     <tool.icon className="size-5" aria-hidden />
                     <PetalMark className="opacity-50" />
                   </span>
-                  <h2 className="relative z-10 mt-3 font-heading text-lg">{tool.title}</h2>
+                  <h2 className="relative z-10 mt-3 font-heading text-lg">
+                    {tool.title}
+                  </h2>
                   <p className="relative z-10 mt-1.5 text-sm leading-relaxed text-muted-foreground">
                     {tool.body}
                   </p>
@@ -275,7 +287,9 @@ export default function HomePage() {
                     />
                   </span>
                   <span className="relative z-10 block p-5">
-                    <span className="block font-heading text-xl">{bouquet.name}</span>
+                    <span className="block font-heading text-xl">
+                      {bouquet.name}
+                    </span>
                     <span className="mt-2 block text-sm leading-relaxed text-muted-foreground">
                       {bouquet.pitch}
                     </span>
@@ -294,7 +308,10 @@ export default function HomePage() {
         <div className="relative mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
           {REVIEWS.length > 0 ? (
             <>
-              <SectionHeading eyebrow="Vos retours" title="Ce qu'en disent nos clients" />
+              <SectionHeading
+                eyebrow="Vos retours"
+                title="Ce qu'en disent nos clients"
+              />
               <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {REVIEWS.map((review) => (
                   <li
@@ -348,7 +365,11 @@ export default function HomePage() {
         rule={false}
       >
         <div className="flex flex-wrap gap-3">
-          <Button nativeButton={false} render={<Link href="/contact" />} variant="outline">
+          <Button
+            nativeButton={false}
+            render={<Link href="/contact" />}
+            variant="outline"
+          >
             Nous écrire
           </Button>
           <Button

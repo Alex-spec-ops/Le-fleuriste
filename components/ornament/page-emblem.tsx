@@ -7,7 +7,13 @@ import { emblemFor } from "@/lib/page-emblem";
  * Filigrane de page : la fleur emblème, dessinée très pâle derrière le titre.
  * Purement décoratif — la fleur elle-même reste consultable au catalogue.
  */
-export function PageEmblem({ route, className }: { route: string; className?: string }) {
+export function PageEmblem({
+  route,
+  className,
+}: {
+  route: string;
+  className?: string;
+}) {
   const id = emblemFor(route);
   const flower = id ? getFlowerById(id) : undefined;
   if (!flower) return null;

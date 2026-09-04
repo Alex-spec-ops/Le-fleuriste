@@ -3,6 +3,7 @@
 import { forwardRef } from "react";
 
 import { FlowerShapes } from "@/components/flower-svg/flower-svg";
+import { Sprig } from "@/components/ornament/botanical";
 import { buildFlowerArt } from "@/lib/flower-art";
 import {
   CANVAS,
@@ -169,16 +170,26 @@ export const BouquetCanvas = forwardRef<SVGSVGElement, Props>(
         </g>
 
         {empty ? (
-          <text
-            x={CANVAS.width / 2}
-            y={CANVAS.headY}
-            textAnchor="middle"
-            fill="var(--muted-foreground)"
-            fontSize="15"
-            fontFamily="var(--font-sans, system-ui)"
-          >
-            Choisissez une première fleur
-          </text>
+          <>
+            {/* Un brin seul plutôt qu'une toile blanche : l'écran vide reste habité. */}
+            <g
+              transform={`translate(${CANVAS.headX - 62} ${CANVAS.headY - 132}) scale(1.05)`}
+              className="text-sage"
+              opacity={0.32}
+            >
+              <Sprig seed="toile-vide" leafPairs={5} />
+            </g>
+            <text
+              x={CANVAS.width / 2}
+              y={CANVAS.headY + 74}
+              textAnchor="middle"
+              fill="var(--muted-foreground)"
+              fontSize="15"
+              fontFamily="var(--font-sans, system-ui)"
+            >
+              Choisissez une première fleur
+            </text>
+          </>
         ) : null}
       </svg>
     );

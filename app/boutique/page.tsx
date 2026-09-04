@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ShopBouquetCard } from "@/components/boutique/shop-bouquet-card";
+import { CornerSprig, PetalMark } from "@/components/ornament/botanical";
 import { PageHeader } from "@/components/site/page-header";
 import { Button } from "@/components/ui/button";
 import { SHOP_BOUQUETS } from "@/data/boutique";
@@ -32,7 +33,14 @@ export default function BoutiquePage() {
           ))}
         </ul>
 
-        <div className="mt-14 rounded-2xl border border-border bg-secondary/40 px-6 py-10 text-center">
+        <div className="botanical mt-14 overflow-hidden rounded-2xl border border-border bg-secondary/40 px-6 py-10 text-center">
+          <CornerSprig corner="top-left" seed="boutique-appel" size={132} />
+          <CornerSprig
+            corner="bottom-right"
+            seed="boutique-appel-bas"
+            size={112}
+          />
+          <PetalMark className="mx-auto mb-3 text-terracotta" />
           <h2 className="heading-display text-2xl">
             Rien qui vous corresponde ?
           </h2>

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { PageHeader } from "@/components/site/page-header";
+import { BotanicalRule, CornerSprig } from "@/components/ornament/botanical";
+import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { Reveal } from "@/components/site/reveal";
 import { Button } from "@/components/ui/button";
 import { getAllFlowers, getCategorySummaries } from "@/lib/flowers";
@@ -55,7 +56,7 @@ export default function AProposPage() {
 
         <Reveal delayMs={80}>
           <article className="space-y-4">
-            <h2 className="heading-display text-2xl">Le travail</h2>
+            <SectionHeading eyebrow="L'atelier" title="Le travail" />
             <p className="leading-relaxed text-muted-foreground">
               Chaque bouquet est monté à la main, en spirale, sur le comptoir de
               l&apos;atelier. Nous recoupons les tiges à l&apos;oblique, nous
@@ -71,9 +72,10 @@ export default function AProposPage() {
         </Reveal>
       </section>
 
-      <section className="border-y border-border bg-secondary/40">
+      <section className="botanical overflow-hidden border-y border-border bg-secondary/40">
+        <CornerSprig corner="top-left" seed="chiffres" size={168} />
         <div className="mx-auto w-full max-w-5xl px-5 py-14 sm:px-8">
-          <h2 className="heading-display text-2xl">Le catalogue en chiffres</h2>
+          <SectionHeading eyebrow="Le fonds" title="Le catalogue en chiffres" />
           <dl className="mt-8 grid gap-8 sm:grid-cols-3">
             <div>
               <dt className="text-sm text-muted-foreground">
@@ -104,7 +106,8 @@ export default function AProposPage() {
       </section>
 
       <section className="mx-auto w-full max-w-5xl px-5 py-14 sm:px-8">
-        <h2 className="heading-display text-2xl">Nous rendre visite</h2>
+        <SectionHeading eyebrow="La boutique" title="Nous rendre visite" />
+        <BotanicalRule className="mt-6 max-w-md" />
         <p className="mt-3 max-w-xl text-muted-foreground">
           L&apos;atelier se trouve dans le {SHOP.district} de {SHOP.city}.{" "}
           {formatOpeningSummary()}

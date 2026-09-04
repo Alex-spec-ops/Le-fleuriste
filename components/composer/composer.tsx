@@ -24,6 +24,7 @@ import { BudgetAssistant } from "@/components/composer/budget-assistant";
 import { AnimatedPrice } from "@/components/composer/animated-price";
 import { FlowerPicker } from "@/components/composer/flower-picker";
 import { PriceDetail } from "@/components/composer/price-detail";
+import { CornerSprig, PetalMark } from "@/components/ornament/botanical";
 import { Button } from "@/components/ui/button";
 import { seasonForDate, type Category } from "@/lib/constants";
 import { analyseHarmony } from "@/lib/bouquet-harmony";
@@ -163,7 +164,13 @@ export function Composer({
         {/* Colonne gauche : le bouquet vivant */}
         <div>
           <div className="lg:sticky lg:top-24">
-            <div className="overflow-hidden rounded-2xl border border-border bg-card">
+            <div className="botanical overflow-hidden rounded-2xl border border-border bg-card">
+              <CornerSprig corner="top-left" seed="composeur" size={128} />
+              <CornerSprig
+                corner="bottom-right"
+                seed="composeur-bas"
+                size={110}
+              />
               <BouquetCanvas
                 ref={svgRef}
                 entries={entries}
@@ -266,6 +273,7 @@ export function Composer({
                           : "border-border bg-secondary/50"
                     }`}
                   >
+                    <PetalMark className="mr-1.5 inline-block -translate-y-px text-sage" />
                     {note.message}
                   </li>
                 ))}
@@ -277,7 +285,10 @@ export function Composer({
         {/* Colonne droite : la sélection */}
         <div className="space-y-8">
           <section>
-            <h2 className="font-heading text-lg">Partir d&apos;un modèle</h2>
+            <h2 className="flex items-center gap-2 font-heading text-lg">
+              <PetalMark className="text-terracotta" />
+              Partir d&apos;un modèle
+            </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Une base de fleuriste, que vous ajustez ensuite tige par tige.
             </p>
@@ -315,7 +326,10 @@ export function Composer({
           </section>
 
           <section>
-            <h2 className="font-heading text-lg">Options</h2>
+            <h2 className="flex items-center gap-2 font-heading text-lg">
+              <PetalMark className="text-terracotta" />
+              Options
+            </h2>
             <div className="mt-4">
               <BouquetOptions />
             </div>

@@ -1,6 +1,10 @@
 import type { ReactNode } from "react";
 
-import { BotanicalRule, CornerSprig, PetalMark } from "@/components/ornament/botanical";
+import {
+  BotanicalRule,
+  CornerSprig,
+  PetalMark,
+} from "@/components/ornament/botanical";
 import { PageEmblem } from "@/components/ornament/page-emblem";
 
 /**
@@ -26,7 +30,12 @@ export function PageHeader({
 }) {
   return (
     <div className="botanical overflow-hidden">
-      <CornerSprig corner="top-right" seed={`entete-${title}`} size={168} className="opacity-[0.13]" />
+      <CornerSprig
+        corner="top-right"
+        seed={`entete-${title}`}
+        size={168}
+        className="opacity-[0.13]"
+      />
 
       <div className="relative mx-auto w-full max-w-6xl px-5 pb-10 pt-14 sm:px-8 sm:pt-20">
         {route ? <PageEmblem route={route} /> : null}
@@ -71,7 +80,9 @@ export function SectionHeading({
   className?: string;
 }) {
   return (
-    <div className={`flex flex-wrap items-end justify-between gap-4 ${className ?? ""}`}>
+    <div
+      className={`flex flex-wrap items-end justify-between gap-4 ${className ?? ""}`}
+    >
       <div>
         {eyebrow ? (
           <p className="eyebrow">
@@ -80,7 +91,9 @@ export function SectionHeading({
           </p>
         ) : null}
         <h2 className="heading-display mt-2 text-2xl sm:text-3xl">{title}</h2>
-        {lead ? <p className="mt-2 max-w-xl text-muted-foreground">{lead}</p> : null}
+        {lead ? (
+          <p className="mt-2 max-w-xl text-muted-foreground">{lead}</p>
+        ) : null}
       </div>
       {actions}
     </div>

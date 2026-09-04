@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Minus, Plus, RotateCcw, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { QuoteSummary } from "@/components/devis/quote-summary";
+import { PetalMark } from "@/components/ornament/botanical";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -488,7 +489,10 @@ function Step({
 }) {
   return (
     <section>
-      <h2 className="heading-display text-2xl sm:text-3xl">{title}</h2>
+      <h2 className="heading-display flex items-start gap-2.5 text-2xl sm:text-3xl">
+        <PetalMark className="mt-2.5 text-terracotta" />
+        {title}
+      </h2>
       {hint ? (
         <p className="mt-2 max-w-xl text-sm text-muted-foreground">{hint}</p>
       ) : null}
