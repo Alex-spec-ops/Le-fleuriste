@@ -405,6 +405,17 @@ function round(value: number): number {
 }
 
 /**
+ * Arrondit tous les nombres écrits dans un chemin SVG.
+ *
+ * Les chemins sont assemblés par interpolation de chaînes dans les
+ * constructeurs ; les arrondir ici plutôt que dans chacun d'eux évite d'avoir
+ * à y penser à chaque nouvelle forme.
+ */
+function roundPath(d: string): string {
+  return d.replace(/-?\d+\.\d+/g, (match) => String(round(Number(match))));
+}
+
+/**
  * Arrondit les coordonnées d'une forme.
  *
  * Ce n'est pas qu'une question de propreté : un double comme
@@ -412,6 +423,10 @@ function round(value: number): number {
  * au rendu client, ce qui provoque une erreur d'hydratation React sur chaque
  * pétale. Arrondir à la source supprime la classe de bug entière, et allège
  * le HTML au passage.
+ *
+ * Toutes les variantes de `Shape` doivent être traitées : la première version
+ * de cette fonction laissait passer les chemins, et le défaut est revenu par
+ * les étamines des lys et des orchidées.
  */
 function roundShape(shape: Shape): Shape {
   switch (shape.kind) {
@@ -426,8 +441,10 @@ function roundShape(shape: Shape): Shape {
         ry: round(shape.ry),
         rotate: shape.rotate === undefined ? undefined : round(shape.rotate),
       };
-    default:
-      return shape;
+    case "path":
+      return { ...shape, d: roundPath(shape.d) };
+    case "stroke":
+      return { ...shape, d: roundPath(shape.d), width: round(shape.width) };
   }
 }
 

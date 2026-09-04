@@ -175,6 +175,38 @@ publions pas de témoignages inventés. Tant qu'il est vide, la page d'accueil
 affiche les engagements de la maison. Ajoutez-y les avis réellement reçus, avec
 l'accord de leurs auteurs, et la section bascule automatiquement.
 
+## Direction artistique
+
+Le vocabulaire botanique est un système, pas une collection de décorations
+collées page par page : `components/ornament/botanical.tsx` construit chaque
+forme par le calcul, comme les illustrations de fleurs. Une tige est une courbe
+de Bézier, les feuilles sont posées le long de cette courbe en suivant sa
+tangente, et une graine déterministe garantit qu'un brin donné est toujours
+identique à lui-même.
+
+| Élément | Rôle |
+| --- | --- |
+| `PetalMark` | ponctuation de la charte, devant chaque sur-titre |
+| `BotanicalRule` | filet de séparation, deux brins et trois graines |
+| `CornerSprig` | filigrane d'angle de section, effet papier à en-tête |
+| `WreathArc` | arc de feuillage derrière le bouquet du hero |
+| `PetalBorder` | frise de pétales entre deux grandes sections |
+| `EmptySprig` | états vides : un brin seul dans un vase esquissé |
+| `PageEmblem` | fleur emblème de la page, en filigrane derrière le titre |
+
+Chaque page est placée sous une fleur du catalogue (`lib/page-emblem.ts`) :
+la pivoine Sarah Bernhardt pour l'accueil, la renoncule Clooney Hanoï pour le
+catalogue, la rose Avalanche pour le composeur, et ainsi de suite. Ce ne sont
+pas des motifs interchangeables mais de vraies variétés de la boutique, et un
+test vérifie qu'aucun emblème ne pointe vers une fleur inexistante.
+
+Le fond porte un grain de papier en CSS pur (deux trames de points décalées et
+une lueur chaude en haut de page), sans image ni requête supplémentaire. Au
+survol, les cartes laissent apparaître un halo de pétale dans leur angle.
+
+Tous ces éléments portent `aria-hidden` : ils n'existent pas pour un lecteur
+d'écran, et `prefers-reduced-motion` neutralise leurs transitions.
+
 ## Accessibilité et performance
 
 - Navigation clavier complète, lien d'évitement, libellés ARIA sur tous les

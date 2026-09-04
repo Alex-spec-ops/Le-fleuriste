@@ -155,6 +155,19 @@ describe("illustrations paramétriques", () => {
     expect(markup.trimEnd().endsWith("</svg>")).toBe(true);
   });
 
+
+  it("n'arrondit aucune coordonnée au-delà de deux décimales", () => {
+    // Garde-fou contre les erreurs d'hydratation : un flottant long ne se
+    // sérialise pas identiquement côté serveur et côté client. Le test balaie
+    // coordonnées et chemins, pour toutes les familles de formes.
+    const tooPrecise = /d+.d{3,}/;
+    for (const flower of getAllFlowers()) {
+      for (const shape of buildFlowerArt(flower).shapes) {
+        const serialised = JSON.stringify(shape);
+        expect(tooPrecise.test(serialised), flower.nameFr + " : " + serialised).toBe(false);
+      }
+    }
+  });
   it("hache les identifiants de façon stable", () => {
     expect(hashSeed("rose-avalanche")).toBe(hashSeed("rose-avalanche"));
     expect(hashSeed("rose-avalanche")).not.toBe(hashSeed("rose-akito"));
