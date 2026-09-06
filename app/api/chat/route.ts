@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { adviseLocally, isOffTopic, offTopicReply } from "@/lib/chat/local-advisor";
 import { MarkerFilter, SUGGESTIONS_SENTINEL } from "@/lib/chat/marker-filter";
 import {
   MistralError,
@@ -7,7 +8,7 @@ import {
   type ChatMessageParam,
   type ToolCall,
 } from "@/lib/chat/mistral";
-import { buildSystemPrompt, fallbackAnswer } from "@/lib/chat/system-prompt";
+import { buildSystemPrompt } from "@/lib/chat/system-prompt";
 import { CHAT_TOOLS, runTool } from "@/lib/chat/tools";
 
 /**
@@ -16,6 +17,12 @@ import { CHAT_TOOLS, runTool } from "@/lib/chat/tools";
  * La clé MISTRAL_API_KEY reste sur le serveur. La réponse est relayée en
  * streaming au navigateur ; les blocs de composition sont extraits, validés
  * contre le catalogue, puis renvoyés en fin de flux.
+ *
+ * Deux garde-fous indépendants du modèle :
+ * — le périmètre floral est vérifié ici, avant tout appel à l'API ;
+ * — si l'API ne répond pas (clé absente, quota fermé, panne), le conseiller
+ *   local prend le relais et répond avec le vrai catalogue, plutôt que de
+ *   laisser le client devant un message d'erreur.
  */
 
 export const runtime = "nodejs";
@@ -32,6 +39,8 @@ const requestSchema = z.object({
     .min(1)
     .max(30),
 });
+
+type Conversation = z.infer<typeof requestSchema>["messages"];
 
 /* ------------------------------------------------------- limitation de débit */
 
@@ -61,26 +70,40 @@ function rateLimited(key: string): boolean {
 
 /* ----------------------------------------------------------------- réponses */
 
+const encoder = new TextEncoder();
+
 function textStream(body: string, suggestions: unknown[] = []): Response {
-  const encoder = new TextEncoder();
   return new Response(
     new ReadableStream({
       start(controller) {
         controller.enqueue(encoder.encode(body));
-        controller.enqueue(
-          encoder.encode(SUGGESTIONS_SENTINEL + JSON.stringify(suggestions)),
-        );
+        controller.enqueue(encoder.encode(SUGGESTIONS_SENTINEL + JSON.stringify(suggestions)));
         controller.close();
       },
     }),
-    { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } },
+    {
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+      },
+    },
   );
+}
+
+function lastUserMessage(messages: Conversation): string {
+  return [...messages].reverse().find((message) => message.role === "user")?.content ?? "";
+}
+
+/** Réponse du conseiller local, dans le même format que la voie modèle. */
+function localReply(messages: Conversation): Response {
+  const reply = adviseLocally(lastUserMessage(messages));
+  return textStream(reply.text, reply.suggestions);
 }
 
 const MAX_TOOL_ROUNDS = 4;
 
 export async function POST(request: Request): Promise<Response> {
-  const apiKey = process.env.MISTRAL_API_KEY;
+  const apiKey = process.env.MISTRAL_API_KEY?.trim();
 
   let payload: unknown;
   try {
@@ -94,27 +117,33 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: "Conversation invalide." }, { status: 422 });
   }
 
+  const messages = parsed.data.messages;
+
   if (rateLimited(clientKey(request))) {
     return textStream(
       "Vous avez posé beaucoup de questions d'un coup — laissez-nous quelques minutes, ou appelez directement la boutique.",
     );
   }
 
-  if (!apiKey) {
-    // Aucune clé configurée : on répond utilement plutôt que d'échouer.
-    return textStream(fallbackAnswer());
+  // Périmètre : une demande manifestement étrangère aux fleurs est écartée
+  // ici, sans appeler le modèle. Le prompt seul ne suffirait pas à garantir
+  // la règle, et cet appel n'a pas à être facturé.
+  if (messages.length === 1 && isOffTopic(lastUserMessage(messages))) {
+    const reply = offTopicReply();
+    return textStream(reply.text, reply.suggestions);
   }
+
+  if (!apiKey) return localReply(messages);
 
   const conversation: ChatMessageParam[] = [
     { role: "system", content: buildSystemPrompt() },
-    ...parsed.data.messages.map((message) =>
+    ...messages.map((message) =>
       message.role === "user"
         ? ({ role: "user", content: message.content } as const)
         : ({ role: "assistant", content: message.content } as const),
     ),
   ];
 
-  const encoder = new TextEncoder();
   const filter = new MarkerFilter();
 
   const stream = new ReadableStream<Uint8Array>({
@@ -162,21 +191,32 @@ export async function POST(request: Request): Promise<Response> {
         }
 
         send(filter.flush());
-        if (!produced) send(fallbackAnswer());
 
-        controller.enqueue(
-          encoder.encode(SUGGESTIONS_SENTINEL + JSON.stringify(filter.suggestions())),
-        );
+        if (produced) {
+          controller.enqueue(
+            encoder.encode(SUGGESTIONS_SENTINEL + JSON.stringify(filter.suggestions())),
+          );
+        } else {
+          // Le modèle n'a rien produit : on répond quand même, localement.
+          const reply = adviseLocally(lastUserMessage(messages));
+          send(reply.text);
+          controller.enqueue(
+            encoder.encode(SUGGESTIONS_SENTINEL + JSON.stringify(reply.suggestions)),
+          );
+        }
       } catch (error) {
-        const detail =
-          error instanceof MistralError
-            ? ` (code ${error.status})`
-            : "";
-        console.error("[chat] échec du conseiller", error);
+        console.error(
+          "[chat] bascule sur le conseiller local :",
+          error instanceof MistralError ? `${error.message} (${error.status})` : error,
+        );
+
+        // Le client ne doit pas payer la panne : le conseiller local reprend
+        // la main avec le catalogue réel.
+        const reply = adviseLocally(lastUserMessage(messages));
         send(filter.flush());
-        send(`\n\n${fallbackAnswer()}${detail}`);
+        send(reply.text);
         controller.enqueue(
-          encoder.encode(SUGGESTIONS_SENTINEL + JSON.stringify(filter.suggestions())),
+          encoder.encode(SUGGESTIONS_SENTINEL + JSON.stringify(reply.suggestions)),
         );
       } finally {
         controller.close();

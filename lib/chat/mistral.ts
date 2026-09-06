@@ -38,7 +38,9 @@ export const DEFAULT_MISTRAL_MODEL = "mistral-medium-3-5";
  */
 export function mistralModel(): string {
   const configured = process.env.MISTRAL_MODEL?.trim();
-  return configured && configured.length > 0 ? configured : DEFAULT_MISTRAL_MODEL;
+  return configured && configured.length > 0
+    ? configured
+    : DEFAULT_MISTRAL_MODEL;
 }
 
 export class MistralError extends Error {
@@ -60,9 +62,12 @@ function retryAfterMs(response: Response): number | null {
   const header = response.headers.get("retry-after");
   if (!header) return null;
   const seconds = Number(header);
-  if (Number.isFinite(seconds)) return Math.min(15000, Math.max(0, seconds * 1000));
+  if (Number.isFinite(seconds))
+    return Math.min(15000, Math.max(0, seconds * 1000));
   const date = Date.parse(header);
-  return Number.isNaN(date) ? null : Math.min(15000, Math.max(0, date - Date.now()));
+  return Number.isNaN(date)
+    ? null
+    : Math.min(15000, Math.max(0, date - Date.now()));
 }
 
 /** Appel avec délai maximal, réessais et repli exponentiel. */
@@ -82,7 +87,8 @@ async function callWithRetry(
         method: "POST",
         headers: {
           "content-type": "application/json",
-          accept: body.stream === true ? "text/event-stream" : "application/json",
+          accept:
+            body.stream === true ? "text/event-stream" : "application/json",
           authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify(body),
@@ -93,7 +99,10 @@ async function callWithRetry(
 
       // Quota du compte à zéro : réessayer ne changera rien dans la seconde.
       // Mieux vaut basculer tout de suite sur la réponse de repli.
-      if (response.status === 429 && response.headers.get("x-ratelimit-limit-req-minute") === "0") {
+      if (
+        response.status === 429 &&
+        response.headers.get("x-ratelimit-limit-req-minute") === "0"
+      ) {
         throw new MistralError(
           "Le compte Mistral n'a aucun quota de requêtes : activez le plan de votre espace de travail sur console.mistral.ai.",
           429,
@@ -108,13 +117,19 @@ async function callWithRetry(
           response.status,
         );
       }
-      lastError = new MistralError(`Statut ${response.status}`, response.status);
+      lastError = new MistralError(
+        `Statut ${response.status}`,
+        response.status,
+      );
       // Une limite de débit demande une pause franche : le repli court d'une
       // erreur réseau ne suffit pas, et l'API indique souvent le délai.
       const base = response.status === 429 ? 1500 : 400;
       waitMs = retryAfterMs(response) ?? base * 2 ** attempt;
     } catch (error) {
-      if (error instanceof MistralError && (error.fatal || !RETRYABLE.has(error.status))) {
+      if (
+        error instanceof MistralError &&
+        (error.fatal || !RETRYABLE.has(error.status))
+      ) {
         throw error;
       }
       lastError = error;
@@ -164,7 +179,10 @@ export async function* streamChatTurn(
   if (!body) throw new MistralError("Réponse vide du conseiller.", 502);
 
   const reader = body.pipeThrough(new TextDecoderStream()).getReader();
-  const pending = new Map<number, { id: string; name: string; arguments: string }>();
+  const pending = new Map<
+    number,
+    { id: string; name: string; arguments: string }
+  >();
   let buffer = "";
 
   while (true) {
@@ -199,13 +217,22 @@ export async function* streamChatTurn(
         ).choices?.[0];
         if (!choice?.delta) continue;
 
-        if (typeof choice.delta.content === "string" && choice.delta.content.length > 0) {
+        if (
+          typeof choice.delta.content === "string" &&
+          choice.delta.content.length > 0
+        ) {
           yield { type: "text", value: choice.delta.content };
         }
 
-        for (const [position, call] of (choice.delta.tool_calls ?? []).entries()) {
+        for (const [position, call] of (
+          choice.delta.tool_calls ?? []
+        ).entries()) {
           const index = call.index ?? position;
-          const existing = pending.get(index) ?? { id: "", name: "", arguments: "" };
+          const existing = pending.get(index) ?? {
+            id: "",
+            name: "",
+            arguments: "",
+          };
           pending.set(index, {
             id: call.id ?? existing.id,
             name: call.function?.name ?? existing.name,

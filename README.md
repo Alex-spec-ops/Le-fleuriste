@@ -144,6 +144,38 @@ function calling (`searchFlowers`, `getFlowerDetails`, `buildBouquetSuggestion`)
 une fleur qui n'existe pas ne peut pas être recommandée. Chaque proposition se
 transforme en bouquet d'un clic.
 
+### Périmètre verrouillé
+
+Le conseiller ne parle que de fleurs, de compositions et des services de la
+boutique. La règle est appliquée à deux endroits, pas seulement dans le prompt :
+
+- `lib/chat/local-advisor.ts` écarte une demande manifestement étrangère au
+  domaine **avant tout appel à l'API** — l'appel n'est ni fait ni facturé ;
+- le prompt système interdit explicitement tout changement de rôle, de ton ou
+  de règles, quel que soit le prétexte invoqué.
+
+Les tests de `tests/chat.test.ts` couvrent les deux, injections de consigne
+comprises.
+
+### Il fonctionne sans l'API
+
+Si l'API ne répond pas — clé absente, quota fermé, panne réseau — le
+**conseiller local** prend le relais au lieu d'afficher une erreur. Il lit la
+demande, identifie le registre, et compose de vraies propositions chiffrées
+avec le catalogue et `lib/pricing.ts`. Les boutons « Composer ce bouquet »
+fonctionnent de la même façon.
+
+Les registres du comptoir sont décrits dans `lib/chat/registers.ts` : ton,
+palette, fourchette de prix et évictions propres à chaque situation — premier
+rendez-vous sans rose rouge, invitation à dîner sans bouquet à mettre en vase,
+condoléances en blanc et vert et sur un ton sobre, naissance sans pollen fort.
+Ce fichier alimente **à la fois** le conseiller local et le prompt du modèle,
+pour que les deux voies tiennent le même discours.
+
+`lib/chat/compose.ts` est la seule fabrique de suggestions : l'outil offert au
+modèle et le conseiller local l'appellent tous les deux, donc une même demande
+donne le même bouquet au même prix quelle que soit la voie empruntée.
+
 ## Cohérence des prix
 
 Le simulateur, la sélection boutique et le devis événementiel appellent tous

@@ -158,7 +158,8 @@ export function getCatalogForClient(): FlowerLite[] {
  * qu'on lui envoie 280 fiches complètes.
  */
 export function getCatalogCsvIndex(): string {
-  const header = "id;nom;categorie;couleurs;saison;prix;role;parfum;allergene;toxique_animaux";
+  const header =
+    "id;nom;categorie;couleurs;saison;import;prix;unite;role;tenue;parfum;allergene;toxique_animaux;occasions";
   const rows = FLOWERS.map((flower) =>
     [
       flower.id,
@@ -166,11 +167,15 @@ export function getCatalogCsvIndex(): string {
       flower.category,
       flower.colors.join("|"),
       flower.season.join("|"),
+      flower.offSeasonImport ? "oui" : "non",
       flower.pricePerStem.toFixed(2),
+      flower.unit,
       flower.role,
+      `${flower.vaseLifeDays[0]}-${flower.vaseLifeDays[1]}j`,
       flower.fragrance,
       flower.allergenRisk,
       flower.toxicPets ? "oui" : "non",
+      flower.occasions.join("|"),
     ].join(";"),
   );
   return [header, ...rows].join("\n");

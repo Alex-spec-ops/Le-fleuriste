@@ -35,7 +35,10 @@ export class MarkerFilter {
       const start = this.buffer.indexOf(COMPOSER_OPEN);
       if (start === -1) {
         // On garde de côté un éventuel début de marqueur incomplet.
-        const keep = Math.max(0, this.buffer.length - (COMPOSER_OPEN.length - 1));
+        const keep = Math.max(
+          0,
+          this.buffer.length - (COMPOSER_OPEN.length - 1),
+        );
         output += this.buffer.slice(0, keep);
         this.buffer = this.buffer.slice(keep);
         return output;
@@ -68,8 +71,14 @@ export class MarkerFilter {
       const parsed: unknown = JSON.parse(raw.trim());
       if (typeof parsed !== "object" || parsed === null) return;
       const candidate = parsed as { title?: unknown; items?: unknown };
-      const title = typeof candidate.title === "string" ? candidate.title.slice(0, 80) : "";
-      if (!title || typeof candidate.items !== "object" || candidate.items === null) return;
+      const title =
+        typeof candidate.title === "string" ? candidate.title.slice(0, 80) : "";
+      if (
+        !title ||
+        typeof candidate.items !== "object" ||
+        candidate.items === null
+      )
+        return;
 
       const items = keepKnownFlowers(candidate.items as Record<string, number>);
       if (Object.keys(items).length === 0) return;

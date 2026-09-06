@@ -1,9 +1,10 @@
 import { z } from "zod";
 
-import { COLORS, OCCASIONS, ROLES, SEASONS, seasonForDate } from "@/lib/constants";
-import { getFlowerById, searchFlowers, type FlowerLite } from "@/lib/flowers";
-import { getAllFlowers } from "@/lib/flowers";
-import { priceBouquet, formatEuro, type BouquetOptions } from "@/lib/pricing";
+import { composeBouquet } from "@/lib/chat/compose";
+import { COLORS, OCCASIONS, ROLES, SEASONS } from "@/lib/constants";
+import { getFlowerById, searchFlowers } from "@/lib/flowers";
+import { formatEuro } from "@/lib/pricing";
+import type { Flower } from "@/lib/schemas/flower";
 
 /**
  * Outils exposés au conseiller.
@@ -24,10 +25,13 @@ const searchArgs = z.object({
   excludeAllergens: z.boolean().optional(),
   petSafe: z.boolean().optional(),
   fragrantOnly: z.boolean().optional(),
+  search: z.string().min(2).max(60).optional(),
   limit: z.number().int().min(1).max(20).optional(),
 });
 
-const detailsArgs = z.object({ id: z.string().min(2) });
+const detailsArgs = z.object({
+  ids: z.array(z.string().min(2)).min(1).max(8),
+});
 
 const suggestionArgs = z.object({
   occasion: z.enum(OCCASIONS),
@@ -35,6 +39,7 @@ const suggestionArgs = z.object({
   palette: z.array(z.enum(COLORS)).max(3).optional(),
   petSafe: z.boolean().optional(),
   excludeAllergens: z.boolean().optional(),
+  fragrantOnly: z.boolean().optional(),
 });
 
 /** Déclarations envoyées à l'API, au format OpenAI/Mistral. */
@@ -44,19 +49,33 @@ export const CHAT_TOOLS = [
     function: {
       name: "searchFlowers",
       description:
-        "Cherche des fleurs réellement présentes au catalogue de la boutique. À utiliser avant toute recommandation nominative.",
+        "Cherche des fleurs réellement présentes au catalogue de la boutique. À utiliser avant toute recommandation nominative, et pour répondre à toute question sur ce que la boutique propose.",
       parameters: {
         type: "object",
         properties: {
           occasion: { type: "string", enum: [...OCCASIONS] },
-          colors: { type: "array", items: { type: "string", enum: [...COLORS] }, maxItems: 4 },
+          colors: {
+            type: "array",
+            items: { type: "string", enum: [...COLORS] },
+            maxItems: 4,
+          },
           season: { type: "string", enum: [...SEASONS] },
           role: { type: "string", enum: [...ROLES] },
           maxPricePerStem: { type: "number" },
           minVaseLifeDays: { type: "integer" },
-          excludeAllergens: { type: "boolean", description: "Écarte les pollens à risque élevé." },
-          petSafe: { type: "boolean", description: "Écarte les fleurs toxiques pour les animaux." },
+          excludeAllergens: {
+            type: "boolean",
+            description: "Écarte les pollens à risque élevé.",
+          },
+          petSafe: {
+            type: "boolean",
+            description: "Écarte les fleurs toxiques pour les animaux.",
+          },
           fragrantOnly: { type: "boolean" },
+          search: {
+            type: "string",
+            description: "Recherche libre sur le nom français ou latin.",
+          },
           limit: { type: "integer", minimum: 1, maximum: 20 },
         },
         additionalProperties: false,
@@ -68,11 +87,19 @@ export const CHAT_TOOLS = [
     function: {
       name: "getFlowerDetails",
       description:
-        "Fiche complète d'une fleur : symbolique, saison, tenue en vase, allergènes, toxicité, prix.",
+        "Fiches complètes de une à huit fleurs : symbolique, saison, tenue en vase, hauteur, parfum, allergènes, toxicité pour les animaux, prix et description du fleuriste.",
       parameters: {
         type: "object",
-        properties: { id: { type: "string" } },
-        required: ["id"],
+        properties: {
+          ids: {
+            type: "array",
+            items: { type: "string" },
+            minItems: 1,
+            maxItems: 8,
+            description: "Identifiants du catalogue, colonne id de l'index.",
+          },
+        },
+        required: ["ids"],
         additionalProperties: false,
       },
     },
@@ -82,15 +109,20 @@ export const CHAT_TOOLS = [
     function: {
       name: "buildBouquetSuggestion",
       description:
-        "Construit une composition chiffrée tenant dans un budget, à partir du catalogue réel. Renvoie les identifiants et les quantités à proposer au client.",
+        "Construit une composition chiffrée tenant dans un budget, à partir du catalogue réel et de la saison en cours. Renvoie les identifiants et les quantités à proposer au client.",
       parameters: {
         type: "object",
         properties: {
           occasion: { type: "string", enum: [...OCCASIONS] },
           budget: { type: "number", description: "Budget cible en euros TTC." },
-          palette: { type: "array", items: { type: "string", enum: [...COLORS] }, maxItems: 3 },
+          palette: {
+            type: "array",
+            items: { type: "string", enum: [...COLORS] },
+            maxItems: 3,
+          },
           petSafe: { type: "boolean" },
           excludeAllergens: { type: "boolean" },
+          fragrantOnly: { type: "boolean" },
         },
         required: ["occasion", "budget"],
         additionalProperties: false,
@@ -99,8 +131,7 @@ export const CHAT_TOOLS = [
   },
 ];
 
-function compact(flower: FlowerLite | ReturnType<typeof getFlowerById>) {
-  if (!flower) return null;
+function compact(flower: Flower) {
   return {
     id: flower.id,
     nom: flower.nameFr,
@@ -108,125 +139,57 @@ function compact(flower: FlowerLite | ReturnType<typeof getFlowerById>) {
     categorie: flower.category,
     couleurs: flower.colors,
     saison: flower.season,
+    import_hors_saison: flower.offSeasonImport,
     prix: flower.pricePerStem,
     unite: flower.unit,
     role: flower.role,
-    tenue: flower.vaseLifeDays,
+    tenue_jours: flower.vaseLifeDays,
+    hauteur_cm: flower.stemHeightCm,
     parfum: flower.fragrance,
     allergene: flower.allergenRisk,
     toxique_animaux: flower.toxicPets,
+    occasions: flower.occasions,
   };
 }
 
-const BOUQUET_OPTIONS: BouquetOptions = {
-  size: "moyen",
-  wrapping: "kraft simple",
-  delivery: "retrait boutique",
-  style: "champêtre",
-  handwrittenCard: false,
-  customRibbon: false,
-  season: seasonForDate(new Date()),
-};
-
-function buildSuggestion(args: z.infer<typeof suggestionArgs>) {
-  const season = seasonForDate(new Date());
-  const catalogue = getAllFlowers();
-
-  const eligible = catalogue.filter((flower) => {
-    if (flower.unit === "pot") return false;
-    if (args.petSafe && flower.toxicPets) return false;
-    if (args.excludeAllergens && flower.allergenRisk === "élevé") return false;
-    if (!flower.occasions.includes(args.occasion)) return false;
-    if (!flower.season.includes("toute l'année") && !flower.season.includes(season)) return false;
-    if (args.palette?.length) {
-      return flower.colors.some((color) => args.palette?.includes(color));
-    }
-    return true;
-  });
-
-  const pick = (role: string) =>
-    eligible
-      .filter((flower) => flower.role === role)
-      .sort((a, b) => a.pricePerStem - b.pricePerStem || a.id.localeCompare(b.id));
-
-  const focales = pick("focale");
-  const secondaires = pick("secondaire");
-  const remplissages = [...pick("remplissage"), ...pick("feuillage")];
-
-  const chosen = [focales[0], secondaires[0], remplissages[0]].filter(
-    (flower): flower is NonNullable<typeof flower> => flower !== undefined,
-  );
-
-  if (chosen.length === 0) {
-    return {
-      erreur:
-        "Aucune fleur du catalogue ne correspond à cette occasion et à cette palette pour la saison en cours.",
-    };
-  }
-
-  // On part d'une base équilibrée, puis on ajuste à la hausse ou à la baisse.
-  const ratios = [0.45, 0.32, 0.23];
-  let scale = 1;
-  let items: Record<string, number> = {};
-  let total = 0;
-
-  for (let attempt = 0; attempt < 24; attempt += 1) {
-    items = {};
-    chosen.forEach((flower, index) => {
-      const quantity = Math.max(1, Math.round((ratios[index] ?? 0.2) * 12 * scale));
-      items[flower.id] = quantity;
-    });
-    total = priceBouquet(
-      chosen.map((flower, index) => ({
-        flower,
-        quantity: items[flower.id] ?? Math.max(1, Math.round((ratios[index] ?? 0.2) * 12 * scale)),
-      })),
-      BOUQUET_OPTIONS,
-    ).total;
-
-    if (Math.abs(total - args.budget) <= args.budget * 0.12) break;
-    scale *= total > args.budget ? 0.85 : 1.15;
-    if (scale < 0.25 || scale > 4) break;
-  }
-
-  return {
-    composition: chosen.map((flower) => ({
-      id: flower.id,
-      nom: flower.nameFr,
-      quantite: items[flower.id] ?? 1,
-      prix_unitaire: flower.pricePerStem,
-      role: flower.role,
-    })),
-    items,
-    total_estime: total,
-    total_affiche: formatEuro(total),
-    saison: season,
-  };
-}
-
-export type ToolResult = { ok: true; content: string } | { ok: false; content: string };
+export type ToolResult = { ok: boolean; content: string };
 
 /** Exécute un appel d'outil et renvoie un JSON prêt à renvoyer au modèle. */
 export function runTool(name: string, rawArguments: string): ToolResult {
   let parsedArguments: unknown;
   try {
-    parsedArguments = rawArguments.trim() === "" ? {} : JSON.parse(rawArguments);
+    parsedArguments =
+      rawArguments.trim() === "" ? {} : JSON.parse(rawArguments);
   } catch {
-    return { ok: false, content: JSON.stringify({ erreur: "Arguments illisibles." }) };
+    return {
+      ok: false,
+      content: JSON.stringify({ erreur: "Arguments illisibles." }),
+    };
   }
 
   switch (name) {
     case "searchFlowers": {
       const parsed = searchArgs.safeParse(parsedArguments);
       if (!parsed.success) {
-        return { ok: false, content: JSON.stringify({ erreur: "Paramètres invalides." }) };
+        return {
+          ok: false,
+          content: JSON.stringify({ erreur: "Paramètres invalides." }),
+        };
       }
-      const { limit = 8, excludeAllergens, ...rest } = parsed.data;
+      const {
+        limit = 8,
+        excludeAllergens,
+        occasion,
+        season,
+        role,
+        ...rest
+      } = parsed.data;
       const results = searchFlowers({
-        occasions: rest.occasion ? [rest.occasion] : undefined,
+        search: rest.search,
+        occasions: occasion ? [occasion] : undefined,
         colors: rest.colors,
-        seasons: rest.season ? [rest.season] : undefined,
-        roles: rest.role ? [rest.role] : undefined,
+        seasons: season ? [season] : undefined,
+        roles: role ? [role] : undefined,
         maxPricePerStem: rest.maxPricePerStem,
         minVaseLifeDays: rest.minVaseLifeDays,
         petSafe: rest.petSafe,
@@ -245,23 +208,28 @@ export function runTool(name: string, rawArguments: string): ToolResult {
     case "getFlowerDetails": {
       const parsed = detailsArgs.safeParse(parsedArguments);
       if (!parsed.success) {
-        return { ok: false, content: JSON.stringify({ erreur: "Identifiant manquant." }) };
-      }
-      const flower = getFlowerById(parsed.data.id);
-      if (!flower) {
         return {
           ok: false,
-          content: JSON.stringify({ erreur: `Aucune fleur nommée ${parsed.data.id} au catalogue.` }),
+          content: JSON.stringify({
+            erreur: "Fournissez un tableau `ids` d'au moins un élément.",
+          }),
         };
       }
+
+      const found = parsed.data.ids
+        .map((id) => getFlowerById(id))
+        .filter((flower): flower is Flower => flower !== undefined);
+      const missing = parsed.data.ids.filter((id) => !getFlowerById(id));
+
       return {
-        ok: true,
+        ok: found.length > 0,
         content: JSON.stringify({
-          ...compact(flower),
-          symbolique: flower.symbolism,
-          occasions: flower.occasions,
-          description: flower.description,
-          import_hors_saison: flower.offSeasonImport,
+          fleurs: found.map((flower) => ({
+            ...compact(flower),
+            symbolique: flower.symbolism,
+            description: flower.description,
+          })),
+          introuvables: missing,
         }),
       };
     }
@@ -269,23 +237,59 @@ export function runTool(name: string, rawArguments: string): ToolResult {
     case "buildBouquetSuggestion": {
       const parsed = suggestionArgs.safeParse(parsedArguments);
       if (!parsed.success) {
-        return { ok: false, content: JSON.stringify({ erreur: "Paramètres invalides." }) };
+        return {
+          ok: false,
+          content: JSON.stringify({ erreur: "Paramètres invalides." }),
+        };
       }
-      return { ok: true, content: JSON.stringify(buildSuggestion(parsed.data)) };
+
+      const bouquet = composeBouquet(parsed.data);
+      if (!bouquet) {
+        return {
+          ok: false,
+          content: JSON.stringify({
+            erreur:
+              "Aucune fleur du catalogue ne correspond à cette occasion et à ces contraintes pour la saison en cours.",
+          }),
+        };
+      }
+
+      return {
+        ok: true,
+        content: JSON.stringify({
+          composition: bouquet.lines.map((line) => ({
+            id: line.flower.id,
+            nom: line.flower.nameFr,
+            quantite: line.quantity,
+            prix_unitaire: line.flower.pricePerStem,
+            role: line.flower.role,
+          })),
+          items: bouquet.items,
+          tiges: bouquet.stemCount,
+          total_estime: bouquet.total,
+          total_affiche: formatEuro(bouquet.total),
+        }),
+      };
     }
 
     default:
-      return { ok: false, content: JSON.stringify({ erreur: `Outil inconnu : ${name}` }) };
+      return {
+        ok: false,
+        content: JSON.stringify({ erreur: `Outil inconnu : ${name}` }),
+      };
   }
 }
 
 /** Ne garde que les identifiants réellement présents au catalogue. */
-export function keepKnownFlowers(items: Record<string, number>): Record<string, number> {
+export function keepKnownFlowers(
+  items: Record<string, number>,
+): Record<string, number> {
   const cleaned: Record<string, number> = {};
   for (const [id, quantity] of Object.entries(items)) {
     if (!getFlowerById(id)) continue;
     const rounded = Math.round(Number(quantity));
-    if (Number.isFinite(rounded) && rounded > 0) cleaned[id] = Math.min(200, rounded);
+    if (Number.isFinite(rounded) && rounded > 0)
+      cleaned[id] = Math.min(200, rounded);
   }
   return cleaned;
 }
