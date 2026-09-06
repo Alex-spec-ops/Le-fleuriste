@@ -25,11 +25,18 @@ export type ChatMessage = {
 type ChatStore = {
   open: boolean;
   messages: ChatMessage[];
-  /** Message prérempli dans le champ de saisie, posé par une autre page. */
+  /**
+   * Ce que l'utilisateur est en train de taper. Rien d'autre n'écrit dedans :
+   * une page qui veut poser une question passe par `pendingPrompt`, sinon le
+   * premier caractère saisi partirait tout seul.
+   */
   draft: string;
+  /** Question posée par une autre page, à envoyer telle quelle à l'ouverture. */
+  pendingPrompt: string | null;
   streaming: boolean;
   setOpen: (open: boolean) => void;
-  openWith: (draft: string) => void;
+  openWith: (prompt: string) => void;
+  consumePendingPrompt: () => string | null;
   setDraft: (draft: string) => void;
   append: (message: ChatMessage) => void;
   updateLast: (patch: Partial<ChatMessage>) => void;
@@ -37,14 +44,23 @@ type ChatStore = {
   reset: () => void;
 };
 
-export const useChatStore = create<ChatStore>()((set) => ({
+export const useChatStore = create<ChatStore>()((set, get) => ({
   open: false,
   messages: [],
   draft: "",
+  pendingPrompt: null,
   streaming: false,
 
   setOpen: (open) => set({ open }),
-  openWith: (draft) => set({ open: true, draft }),
+  openWith: (prompt) => set({ open: true, pendingPrompt: prompt }),
+
+  /** Rend la question en attente et la retire, pour qu'elle ne parte qu'une fois. */
+  consumePendingPrompt: () => {
+    const { pendingPrompt } = get();
+    if (pendingPrompt !== null) set({ pendingPrompt: null });
+    return pendingPrompt;
+  },
+
   setDraft: (draft) => set({ draft }),
 
   append: (message) => set((state) => ({ messages: [...state.messages, message] })),
@@ -60,5 +76,5 @@ export const useChatStore = create<ChatStore>()((set) => ({
     }),
 
   setStreaming: (streaming) => set({ streaming }),
-  reset: () => set({ messages: [], draft: "", streaming: false }),
+  reset: () => set({ messages: [], draft: "", pendingPrompt: null, streaming: false }),
 }));

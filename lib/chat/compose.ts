@@ -33,7 +33,15 @@ export type ComposedBouquet = {
   stemCount: number;
 };
 
-const BASE_OPTIONS: Omit<BouquetOptions, "season"> = {
+/**
+ * Options de référence d'une suggestion.
+ *
+ * Elles sont exportées parce que le composeur doit les reprendre telles
+ * quelles en chargeant une proposition : sans cela, un bouquet annoncé à
+ * 38 € dans la conversation s'afficherait à 52 € dans le composeur, avec la
+ * taille et l'emballage que le client avait réglés auparavant.
+ */
+export const SUGGESTION_OPTIONS: Omit<BouquetOptions, "season"> = {
   size: "moyen",
   wrapping: "kraft simple",
   delivery: "retrait boutique",
@@ -41,6 +49,8 @@ const BASE_OPTIONS: Omit<BouquetOptions, "season"> = {
   handwrittenCard: false,
   customRibbon: false,
 };
+
+const BASE_OPTIONS = SUGGESTION_OPTIONS;
 
 /**
  * Proportions par rôle dans un bouquet du quotidien : part des tiges, et part

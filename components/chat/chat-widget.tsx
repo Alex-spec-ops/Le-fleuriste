@@ -13,6 +13,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { SUGGESTION_OPTIONS } from "@/lib/chat/compose";
 import {
   SUGGESTIONS_SENTINEL,
   type ParsedSuggestion,
@@ -38,6 +39,8 @@ export function ChatWidget() {
   const messages = useChatStore((state) => state.messages);
   const draft = useChatStore((state) => state.draft);
   const setDraft = useChatStore((state) => state.setDraft);
+  const pendingPrompt = useChatStore((state) => state.pendingPrompt);
+  const consumePendingPrompt = useChatStore((state) => state.consumePendingPrompt);
   const append = useChatStore((state) => state.append);
   const updateLast = useChatStore((state) => state.updateLast);
   const streaming = useChatStore((state) => state.streaming);
@@ -45,12 +48,6 @@ export function ChatWidget() {
 
   const replaceBouquet = useBouquetStore((state) => state.replace);
   const seed = useBouquetStore((state) => state.seed);
-  const size = useBouquetStore((state) => state.size);
-  const wrapping = useBouquetStore((state) => state.wrapping);
-  const delivery = useBouquetStore((state) => state.delivery);
-  const style = useBouquetStore((state) => state.style);
-  const handwrittenCard = useBouquetStore((state) => state.handwrittenCard);
-  const customRibbon = useBouquetStore((state) => state.customRibbon);
 
   const listRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -138,10 +135,9 @@ export function ChatWidget() {
     }
   };
 
-  // Un autre écran a pu préremplir le champ : on l'envoie dès l'ouverture.
-  // L'envoi est différé d'une microtâche pour ne pas déclencher de rendu en
-  // cascade depuis le corps de l'effet.
-  const autoSent = useRef<string | null>(null);
+  // Question posée par une autre page (« Demander l'avis du fleuriste »).
+  // Elle est consommée une seule fois, et ne touche jamais à la saisie en
+  // cours : ce champ n'est écrit que par l'utilisateur.
   const sendRef = useRef(send);
 
   useEffect(() => {
@@ -149,24 +145,21 @@ export function ChatWidget() {
   });
 
   useEffect(() => {
-    if (!open || !draft || streaming) return;
-    if (autoSent.current === draft) return;
-    if (messages.length > 0 && messages.at(-1)?.role === "user") return;
-    autoSent.current = draft;
-    const prompt = draft;
+    if (!open || streaming || pendingPrompt === null) return;
+    const prompt = consumePendingPrompt();
+    if (prompt === null) return;
+    // Différé d'une microtâche pour ne pas enchaîner les rendus depuis l'effet.
     queueMicrotask(() => void sendRef.current(prompt));
-  }, [open, draft, streaming, messages]);
+  }, [open, streaming, pendingPrompt, consumePendingPrompt]);
 
   const applySuggestion = (suggestion: ParsedSuggestion) => {
+    // On reprend aussi les options qui ont servi à chiffrer la proposition :
+    // le composeur doit afficher exactement le prix annoncé, pas celui-ci
+    // recalculé avec la taille et l'emballage réglés lors d'une visite passée.
     replaceBouquet({
       items: suggestion.items,
       seed,
-      size,
-      wrapping,
-      delivery,
-      style,
-      handwrittenCard,
-      customRibbon,
+      ...SUGGESTION_OPTIONS,
     });
     setOpen(false);
     toast.success(`« ${suggestion.title} » chargé dans le composeur`);
@@ -288,7 +281,9 @@ export function ChatWidget() {
                 id="message-fleuriste"
                 value={draft}
                 rows={2}
-                disabled={streaming}
+                // Jamais désactivé : on peut préparer la question suivante
+                // pendant que la réponse arrive, et un flux resté ouvert ne
+                // peut pas verrouiller la saisie. Seul l'envoi est bloqué.
                 placeholder="Pour qui, quelle occasion, quel budget…"
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={(event) => {
