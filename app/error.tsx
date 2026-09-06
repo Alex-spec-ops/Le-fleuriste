@@ -18,7 +18,7 @@ export default function GlobalError({
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col items-center px-5 py-28 text-center sm:px-8">
-      <p className="text-[0.72rem] uppercase tracking-[0.22em] text-terracotta-strong">
+      <p className="text-[0.72rem] uppercase tracking-[0.22em] text-poppy">
         Incident technique
       </p>
       <h1 className="heading-display mt-4 text-4xl sm:text-5xl">

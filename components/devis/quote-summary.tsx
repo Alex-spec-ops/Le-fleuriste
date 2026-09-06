@@ -127,7 +127,7 @@ export function QuoteSummary({
               key={tier.label}
               className={`rounded-xl border p-4 ${
                 tier.highlight
-                  ? "border-terracotta bg-terracotta/5"
+                  ? "border-poppy bg-poppy/5"
                   : "border-border bg-card"
               }`}
             >
@@ -187,7 +187,7 @@ export function QuoteSummary({
                     <td className="py-1.5 pr-2">
                       {line.nameFr}
                       {line.availability !== "en saison" ? (
-                        <span className="ml-1.5 text-xs text-terracotta-strong">
+                        <span className="ml-1.5 text-xs text-poppy">
                           {line.availability === "import"
                             ? "import"
                             : "hors saison"}
@@ -260,7 +260,7 @@ export function QuoteSummary({
       </section>
 
       {built.adjustments.length > 0 || built.quote.warnings.length > 0 ? (
-        <section className="rounded-xl border border-terracotta/40 bg-terracotta/5 p-4">
+        <section className="rounded-xl border border-poppy/40 bg-poppy/5 p-4">
           <h3 className="font-heading text-lg">Nos arbitrages</h3>
           <ul className="mt-2 space-y-1.5 text-sm">
             {[...built.adjustments, ...built.quote.warnings].map((line) => (
@@ -346,8 +346,8 @@ export function QuoteSummary({
         </div>
 
         {sentReference ? (
-          <p className="mt-4 flex items-center gap-2 rounded-lg bg-sage-soft px-3 py-2.5 text-sm">
-            <CheckCircle2 className="size-4 text-sage" aria-hidden />
+          <p className="mt-4 flex items-center gap-2 rounded-lg bg-leaf/10 px-3 py-2.5 text-sm">
+            <CheckCircle2 className="size-4 text-leaf" aria-hidden />
             Demande enregistrée sous la référence {sentReference}. Nous vous
             répondons sous deux jours ouvrés.
           </p>

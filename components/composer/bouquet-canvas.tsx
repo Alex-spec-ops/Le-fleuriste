@@ -3,6 +3,7 @@
 import { forwardRef } from "react";
 
 import { FlowerShapes } from "@/components/flower-svg/flower-svg";
+import { WrapBack, WrapFront } from "@/components/bouquet/wrapping";
 import { Sprig } from "@/components/ornament/botanical";
 import { buildFlowerArt } from "@/lib/flower-art";
 import {
@@ -14,91 +15,10 @@ import {
 import type { Wrapping } from "@/lib/constants";
 
 /**
- * Rendu du bouquet, en couches : emballage, tiges, puis les têtes du fond
- * vers l'avant. Chaque tige garde une clé stable, ce qui laisse le navigateur
+ * Rendu du bouquet, en couches : vase derrière, tiges, emballage devant,
+ * puis les têtes du fond vers l'avant. Chaque tige garde une clé stable, ce qui laisse le navigateur
  * animer les déplacements plutôt que de tout redessiner.
  */
-
-function Wrap({ wrapping }: { wrapping: Wrapping }) {
-  if (wrapping === "vase inclus") {
-    return (
-      <g aria-hidden>
-        <path
-          d="M168 358 L164 452 Q210 466 256 452 L252 358 Z"
-          fill="#DCE4E6"
-          opacity="0.75"
-        />
-        <path
-          d="M168 358 L252 358 L250 372 L170 372 Z"
-          fill="#C9D4D7"
-          opacity="0.8"
-        />
-        <path
-          d="M180 380 L186 444 Q210 452 234 444 L240 380 Z"
-          fill="#EAF0F1"
-          opacity="0.55"
-        />
-      </g>
-    );
-  }
-
-  if (wrapping === "boîte chapeau") {
-    return (
-      <g aria-hidden>
-        <rect x="140" y="344" width="140" height="112" rx="10" fill="#C9B492" />
-        <rect x="140" y="344" width="140" height="20" rx="8" fill="#B7A07C" />
-        <rect
-          x="196"
-          y="364"
-          width="28"
-          height="92"
-          fill="#A98F68"
-          opacity="0.4"
-        />
-      </g>
-    );
-  }
-
-  const paper = wrapping === "papier de soie" ? "#F0E4E1" : "#D8C2A0";
-  const paperShade = wrapping === "papier de soie" ? "#E3D2CE" : "#C3A985";
-
-  return (
-    <g aria-hidden>
-      <path d={`M${CANVAS.bindX} 352 L128 462 L292 462 Z`} fill={paper} />
-      <path
-        d={`M${CANVAS.bindX} 352 L128 462 L${CANVAS.bindX} 462 Z`}
-        fill={paperShade}
-        opacity="0.55"
-      />
-      <path
-        d={`M${CANVAS.bindX} 352 L160 448`}
-        stroke={paperShade}
-        strokeWidth="1.5"
-        fill="none"
-        opacity="0.7"
-      />
-      <path
-        d={`M${CANVAS.bindX} 352 L262 448`}
-        stroke={paperShade}
-        strokeWidth="1.5"
-        fill="none"
-        opacity="0.7"
-      />
-    </g>
-  );
-}
-
-function Ribbon() {
-  return (
-    <g aria-hidden>
-      <path
-        d="M176 366 Q210 380 244 366 L244 380 Q210 394 176 380 Z"
-        fill="#C97B63"
-      />
-      <path d="M206 380 L192 412 L206 404 L220 412 Z" fill="#B96C54" />
-    </g>
-  );
-}
 
 type Props = {
   entries: readonly BouquetEntry[];
@@ -129,7 +49,7 @@ export const BouquetCanvas = forwardRef<SVGSVGElement, Props>(
             : `Aperçu du bouquet, ${layout.totalStems} tige${layout.totalStems > 1 ? "s" : ""}.`
         }
       >
-        <Wrap wrapping={wrapping} />
+        <WrapBack wrapping={wrapping} />
 
         <g aria-hidden>
           {layout.stems.map((stem) => (
@@ -137,23 +57,24 @@ export const BouquetCanvas = forwardRef<SVGSVGElement, Props>(
               key={`tige-${stem.key}`}
               d={stemPath(stem)}
               fill="none"
-              stroke="#6E8464"
-              strokeWidth={1.6}
+              stroke="#2C6B45"
+              strokeWidth={1.4 + stem.depth * 0.8}
               strokeLinecap="round"
-              opacity={0.85}
+              opacity={0.5 + stem.depth * 0.4}
             />
           ))}
         </g>
 
-        {wrapping !== "vase inclus" && !empty ? <Ribbon /> : null}
+        {empty ? null : <WrapFront wrapping={wrapping} />}
 
         <g aria-hidden>
           {layout.stems.map((stem) => {
-            const art = buildFlowerArt(stem.flower, false);
+            const art = buildFlowerArt(stem.flower, false, "compact");
             return (
               <g
                 key={stem.key}
                 transform={`translate(${stem.x.toFixed(1)} ${stem.y.toFixed(1)}) rotate(${stem.rotate.toFixed(1)}) scale(${stem.scale.toFixed(3)}) translate(-50 -46)`}
+                opacity={stem.opacity.toFixed(2)}
                 style={
                   animated
                     ? {
@@ -174,7 +95,7 @@ export const BouquetCanvas = forwardRef<SVGSVGElement, Props>(
             {/* Un brin seul plutôt qu'une toile blanche : l'écran vide reste habité. */}
             <g
               transform={`translate(${CANVAS.headX - 62} ${CANVAS.headY - 132}) scale(1.05)`}
-              className="text-sage"
+              className="text-leaf"
               opacity={0.32}
             >
               <Sprig seed="toile-vide" leafPairs={5} />
@@ -209,7 +130,7 @@ export async function exportBouquetPng(
   );
   background.setAttribute("width", String(CANVAS.width));
   background.setAttribute("height", String(CANVAS.height));
-  background.setAttribute("fill", "#FAF7F2");
+  background.setAttribute("fill", "#FFF7EC");
   clone.insertBefore(background, clone.firstChild);
 
   const source = new XMLSerializer().serializeToString(clone);
@@ -231,7 +152,7 @@ export async function exportBouquetPng(
     canvas.height = CANVAS.height * scale;
     const context = canvas.getContext("2d");
     if (!context) throw new Error("Canvas indisponible.");
-    context.fillStyle = "#FAF7F2";
+    context.fillStyle = "#FFF7EC";
     context.fillRect(0, 0, canvas.width, canvas.height);
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
 

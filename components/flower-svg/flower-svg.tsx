@@ -109,7 +109,9 @@ export function FlowerThumb({
   label?: string;
   className?: string;
 }) {
-  const art = buildFlowerArt(flower, false);
+  // Vignette : rendu compact, la finesse ne se voit pas à cette taille et
+  // 280 cartes en plein détail alourdissent la page catalogue de 700 Ko.
+  const art = buildFlowerArt(flower, false, "compact");
   return (
     <svg
       viewBox="4 0 92 92"

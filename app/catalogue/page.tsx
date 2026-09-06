@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { CatalogueBrowser } from "@/components/catalogue/catalogue-browser";
 import { PageHeader } from "@/components/site/page-header";
+import { seasonForDate } from "@/lib/constants";
 import { getCatalogForClient, getCategorySummaries } from "@/lib/flowers";
 
 export const metadata: Metadata = {
@@ -23,7 +24,11 @@ export default function CataloguePage() {
         title="Toutes les fleurs de l'atelier"
         lead={`${flowers.length} variétés, avec pour chacune sa saison réelle, sa tenue en vase, son prix à l'unité et ses précautions. Cliquez sur une fleur pour l'ajouter à votre bouquet.`}
       />
-      <CatalogueBrowser flowers={flowers} categories={categories} />
+      <CatalogueBrowser
+        flowers={flowers}
+        categories={categories}
+        season={seasonForDate(new Date())}
+      />
     </>
   );
 }

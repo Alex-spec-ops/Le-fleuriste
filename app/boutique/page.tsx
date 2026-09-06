@@ -40,7 +40,7 @@ export default function BoutiquePage() {
             seed="boutique-appel-bas"
             size={112}
           />
-          <PetalMark className="mx-auto mb-3 text-terracotta" />
+          <PetalMark className="mx-auto mb-3 text-poppy" />
           <h2 className="heading-display text-2xl">
             Rien qui vous corresponde ?
           </h2>

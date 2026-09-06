@@ -52,7 +52,7 @@ export function BudgetAssistant({
   return (
     <section className="rounded-xl border border-border bg-card p-5">
       <h3 className="flex items-center gap-2 font-heading text-lg">
-        <Wallet className="size-4 text-terracotta-strong" aria-hidden />
+        <Wallet className="size-4 text-poppy" aria-hidden />
         Ajuster au budget
       </h3>
       <p className="mt-1 text-sm text-muted-foreground">
@@ -89,7 +89,7 @@ export function BudgetAssistant({
           Ajoutez d&apos;abord quelques fleurs, nous nous chargerons du reste.
         </p>
       ) : withinBudget ? (
-        <p className="mt-4 rounded-lg bg-sage-soft px-3 py-2.5 text-sm">
+        <p className="mt-4 rounded-lg bg-leaf/10 px-3 py-2.5 text-sm">
           Vous êtes dans l&apos;enveloppe. Il vous reste{" "}
           {formatEuro(budget - currentTotal)} si vous souhaitez enrichir la
           composition.
@@ -104,7 +104,7 @@ export function BudgetAssistant({
             {plan.actions.map((action, index) => (
               <li key={`${action.kind}-${index}`} className="flex gap-2">
                 <ArrowRight
-                  className="mt-0.5 size-4 shrink-0 text-terracotta-strong"
+                  className="mt-0.5 size-4 shrink-0 text-poppy"
                   aria-hidden
                 />
                 <span>{describeAction(action)}</span>

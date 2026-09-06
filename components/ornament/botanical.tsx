@@ -177,7 +177,7 @@ export function CornerSprig({
       viewBox="0 0 120 120"
       width={size}
       height={size}
-      className={`pointer-events-none absolute -z-10 ${position} text-sage opacity-[0.18] ${className ?? ""}`}
+      className={`pointer-events-none absolute -z-10 ${position} text-leaf opacity-[0.18] ${className ?? ""}`}
       aria-hidden
       focusable="false"
     >
@@ -195,7 +195,7 @@ export function CornerSprig({
 export function BotanicalRule({ className }: { className?: string }) {
   return (
     <div
-      className={`flex items-center gap-4 text-sage ${className ?? ""}`}
+      className={`flex items-center gap-4 text-leaf ${className ?? ""}`}
       aria-hidden
     >
       <span className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
@@ -274,7 +274,7 @@ export function WreathArc({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 400 210"
-      className={`pointer-events-none absolute inset-x-0 top-0 -z-10 w-full text-sage opacity-25 ${className ?? ""}`}
+      className={`pointer-events-none absolute inset-x-0 top-0 -z-10 w-full text-leaf opacity-25 ${className ?? ""}`}
       aria-hidden
       focusable="false"
     >
@@ -302,7 +302,7 @@ export function EmptySprig({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 140 140"
-      className={`mx-auto text-sage ${className ?? "h-28 w-28"}`}
+      className={`mx-auto text-leaf ${className ?? "h-28 w-28"}`}
       aria-hidden
       focusable="false"
     >
@@ -346,7 +346,7 @@ export function PetalBorder({ className }: { className?: string }) {
     <svg
       viewBox="0 0 880 32"
       preserveAspectRatio="none"
-      className={`pointer-events-none block h-6 w-full text-sage opacity-30 ${className ?? ""}`}
+      className={`pointer-events-none block h-6 w-full text-leaf opacity-30 ${className ?? ""}`}
       aria-hidden
       focusable="false"
     >

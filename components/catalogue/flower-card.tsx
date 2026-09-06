@@ -1,81 +1,95 @@
 "use client";
 
 import Link from "next/link";
-import { Cat, Flower2, Wind } from "lucide-react";
+import { Cat, Wind } from "lucide-react";
 
 import { QuantityControl } from "@/components/bouquet/quantity-control";
 import { FlowerThumb } from "@/components/flower-svg/flower-svg";
-import { Badge } from "@/components/ui/badge";
-import { COLOR_SWATCHES } from "@/lib/constants";
+import { COLOR_SWATCHES, type Season } from "@/lib/constants";
 import type { FlowerLite } from "@/lib/flowers";
-import { formatEuro } from "@/lib/pricing";
+import { availabilityOf, formatEuro } from "@/lib/pricing";
 
-export function FlowerCard({ flower }: { flower: FlowerLite }) {
+/**
+ * Carte du catalogue.
+ *
+ * La saison est reçue en propriété plutôt que calculée ici : la déduire de
+ * `new Date()` dans un composant rendu des deux côtés ferait diverger le
+ * serveur et le navigateur au passage de minuit.
+ */
+export function FlowerCard({ flower, season }: { flower: FlowerLite; season: Season }) {
   const swatch = COLOR_SWATCHES[flower.colors[0]];
+  const availability = availabilityOf(flower, season);
   const yearRound = flower.season.includes("toute l'année");
 
+  const badge =
+    availability === "en saison"
+      ? { label: "De saison", className: "bg-leaf text-white" }
+      : availability === "import"
+        ? { label: "Import", className: "bg-pollen text-[#241a12]" }
+        : { label: "Hors saison", className: "bg-sand text-muted-foreground" };
+
   return (
-    <article className="card-lift card-petal group flex flex-col overflow-hidden rounded-xl border border-border bg-card">
+    <article className="card-lift card-petal flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card">
       <Link
         href={`/catalogue/${flower.id}`}
-        className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="relative block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <div
-          className="flex aspect-4/3 items-center justify-center px-6 py-4"
-          style={{
-            backgroundColor: `color-mix(in oklab, ${swatch.fill} 16%, var(--card))`,
-          }}
+          className="flex h-44 items-center justify-center px-6"
+          style={{ backgroundColor: `color-mix(in oklab, ${swatch.fill} 22%, var(--card))` }}
         >
-          <FlowerThumb flower={flower} className="h-full w-auto max-h-40" />
+          <FlowerThumb flower={flower} className="max-h-36 w-auto py-3" />
         </div>
+        <span
+          className={`chip absolute left-3 top-3 text-[0.62rem] uppercase tracking-[0.05em] ${badge.className}`}
+        >
+          {badge.label}
+        </span>
       </Link>
 
-      <div className="flex flex-1 flex-col gap-3 p-4">
+      <div className="flex flex-1 flex-col gap-2 p-4">
         <div>
-          <h3 className="font-heading text-lg leading-tight">
+          {/* Nom en Karla gras : la serif est réservée au nom botanique, comme
+              dans la maquette. La règle de base met les titres en serif. */}
+          <h3 className="font-sans text-[1.02rem] font-bold leading-tight">
             <Link
               href={`/catalogue/${flower.id}`}
-              className="hover:text-terracotta-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="hover:text-poppy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               {flower.nameFr}
             </Link>
           </h3>
-          <p className="mt-0.5 text-xs italic text-muted-foreground">
+          <p className="mt-0.5 font-heading text-[0.88rem] italic text-muted-soft">
             {flower.nameLatin}
           </p>
         </div>
 
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="text-[1.2rem] font-bold text-poppy">
+            {formatEuro(flower.pricePerStem)}
+          </span>
+          <span className="text-xs text-muted-soft">la {flower.unit}</span>
+        </div>
+
+        <p className="text-[0.78rem] text-muted-foreground">
+          Tient {flower.vaseLifeDays[0]} – {flower.vaseLifeDays[1]} jours ·{" "}
+          {yearRound ? "toute l'année" : flower.season.join(", ")}
+        </p>
+
         <div className="flex flex-wrap items-center gap-1.5">
-          <Badge variant="secondary" className="font-normal">
-            {yearRound ? "Toute l'année" : flower.season.join(", ")}
-          </Badge>
           {flower.fragrance !== "aucune" ? (
-            <Badge variant="outline" className="font-normal">
+            <span className="chip bg-magenta-tint text-[0.68rem] font-semibold text-[#c41570]">
               <Wind className="size-3" aria-hidden /> Parfum {flower.fragrance}
-            </Badge>
+            </span>
           ) : null}
           {flower.toxicPets ? (
-            <Badge
-              variant="outline"
-              className="font-normal text-muted-foreground"
-            >
+            <span className="chip bg-secondary text-[0.68rem] font-semibold text-muted-foreground">
               <Cat className="size-3" aria-hidden /> Toxique animaux
-            </Badge>
-          ) : null}
-          {flower.role === "feuillage" || flower.role === "remplissage" ? (
-            <Badge variant="outline" className="font-normal">
-              <Flower2 className="size-3" aria-hidden /> {flower.role}
-            </Badge>
+            </span>
           ) : null}
         </div>
 
-        <div className="mt-auto flex items-end justify-between gap-3 pt-1">
-          <p className="text-sm">
-            <span className="font-medium">
-              {formatEuro(flower.pricePerStem)}
-            </span>
-            <span className="text-muted-foreground"> / {flower.unit}</span>
-          </p>
+        <div className="mt-auto flex items-center justify-end pt-1">
           <QuantityControl
             flowerId={flower.id}
             flowerName={flower.nameFr}

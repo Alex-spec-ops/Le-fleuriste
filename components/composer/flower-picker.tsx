@@ -170,7 +170,7 @@ export function FlowerPicker({
                           key={flower.id}
                           className={`flex items-center gap-3 rounded-lg border px-2.5 py-2 transition-colors ${
                             quantity > 0
-                              ? "border-terracotta/50 bg-terracotta/5"
+                              ? "border-poppy/50 bg-poppy/5"
                               : "border-transparent hover:bg-secondary/50"
                           }`}
                         >
@@ -186,7 +186,7 @@ export function FlowerPicker({
                           <span className="min-w-0 flex-1">
                             <Link
                               href={`/catalogue/${flower.id}`}
-                              className="block truncate text-sm hover:text-terracotta-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                              className="block truncate text-sm hover:text-poppy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                             >
                               {flower.nameFr}
                             </Link>

@@ -209,6 +209,35 @@ l'accord de leurs auteurs, et la section bascule automatiquement.
 
 ## Direction artistique
 
+La charte suit la maquette `SAAS_projet/site-fleuriste-coquelicot.html`, un
+canvas Claude Design dont les cinq planches (accueil, catalogue, fiche fleur,
+composeur, devis) ont servi de référence. Les jetons vivent dans
+`app/globals.css` :
+
+| Rôle | Valeur | Usage |
+| --- | --- | --- |
+| Fond | `#FFF7EC` | crème chaud, jamais de blanc pur en fond de page |
+| Encre | `#241A12` | texte, boutons principaux, barre de prix, pied de page |
+| Coquelicot | `#D93A1E` | accent, prix, appels à l'action |
+| Vert d'atelier | `#0F7A40` | bandeau d'annonce, pastille « de saison », chiffres |
+| Pollen | `#FFB703` | pastilles d'information, total du simulateur |
+| Magenta | `#E92A8B` | respirations : mot en italique du hero, parfum |
+| Bordure | `#EADCC8` | filets et contours de cartes |
+
+Typographies : **Instrument Serif** pour les titres et les noms botaniques en
+italique, **Karla** pour le texte courant et les noms de produits. Les boutons
+et les pastilles sont des boudins (999 px), les cartes ont un rayon de 22 px.
+
+Les valeurs provisoires de la maquette ont été remplacées par les données
+réelles : « Coquelicot & Cie » → `LE Fleuriste`, « [VOTRE VILLE] » → Paris 10ᵉ,
+« 512 variétés » → le compte réel du catalogue. Le panier de la maquette n'a
+pas été repris : le site s'arrête au devis et au contact, sans paiement en
+ligne.
+
+Contrastes vérifiés : le rouge coquelicot et les gris `#6B5B4D` / `#7A6656`
+passent AA sur crème comme sur blanc ; le magenta n'est employé qu'en grand
+corps, où le seuil est de 3:1.
+
 Le vocabulaire botanique est un système, pas une collection de décorations
 collées page par page : `components/ornament/botanical.tsx` construit chaque
 forme par le calcul, comme les illustrations de fleurs. Une tige est une courbe

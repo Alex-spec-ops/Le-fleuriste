@@ -32,7 +32,6 @@ type BouquetActions = {
 type BouquetStore = BouquetState & {
   /** Pile des états précédents, pour le bouton « Annuler ». */
   history: BouquetState[];
-  hydrated: boolean;
 } & BouquetActions;
 
 const MAX_HISTORY = 40;
@@ -59,7 +58,6 @@ export const useBouquetStore = create<BouquetStore>()(
     (set) => ({
       ...EMPTY_BOUQUET,
       history: [],
-      hydrated: false,
 
       add: (flowerId, quantity = 1) =>
         set((state) => ({
@@ -117,9 +115,6 @@ export const useBouquetStore = create<BouquetStore>()(
       name: "lefleuriste:bouquet",
       version: 1,
       partialize: (state) => snapshot(state),
-      onRehydrateStorage: () => (state) => {
-        if (state) state.hydrated = true;
-      },
     },
   ),
 );

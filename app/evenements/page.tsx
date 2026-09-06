@@ -115,7 +115,7 @@ export default function EvenementsPage() {
             <li key={step.title}>
               <Reveal delayMs={index * 70}>
                 <div className="card-petal h-full rounded-xl border border-border bg-card p-5">
-                  <p className="flex items-baseline gap-2 font-heading text-3xl text-terracotta">
+                  <p className="flex items-baseline gap-2 font-heading text-3xl text-poppy">
                     {index + 1}
                     <PetalMark className="translate-y-[-2px] opacity-70" />
                   </p>

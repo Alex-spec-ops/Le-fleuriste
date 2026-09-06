@@ -106,21 +106,31 @@ export function Composer({
   );
   const harmony = useMemo(() => analyseHarmony(entries), [entries]);
 
-  // Un lien partagé prime sur la composition sauvegardée localement.
+  // Un lien partagé prime sur la composition sauvegardée localement — mais il
+  // faut attendre que celle-ci soit relue depuis le navigateur : la
+  // réhydratation de zustand est asynchrone et écraserait sinon la
+  // composition partagée juste après l'avoir posée.
   const appliedShare = useRef(false);
   useEffect(() => {
     if (appliedShare.current) return;
     const token = searchParams.get("b");
     if (!token) return;
-    const shared = decodeBouquet(token);
     appliedShare.current = true;
-    if (shared) {
-      replace(shared);
-      toast.success("Composition partagée chargée");
-    } else {
-      toast.error("Ce lien de composition n'est plus valide.");
-    }
-    router.replace("/composer");
+
+    const shared = decodeBouquet(token);
+
+    // On force la relecture du stockage avant d'écrire : la réhydratation de
+    // zustand est asynchrone, et appliquer la composition partagée sans
+    // l'attendre revient à la faire écraser par la composition précédente.
+    void Promise.resolve(useBouquetStore.persist.rehydrate()).then(() => {
+      if (shared) {
+        replace(shared);
+        toast.success("Composition partagée chargée");
+      } else {
+        toast.error("Ce lien de composition n'est plus valide.");
+      }
+      router.replace("/composer");
+    });
   }, [searchParams, replace, router]);
 
   const share = async () => {
@@ -176,7 +186,12 @@ export function Composer({
                 entries={entries}
                 seed={seed}
                 wrapping={wrapping}
-                className="h-[46vh] w-full min-h-[320px] lg:h-[54vh]"
+                /*
+                 * Largeur automatique : le dessin fait 420 × 480, et un
+                 * conteneur pleine largeur le laissait flotter au milieu de
+                 * deux grandes marges vides, en le rapetissant d'autant.
+                 */
+                className="mx-auto h-[46vh] min-h-[320px] w-auto lg:h-[56vh]"
               />
             </div>
 
@@ -267,13 +282,13 @@ export function Composer({
                     key={note.id}
                     className={`rounded-lg border px-3 py-2 text-sm ${
                       note.tone === "bravo"
-                        ? "border-sage/50 bg-sage-soft"
+                        ? "border-leaf/40 bg-leaf/10"
                         : note.tone === "attention"
-                          ? "border-terracotta/40 bg-terracotta/5"
+                          ? "border-poppy/40 bg-poppy/5"
                           : "border-border bg-secondary/50"
                     }`}
                   >
-                    <PetalMark className="mr-1.5 inline-block -translate-y-px text-sage" />
+                    <PetalMark className="mr-1.5 inline-block -translate-y-px text-leaf" />
                     {note.message}
                   </li>
                 ))}
@@ -286,7 +301,7 @@ export function Composer({
         <div className="space-y-8">
           <section>
             <h2 className="flex items-center gap-2 font-heading text-lg">
-              <PetalMark className="text-terracotta" />
+              <PetalMark className="text-poppy" />
               Partir d&apos;un modèle
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -327,7 +342,7 @@ export function Composer({
 
           <section>
             <h2 className="flex items-center gap-2 font-heading text-lg">
-              <PetalMark className="text-terracotta" />
+              <PetalMark className="text-poppy" />
               Options
             </h2>
             <div className="mt-4">
@@ -351,16 +366,17 @@ export function Composer({
           </div>
         ) : null}
 
-        {/* La marge à droite laisse passer le bouton flottant du conseiller. */}
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-3 pr-20 sm:px-8 sm:pr-8">
+        {/*
+          La marge à droite réserve la place du bouton flottant du conseiller :
+          64 px quand il est réduit à son icône, 208 px quand il porte son
+          libellé, sans quoi il recouvre « Transformer en devis ».
+        */}
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-3 pr-20 sm:px-8 sm:pr-52">
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
               Total estimé TTC
             </p>
-            <AnimatedPrice
-              value={quote.total}
-              className="font-heading text-3xl"
-            />
+            <AnimatedPrice value={quote.total} className="font-heading text-3xl" />
           </div>
 
           <div className="flex flex-wrap items-center gap-2">

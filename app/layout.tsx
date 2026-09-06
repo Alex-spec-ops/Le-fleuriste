@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Karla } from "next/font/google";
+import { Instrument_Serif, Karla } from "next/font/google";
 
 import { ChatWidget } from "@/components/chat/chat-widget";
+import { AnnouncementBar } from "@/components/site/announcement-bar";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 import { LocalBusinessJsonLd } from "@/components/site/json-ld";
@@ -10,17 +11,18 @@ import { SHOP } from "@/lib/shop";
 
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: "400",
+  style: ["normal", "italic"],
   display: "swap",
 });
 
 const karla = Karla({
   variable: "--font-karla",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -44,7 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="fr"
-      className={`${cormorant.variable} ${karla.variable} h-full antialiased`}
+      className={`${instrumentSerif.variable} ${karla.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
@@ -54,6 +56,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Aller au contenu principal
         </a>
+        <AnnouncementBar />
         <SiteHeader />
         <main id="contenu" className="flex-1">
           {children}

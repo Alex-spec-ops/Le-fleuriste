@@ -31,7 +31,7 @@ export default function ContactPage() {
         <aside className="space-y-8">
           <section>
             <h2 className="flex items-center gap-2 text-[0.72rem] uppercase tracking-[0.2em] text-muted-foreground">
-              <PetalMark className="text-sage" />
+              <PetalMark className="text-leaf" />
               Coordonnées
             </h2>
             <address className="mt-3 space-y-1.5 text-sm not-italic">
@@ -41,7 +41,7 @@ export default function ContactPage() {
               </p>
               <p>
                 <a
-                  className="hover:text-terracotta-strong"
+                  className="hover:text-poppy"
                   href={`tel:${SHOP.phoneHref}`}
                 >
                   {SHOP.phoneDisplay}
@@ -49,7 +49,7 @@ export default function ContactPage() {
               </p>
               <p>
                 <a
-                  className="hover:text-terracotta-strong"
+                  className="hover:text-poppy"
                   href={`mailto:${SHOP.email}`}
                 >
                   {SHOP.email}
@@ -66,7 +66,7 @@ export default function ContactPage() {
 
           <section>
             <h2 className="flex items-center gap-2 text-[0.72rem] uppercase tracking-[0.2em] text-muted-foreground">
-              <PetalMark className="text-sage" />
+              <PetalMark className="text-leaf" />
               Horaires
             </h2>
             <table className="mt-3 w-full text-sm">
@@ -98,7 +98,7 @@ export default function ContactPage() {
 
           <section>
             <h2 className="flex items-center gap-2 text-[0.72rem] uppercase tracking-[0.2em] text-muted-foreground">
-              <PetalMark className="text-sage" />
+              <PetalMark className="text-leaf" />
               Livraison
             </h2>
             <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">

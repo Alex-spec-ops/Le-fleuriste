@@ -14,7 +14,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import type { Category } from "@/lib/constants";
+import type { Category, Season } from "@/lib/constants";
 import { EMPTY_FILTERS, filterFlowers, type FilterState } from "@/lib/filter";
 import type { FlowerLite } from "@/lib/flowers";
 
@@ -30,9 +30,11 @@ const SORTS: { key: SortKey; label: string }[] = [
 export function CatalogueBrowser({
   flowers,
   categories,
+  season,
 }: {
   flowers: FlowerLite[];
   categories: { category: Category; count: number }[];
+  season: Season;
 }) {
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
   const [sort, setSort] = useState<SortKey>("nom");
@@ -148,7 +150,7 @@ export function CatalogueBrowser({
           <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {results.map((flower) => (
               <li key={flower.id}>
-                <FlowerCard flower={flower} />
+                <FlowerCard flower={flower} season={season} />
               </li>
             ))}
           </ul>

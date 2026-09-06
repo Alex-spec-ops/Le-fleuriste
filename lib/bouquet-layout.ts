@@ -19,17 +19,17 @@ export const CANVAS = {
   bindY: 372,
   headX: 210,
   headY: 172,
-  spreadX: 152,
-  spreadY: 118,
+  spreadX: 158,
+  spreadY: 124,
 } as const;
 
 /** Rayon relatif et taille de tête selon le rôle de la fleur. */
 const LAYER_STYLE: Record<Role, { spread: number; scale: number }> = {
-  feuillage: { spread: 1.16, scale: 0.62 },
-  structure: { spread: 1.08, scale: 0.66 },
-  remplissage: { spread: 0.98, scale: 0.4 },
-  secondaire: { spread: 0.85, scale: 0.5 },
-  focale: { spread: 0.7, scale: 0.64 },
+  feuillage: { spread: 1.14, scale: 0.8 },
+  structure: { spread: 1.06, scale: 0.86 },
+  remplissage: { spread: 0.96, scale: 0.56 },
+  secondaire: { spread: 0.84, scale: 0.68 },
+  focale: { spread: 0.72, scale: 0.86 },
 };
 
 const GOLDEN_ANGLE = 2.399963229728653;
@@ -46,6 +46,14 @@ export type PlacedStem = {
   y: number;
   rotate: number;
   scale: number;
+  /**
+   * Profondeur perçue, de 0 (fond du bouquet) à 1 (premier plan).
+   * Elle pilote la taille et l'atténuation : sans elle, toutes les têtes
+   * sont au même plan et le bouquet reste plat.
+   */
+  depth: number;
+  /** Opacité appliquée à la tête, plus faible au fond. */
+  opacity: number;
 };
 
 export type BouquetLayout = {
@@ -83,10 +91,19 @@ export function layoutBouquet(entries: readonly BouquetEntry[], seed: number): B
     const jitterY = (random() - 0.5) * 18;
 
     const x = CANVAS.headX + Math.cos(angle) * radius * CANVAS.spreadX * style.spread + jitterX;
-    const y = CANVAS.headY + Math.sin(angle) * radius * CANVAS.spreadY * style.spread + jitterY;
+    // Le bouquet est bombé, pas plat : les tiges du fond montent un peu plus
+    // haut que celles du premier plan, comme dans une main serrée en spirale.
+    const dome = (1 - progress) * 16;
+    const y =
+      CANVAS.headY + Math.sin(angle) * radius * CANVAS.spreadY * style.spread - dome + jitterY;
 
     const tilt = ((x - CANVAS.headX) / CANVAS.spreadX) * 16 + (random() - 0.5) * 10;
-    const scale = style.scale * (0.9 + random() * 0.22);
+
+    // Les premières tiges dessinées sont au fond : elles rapetissent et
+    // s'estompent, ce qui creuse le bouquet au lieu de le laisser plat.
+    const depth = progress;
+    const scale = style.scale * (0.78 + depth * 0.3) * (0.94 + random() * 0.14);
+    const opacity = 0.72 + depth * 0.28;
 
     return {
       key: `${stem.flower.id}-${stem.occurrence}`,
@@ -95,6 +112,8 @@ export function layoutBouquet(entries: readonly BouquetEntry[], seed: number): B
       y,
       rotate: tilt,
       scale,
+      depth,
+      opacity,
     };
   });
 

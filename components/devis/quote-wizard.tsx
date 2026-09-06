@@ -251,7 +251,7 @@ export function QuoteWizard({ flowers }: { flowers: FlowerLite[] }) {
                     className={cn(
                       "flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5",
                       quantity > 0
-                        ? "border-terracotta/50 bg-terracotta/5"
+                        ? "border-poppy/50 bg-poppy/5"
                         : "border-border",
                     )}
                   >
@@ -490,7 +490,7 @@ function Step({
   return (
     <section>
       <h2 className="heading-display flex items-start gap-2.5 text-2xl sm:text-3xl">
-        <PetalMark className="mt-2.5 text-terracotta" />
+        <PetalMark className="mt-2.5 text-poppy" />
         {title}
       </h2>
       {hint ? (
@@ -520,7 +520,7 @@ function ChoiceCard({
       className={cn(
         "rounded-xl border p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         selected
-          ? "border-terracotta bg-terracotta/5"
+          ? "border-poppy bg-poppy/5"
           : "border-border bg-card hover:border-foreground/25",
       )}
     >

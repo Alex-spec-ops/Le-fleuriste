@@ -22,7 +22,7 @@ import { FlowerJsonLd } from "@/components/site/json-ld";
 import { SectionHeading } from "@/components/site/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { COLOR_SWATCHES } from "@/lib/constants";
+import { COLOR_SWATCHES, seasonForDate } from "@/lib/constants";
 import { getAllFlowers, getFlowerById, toFlowerLite } from "@/lib/flowers";
 import { formatEuro } from "@/lib/pricing";
 
@@ -185,7 +185,7 @@ export default async function FlowerPage({
           <dl className="mt-9 grid gap-x-8 gap-y-5 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <dt className="flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
-                <PetalMark className="text-sage" />
+                <PetalMark className="text-leaf" />
                 Saison de disponibilité
               </dt>
               <dd className="mt-2 flex flex-wrap gap-1.5">
@@ -208,7 +208,7 @@ export default async function FlowerPage({
 
             <div className="sm:col-span-2">
               <dt className="flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
-                <PetalMark className="text-sage" />
+                <PetalMark className="text-leaf" />
                 Couleurs
               </dt>
               <dd className="mt-2 flex flex-wrap gap-1.5">
@@ -255,7 +255,7 @@ export default async function FlowerPage({
 
             <div>
               <dt className="flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
-                <PetalMark className="text-sage" />
+                <PetalMark className="text-leaf" />
                 Rôle dans un bouquet
               </dt>
               <dd className="mt-1 text-sm">{flower.role}</dd>
@@ -263,7 +263,7 @@ export default async function FlowerPage({
 
             <div className="sm:col-span-2">
               <dt className="flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
-                <PetalMark className="text-sage" />
+                <PetalMark className="text-leaf" />
                 Ce qu&apos;elle dit
               </dt>
               <dd className="mt-2 flex flex-wrap gap-1.5">
@@ -281,7 +281,7 @@ export default async function FlowerPage({
 
             <div className="sm:col-span-2">
               <dt className="flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">
-                <PetalMark className="text-sage" />
+                <PetalMark className="text-leaf" />
                 Occasions
               </dt>
               <dd className="mt-2 flex flex-wrap gap-1.5">
@@ -306,7 +306,7 @@ export default async function FlowerPage({
           <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((candidate) => (
               <li key={candidate.id}>
-                <FlowerCard flower={toFlowerLite(candidate)} />
+                <FlowerCard flower={toFlowerLite(candidate)} season={seasonForDate(new Date())} />
               </li>
             ))}
           </ul>

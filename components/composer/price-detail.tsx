@@ -40,7 +40,7 @@ export function PriceDetail({ quote }: { quote: BouquetQuote }) {
               <td className="py-1.5 pr-2">
                 {line.nameFr}
                 {line.availability !== "en saison" ? (
-                  <span className="ml-1.5 text-xs text-terracotta-strong">
+                  <span className="ml-1.5 text-xs text-poppy">
                     {line.availability === "import"
                       ? `import ×${line.seasonCoefficient}`
                       : "hors saison"}
@@ -109,11 +109,11 @@ export function PriceDetail({ quote }: { quote: BouquetQuote }) {
       </dl>
 
       {quote.warnings.length > 0 ? (
-        <ul className="space-y-1.5 rounded-lg border border-terracotta/40 bg-terracotta/5 p-3 text-sm">
+        <ul className="space-y-1.5 rounded-lg border border-poppy/40 bg-poppy/5 p-3 text-sm">
           {quote.warnings.map((warning) => (
             <li key={warning} className="flex gap-2">
               <AlertTriangle
-                className="mt-0.5 size-4 shrink-0 text-terracotta-strong"
+                className="mt-0.5 size-4 shrink-0 text-poppy"
                 aria-hidden
               />
               <span>{warning}</span>

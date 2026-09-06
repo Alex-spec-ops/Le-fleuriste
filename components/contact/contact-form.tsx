@@ -75,9 +75,9 @@ export function ContactForm() {
 
   if (state === "sent") {
     return (
-      <div className="rounded-xl border border-sage/50 bg-sage-soft p-6">
+      <div className="rounded-xl border border-leaf/40 bg-leaf/10 p-6">
         <p className="flex items-center gap-2 font-heading text-lg">
-          <CheckCircle2 className="size-5 text-sage" aria-hidden />
+          <CheckCircle2 className="size-5 text-leaf" aria-hidden />
           Message reçu
         </p>
         <p className="mt-2 text-sm">

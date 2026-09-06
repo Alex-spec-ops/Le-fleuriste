@@ -12,9 +12,9 @@ import { SHOP, formatOpeningSummary, formatPostalAddress } from "@/lib/shop";
  * du client tant qu'il n'a pas cliqué sur « Envoyer à la boutique ».
  */
 
-const INK = "#1F2E23";
-const MUTED = "#61705F";
-const ACCENT = "#9F5740";
+const INK = "#241A12";
+const MUTED = "#6B5B4D";
+const ACCENT = "#D93A1E";
 
 function formatFrenchDate(iso: string): string {
   if (!iso) return "date à préciser";
@@ -138,8 +138,8 @@ export function generateQuotePdf({
         ],
       ],
       theme: "grid",
-      styles: { fontSize: 8.5, cellPadding: 1.8, textColor: INK, lineColor: [226, 219, 205] },
-      headStyles: { fillColor: [239, 234, 225], textColor: INK, fontStyle: "bold" },
+      styles: { fontSize: 8.5, cellPadding: 1.8, textColor: INK, lineColor: [234, 220, 200] },
+      headStyles: { fillColor: [242, 228, 212], textColor: INK, fontStyle: "bold" },
       columnStyles: {
         1: { halign: "right", cellWidth: 24 },
         2: { halign: "right", cellWidth: 28 },

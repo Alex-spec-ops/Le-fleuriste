@@ -5,9 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 /* -------------------------------------------------------------------------
-   LE Fleuriste — jetons de design
-   Fond crème, vert profond, terracotta, rose poudré, vert sauge, or discret.
-   Aucun blanc pur, aucun noir pur.
+   LE Fleuriste — jetons de design, direction « Coquelicot »
+   Fond crème chaud, encre brun profond, rouge coquelicot en accent, vert
+   d'atelier, jaune de pollen et magenta pour les respirations.
+   Les valeurs viennent de la maquette SAAS_projet/site-fleuriste-coquelicot.html.
    ------------------------------------------------------------------------- */
 
 @theme inline {
@@ -15,7 +16,7 @@
   --color-foreground: var(--foreground);
 
   --font-sans: var(--font-karla);
-  --font-heading: var(--font-cormorant);
+  --font-heading: var(--font-instrument-serif);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --color-ring: var(--ring);
@@ -36,13 +37,20 @@
   --color-card: var(--card);
 
   /* Couleurs d'atelier, utilisables en classes Tailwind */
-  --color-sage: var(--sage);
-  --color-sage-soft: var(--sage-soft);
-  --color-terracotta: var(--terracotta);
-  --color-terracotta-strong: var(--terracotta-strong);
-  --color-blush: var(--blush);
-  --color-gold: var(--gold);
-  --color-kraft: var(--kraft);
+  --color-poppy: var(--poppy);
+  --color-poppy-strong: var(--poppy-strong);
+  --color-poppy-light: var(--poppy-light);
+  --color-poppy-tint: var(--poppy-tint);
+  --color-leaf: var(--leaf);
+  --color-leaf-bright: var(--leaf-bright);
+  --color-leaf-deep: var(--leaf-deep);
+  --color-pollen: var(--pollen);
+  --color-pollen-tint: var(--pollen-tint);
+  --color-pollen-ink: var(--pollen-ink);
+  --color-magenta: var(--magenta);
+  --color-magenta-tint: var(--magenta-tint);
+  --color-sand: var(--sand);
+  --color-muted-soft: var(--muted-soft);
 
   --color-sidebar-ring: var(--ring);
   --color-sidebar-border: var(--border);
@@ -53,94 +61,125 @@
   --color-sidebar-foreground: var(--foreground);
   --color-sidebar: var(--card);
 
-  --color-chart-1: var(--terracotta);
-  --color-chart-2: var(--sage);
-  --color-chart-3: var(--blush);
-  --color-chart-4: var(--gold);
+  --color-chart-1: var(--poppy);
+  --color-chart-2: var(--leaf);
+  --color-chart-3: var(--pollen);
+  --color-chart-4: var(--magenta);
   --color-chart-5: var(--primary);
 
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  /* La maquette travaille au boudin : pastilles en 999px, cartes en 22px. */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --radius-2xl: 26px;
+  --radius-3xl: 32px;
+  --radius-4xl: 40px;
+  --radius-pill: 999px;
 
-  --shadow-petal: 0 1px 2px rgba(31, 46, 35, 0.04), 0 8px 24px -12px rgba(31, 46, 35, 0.12);
-  --shadow-lifted: 0 2px 4px rgba(31, 46, 35, 0.05), 0 18px 40px -20px rgba(31, 46, 35, 0.22);
+  --shadow-petal: 0 1px 2px rgba(36, 26, 18, 0.04), 0 10px 28px -14px rgba(36, 26, 18, 0.16);
+  --shadow-lifted: 0 2px 6px rgba(36, 26, 18, 0.06), 0 20px 44px -22px rgba(36, 26, 18, 0.26);
 }
 
 :root {
-  --background: #faf7f2;
-  --foreground: #1f2e23;
+  color-scheme: light;
 
-  --card: #fffdfa;
-  --card-foreground: #1f2e23;
-  --popover: #fffdfa;
-  --popover-foreground: #1f2e23;
+  --background: #fff7ec;
+  --foreground: #241a12;
 
-  --primary: #1f2e23;
-  --primary-foreground: #faf7f2;
-  --secondary: #efeae1;
-  --secondary-foreground: #1f2e23;
+  --card: #ffffff;
+  --card-foreground: #241a12;
+  --popover: #ffffff;
+  --popover-foreground: #241a12;
 
-  --muted: #f1ece3;
-  --muted-foreground: #61705f;
+  /* Le bouton principal est l'encre, pas le rouge : le rouge reste l'accent. */
+  --primary: #241a12;
+  --primary-foreground: #fff7ec;
+  --secondary: #f2e4d4;
+  --secondary-foreground: #241a12;
 
-  --accent: #c97b63;
-  --accent-foreground: #fffdfa;
+  --muted: #f7ecdd;
+  --muted-foreground: #6b5b4d;
+  /* Textes secondaires : contraste AA conservé sur crème comme sur blanc. */
+  --muted-soft: #7a6656;
 
-  --destructive: #9d3b2c;
+  --accent: #d93a1e;
+  --accent-foreground: #ffffff;
 
-  --border: #e3dbcd;
-  --input: #ded5c5;
-  --ring: #c97b63;
+  --destructive: #a82a12;
 
-  --sage: #8fa68e;
-  --sage-soft: #e6ece4;
-  --terracotta: #c97b63;
-  --terracotta-strong: #9f5740;
-  --blush: #d9a5a0;
-  --gold: #a9884f;
-  --kraft: #cbb492;
+  --border: #eadcc8;
+  --input: #e3d4c0;
+  --ring: #d93a1e;
 
-  --radius: 0.625rem;
+  --poppy: #d93a1e;
+  --poppy-strong: #a82a12;
+  --poppy-light: #ff5a3c;
+  --poppy-tint: #ffe3dc;
+
+  --leaf: #0f7a40;
+  --leaf-bright: #8cc63f;
+  --leaf-deep: #1b5236;
+
+  --pollen: #ffb703;
+  --pollen-tint: #ffe9bf;
+  --pollen-ink: #7a4e00;
+
+  --magenta: #e92a8b;
+  --magenta-tint: #fbd3e6;
+
+  --sand: #e3d4c0;
+
+  --radius: 22px;
 }
 
 .dark {
-  --background: #131c16;
-  --foreground: #eee9de;
+  color-scheme: dark;
 
-  --card: #1a251d;
-  --card-foreground: #eee9de;
-  --popover: #1a251d;
-  --popover-foreground: #eee9de;
+  /* Le fond sombre reprend l'encre du pied de page de la maquette. */
+  --background: #1a120c;
+  --foreground: #fff7ec;
 
-  --primary: #e5dccb;
-  --primary-foreground: #16201a;
-  --secondary: #22301f;
-  --secondary-foreground: #eee9de;
+  --card: #241a12;
+  --card-foreground: #fff7ec;
+  --popover: #241a12;
+  --popover-foreground: #fff7ec;
 
-  --muted: #22301f;
-  --muted-foreground: #a9b6a4;
+  --primary: #fff7ec;
+  --primary-foreground: #241a12;
+  --secondary: #33251b;
+  --secondary-foreground: #fff7ec;
 
-  --accent: #d98f76;
-  --accent-foreground: #16201a;
+  --muted: #33251b;
+  --muted-foreground: #c6b6a8;
+  --muted-soft: #a8968a;
 
-  --destructive: #d97a68;
+  --accent: #ff5a3c;
+  --accent-foreground: #241a12;
 
-  --border: rgba(238, 233, 222, 0.14);
-  --input: rgba(238, 233, 222, 0.2);
-  --ring: #d98f76;
+  --destructive: #ff7a5c;
 
-  --sage: #9db79b;
-  --sage-soft: #21301f;
-  --terracotta: #d98f76;
-  --terracotta-strong: #e5a88f;
-  --blush: #e0b3ae;
-  --gold: #c5a570;
-  --kraft: #b39b78;
+  --border: #43342a;
+  --input: #53422f;
+  --ring: #ff5a3c;
+
+  --poppy: #ff5a3c;
+  --poppy-strong: #ff8c63;
+  --poppy-light: #ff8c63;
+  --poppy-tint: #3d2018;
+
+  --leaf: #57b06b;
+  --leaf-bright: #8cc63f;
+  --leaf-deep: #8cc63f;
+
+  --pollen: #ffb703;
+  --pollen-tint: #3a2a10;
+  --pollen-ink: #ffcf4d;
+
+  --magenta: #f76bb0;
+  --magenta-tint: #3d1a2c;
+
+  --sand: #43342a;
 }
 
 @layer base {
@@ -161,11 +200,11 @@
   h3,
   h4 {
     @apply font-heading;
-    font-weight: 500;
-    letter-spacing: -0.01em;
+    font-weight: 400;
+    letter-spacing: -0.015em;
   }
   ::selection {
-    background: var(--blush);
+    background: var(--pollen-tint);
     color: var(--foreground);
   }
 }
@@ -173,8 +212,6 @@
 /* -------------------------------------------------------------------------
    Grain de papier
    Une vitrine de fleuriste n'est jamais posée sur du blanc numérique plat.
-   Deux trames de points très pâles, décalées, suffisent à donner une matière
-   de papier sans charger la page d'une image.
    ------------------------------------------------------------------------- */
 @layer base {
   body::before {
@@ -184,9 +221,9 @@
     z-index: -1;
     pointer-events: none;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(31, 46, 35, 0.03) 0 1px, transparent 1.2px),
-      radial-gradient(circle at 70% 65%, rgba(31, 46, 35, 0.022) 0 1px, transparent 1.2px),
-      radial-gradient(ellipse 90% 55% at 50% 0%, rgba(201, 123, 99, 0.05), transparent 70%);
+      radial-gradient(circle at 20% 30%, rgba(36, 26, 18, 0.035) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 70% 65%, rgba(36, 26, 18, 0.025) 0 1px, transparent 1.2px),
+      radial-gradient(ellipse 90% 55% at 50% 0%, rgba(255, 183, 3, 0.09), transparent 70%);
     background-size:
       23px 23px,
       37px 37px,
@@ -195,9 +232,9 @@
   }
   .dark body::before {
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(238, 233, 222, 0.025) 0 1px, transparent 1.2px),
-      radial-gradient(circle at 70% 65%, rgba(238, 233, 222, 0.018) 0 1px, transparent 1.2px),
-      radial-gradient(ellipse 90% 55% at 50% 0%, rgba(217, 143, 118, 0.07), transparent 70%);
+      radial-gradient(circle at 20% 30%, rgba(255, 247, 236, 0.028) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 70% 65%, rgba(255, 247, 236, 0.02) 0 1px, transparent 1.2px),
+      radial-gradient(ellipse 90% 55% at 50% 0%, rgba(255, 183, 3, 0.08), transparent 70%);
   }
 }
 
@@ -208,12 +245,21 @@
     isolation: isolate;
   }
 
-  /* Sur-titre de section : petites capitales espacées, terracotta sombre. */
+  /* Sur-titre de section : petites capitales espacées. */
   .eyebrow {
-    @apply flex items-center gap-2 text-[0.72rem] uppercase tracking-[0.22em] text-terracotta-strong;
+    @apply flex items-center gap-2 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-poppy;
   }
 
-  /* Filet dégradé, plus doux qu'une bordure franche. */
+  /* Sur-titre sur fond sombre : le vert clair de la maquette. */
+  .eyebrow-dark {
+    @apply flex items-center gap-2 text-[0.72rem] font-bold uppercase tracking-[0.13em] text-leaf-bright;
+  }
+
+  /* Pastille d'étiquette : saison, occasion, statut. */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold;
+  }
+
   .rule-fade {
     @apply h-px w-full;
     background: linear-gradient(
@@ -225,18 +271,31 @@
     );
   }
 
+  .heading-display {
+    @apply font-heading leading-[0.98] tracking-[-0.02em];
+  }
+
+  .rule-fine {
+    @apply h-px w-full bg-border;
+  }
+
+  .card-lift {
+    transition:
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .card-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lifted);
+  }
+
   /*
    * Carte : au survol, un halo de pétale apparaît dans l'angle supérieur droit.
-   * Le pseudo-élément reste sous le contenu et ne capte aucun clic.
+   * Posé sous le contenu par z-index négatif, enfermé par `isolation`.
    */
   .card-petal {
     position: relative;
     overflow: hidden;
-    /*
-     * Le halo est posé sous le contenu grâce à z-index: -1, mais au-dessus du
-     * fond de la carte : `isolation` enferme cette astuce dans la carte, sans
-     * quoi le pétale passerait derrière la page entière.
-     */
     isolation: isolate;
   }
   .card-petal::after {
@@ -248,7 +307,7 @@
     width: 110px;
     height: 110px;
     border-radius: 50% 50% 50% 0;
-    background: radial-gradient(circle at 30% 70%, var(--blush), transparent 68%);
+    background: radial-gradient(circle at 30% 70%, var(--pollen), transparent 68%);
     opacity: 0;
     transform: rotate(-18deg) scale(0.85);
     transition:
@@ -258,24 +317,8 @@
   }
   .card-petal:hover::after,
   .card-petal:focus-within::after {
-    opacity: 0.4;
+    opacity: 0.42;
     transform: rotate(0deg) scale(1);
-  }
-
-  .heading-display {
-    @apply font-heading font-medium leading-[1.08] tracking-[-0.015em];
-  }
-  .rule-fine {
-    @apply h-px w-full bg-border;
-  }
-  .card-lift {
-    transition:
-      transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .card-lift:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-lifted);
   }
 }
 
@@ -301,14 +344,12 @@
     transform: none;
     transition: none;
   }
-  .card-lift {
+  .card-lift,
+  .card-petal::after {
     transition: none;
   }
   .card-lift:hover {
     transform: none;
-  }
-  .card-petal::after {
-    transition: none;
   }
   *,
   *::before,

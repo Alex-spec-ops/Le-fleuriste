@@ -11,7 +11,6 @@ import {
 import { BouquetPreview } from "@/components/boutique/bouquet-preview";
 import { FlowerThumb } from "@/components/flower-svg/flower-svg";
 import {
-  BotanicalRule,
   CornerSprig,
   PetalBorder,
   PetalMark,
@@ -104,44 +103,76 @@ export default function HomePage() {
           />
 
           <div>
-            <p className="eyebrow">
-              <PetalMark />
+            <p className="chip bg-pollen-tint text-[0.68rem] font-bold uppercase tracking-[0.13em] text-pollen-ink">
+              <span aria-hidden className="size-[7px] rounded-full bg-pollen" />
               {SHOP.tagline}
             </p>
-            <h1 className="heading-display mt-4 text-5xl sm:text-6xl">
-              Des fleurs choisies
+            <h1 className="heading-display mt-6 text-[3.4rem] sm:text-[4.6rem]">
+              Dites-le avec
               <br />
-              pour une personne précise.
+              les fleurs{" "}
+              <span className="italic text-magenta">justes</span>.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
               Nous composons à la main, avec ce que le marché offre vraiment
-              cette semaine. Et si vous ne savez pas par où commencer,
-              dites-nous simplement pour qui c&apos;est.
+              cette semaine. Composez votre bouquet tige par tige, voyez le prix
+              bouger en direct, et laissez-vous conseiller quand vous hésitez.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button
                 nativeButton={false}
                 render={<Link href="/composer" />}
                 size="lg"
+                variant="accent"
               >
-                Composer votre bouquet <ArrowRight aria-hidden />
+                Composer mon bouquet <ArrowRight aria-hidden />
               </Button>
               <Button
                 nativeButton={false}
                 render={<Link href="/devis" />}
                 size="lg"
                 variant="outline"
+                className="border-[1.5px] border-foreground"
               >
-                Demander un devis
+                Devis événement
               </Button>
             </div>
 
-            <BotanicalRule className="mt-9 max-w-md" />
-
-            <p className="mt-5 text-sm text-muted-foreground">
-              {getAllFlowers().length} variétés au catalogue · prix affiché
-              avant commande · devis PDF immédiat
-            </p>
+            <dl className="mt-12 flex flex-wrap gap-10 border-t border-border pt-7">
+              <div>
+                <dt className="sr-only">Variétés au catalogue</dt>
+                <dd>
+                  <span className="block font-heading text-[2.1rem] leading-none text-leaf">
+                    {getAllFlowers().length}
+                  </span>
+                  <span className="mt-1 block text-[0.8rem] text-muted-foreground">
+                    variétés au catalogue
+                  </span>
+                </dd>
+              </div>
+              <div>
+                <dt className="sr-only">Outils en ligne</dt>
+                <dd>
+                  <span className="block font-heading text-[2.1rem] leading-none text-magenta">
+                    4
+                  </span>
+                  <span className="mt-1 block text-[0.8rem] text-muted-foreground">
+                    outils pour vous décider
+                  </span>
+                </dd>
+              </div>
+              <div>
+                <dt className="sr-only">Devis</dt>
+                <dd>
+                  <span className="block font-heading text-[2.1rem] leading-none text-poppy">
+                    PDF
+                  </span>
+                  <span className="mt-1 block text-[0.8rem] text-muted-foreground">
+                    devis immédiat, sans engagement
+                  </span>
+                </dd>
+              </div>
+            </dl>
           </div>
 
           <Reveal className="justify-self-center">
@@ -178,7 +209,7 @@ export default function HomePage() {
                   href={tool.href}
                   className="card-lift card-petal block h-full rounded-xl border border-border bg-card p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
-                  <span className="relative z-10 flex items-center gap-2 text-terracotta-strong">
+                  <span className="relative z-10 flex items-center gap-2 text-poppy">
                     <tool.icon className="size-5" aria-hidden />
                     <PetalMark className="opacity-50" />
                   </span>
@@ -318,7 +349,7 @@ export default function HomePage() {
                     key={`${review.author}-${review.date}`}
                     className="rounded-xl border border-border bg-card p-5"
                   >
-                    <PetalMark className="text-terracotta" />
+                    <PetalMark className="text-poppy" />
                     <blockquote className="mt-3 text-sm leading-relaxed">
                       « {review.text} »
                     </blockquote>
@@ -341,7 +372,7 @@ export default function HomePage() {
                   <li key={commitment.title}>
                     <Reveal delayMs={index * 70}>
                       <div className="card-petal h-full rounded-xl border border-border bg-card p-5">
-                        <PetalMark className="relative z-10 text-terracotta" />
+                        <PetalMark className="relative z-10 text-poppy" />
                         <h3 className="relative z-10 mt-3 font-heading text-lg">
                           {commitment.title}
                         </h3>
