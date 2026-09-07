@@ -24,6 +24,25 @@ export function getFlowerPhoto(flowerId: string): FlowerPhoto | undefined {
   return LIBRARY.flowers[flowerId];
 }
 
+/**
+ * Ce qu'une vidéo livre au navigateur : de quoi la lire, rien de plus.
+ *
+ * Le crédit ne suit pas. Les auteurs des vidéos ne sont pas nommés à
+ * l'écran ; les laisser dans les propriétés sérialisées de la page les
+ * rendrait quand même lisibles dans le source, ce qui reviendrait au même.
+ */
+export type VideoSource = Pick<Video, "pexelsId" | "src" | "poster" | "width" | "height">;
+
+export function videoSource(video: Video): VideoSource {
+  return {
+    pexelsId: video.pexelsId,
+    src: video.src,
+    poster: video.poster,
+    width: video.width,
+    height: video.height,
+  };
+}
+
 /** Plans du montage d'ouverture, dans l'ordre de passage. */
 export function getHomeHero(): readonly Video[] {
   return LIBRARY.home.hero;

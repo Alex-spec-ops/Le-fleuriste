@@ -27,7 +27,14 @@ import { COMMITMENTS, REVIEWS } from "@/data/avis";
 import { SHOP_BOUQUETS } from "@/data/boutique";
 import { COLOR_SWATCHES, seasonForDate } from "@/lib/constants";
 import { getAllFlowers, getFlowerById, toFlowerLite } from "@/lib/flowers";
-import { getHomeHero, getHomePhotos, getHomeVideos, type Photo, type Video } from "@/lib/photos";
+import {
+  getHomeHero,
+  getHomePhotos,
+  getHomeVideos,
+  videoSource,
+  type Photo,
+  type Video,
+} from "@/lib/photos";
 import { formatEuro } from "@/lib/pricing";
 import { SHOP } from "@/lib/shop";
 
@@ -119,7 +126,7 @@ export default function HomePage() {
 
   // Le montage d'ouverture a ses propres plans ; les vidéos de la
   // photothèque ponctuent le mur d'images plus bas.
-  const heroShots = getHomeHero();
+  const heroShots = getHomeHero().map(videoSource);
   const gallery = buildGallery(getHomePhotos(), getHomeVideos());
 
   return (
@@ -233,8 +240,10 @@ export default function HomePage() {
               </div>
               {heroShots.length > 1 ? (
                 <figcaption className="mt-3 text-center text-xs text-muted-foreground">
+                  {/* Les auteurs des vidéos ne sont pas nommés, à la demande.
+                      La licence Pexels ne l'impose pas ; le lien vers la
+                      banque reste, lui, la moindre des choses. */}
                   Les fleurs, en vrai. Vidéos{" "}
-                  {[...new Set(heroShots.map((shot) => shot.photographer))].join(", ")} sur{" "}
                   <a
                     href="https://www.pexels.com"
                     target="_blank"
@@ -412,7 +421,11 @@ export default function HomePage() {
                       sinon une hauteur double et disloquerait la rangée. */}
                   <figure className="group relative h-40 overflow-hidden rounded-xl bg-white/5 sm:h-52">
                     {item.kind === "video" ? (
-                      <FlowerVideo video={item.video} className="size-full" posterWidth={800} />
+                      <FlowerVideo
+                        video={videoSource(item.video)}
+                        className="size-full"
+                        posterWidth={800}
+                      />
                     ) : (
                       <PexelsImage
                         photo={item.photo}
@@ -428,11 +441,17 @@ export default function HomePage() {
           </ul>
 
           <p className="mt-6 text-[0.72rem] leading-relaxed text-[#fff7ec]/55">
-            Photographies et vidéos&nbsp;:{" "}
-            {gallery
-              .map((item) => (item.kind === "video" ? item.video : item.photo).photographer)
-              .join(", ")}{" "}
-            —{" "}
+            {/* Les photographes restent nommés, les auteurs des vidéos non :
+                c'est la demande. */}
+            Photographies&nbsp;:{" "}
+            {[
+              ...new Set(
+                gallery
+                  .filter((item) => item.kind === "photo")
+                  .map((item) => item.photo.photographer),
+              ),
+            ].join(", ")}
+            . Toutes les images et vidéos viennent de{" "}
             <a
               href="https://www.pexels.com"
               target="_blank"

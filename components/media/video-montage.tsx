@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useReducedMotion } from "@/lib/hooks/use-reduced-motion";
 import pexelsLoader from "@/lib/pexels-loader";
-import type { Video } from "@/lib/photos";
+import type { VideoSource } from "@/lib/photos";
 
 /**
  * Enchaînement de plusieurs plans en fondu.
@@ -26,7 +26,7 @@ export function VideoMontage({
   className,
   posterWidth = 1280,
 }: {
-  shots: readonly Video[];
+  shots: readonly VideoSource[];
   /** Durée d'un plan avant l'enchaînement. */
   shotSeconds?: number;
   className?: string;

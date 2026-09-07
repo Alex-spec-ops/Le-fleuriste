@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { useReducedMotion } from "@/lib/hooks/use-reduced-motion";
 import pexelsLoader from "@/lib/pexels-loader";
-import type { Video } from "@/lib/photos";
+import type { VideoSource } from "@/lib/photos";
 
 /**
  * Vidéo d'ambiance en lecture automatique.
@@ -24,7 +24,7 @@ export function FlowerVideo({
   className,
   posterWidth = 1280,
 }: {
-  video: Video;
+  video: VideoSource;
   className?: string;
   /** Largeur demandée au CDN pour l'image d'attente. */
   posterWidth?: number;
