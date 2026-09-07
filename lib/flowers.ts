@@ -8,6 +8,7 @@ import {
   type Role,
   type Season,
 } from "@/lib/constants";
+import { photoRefOf, type PhotoRef } from "@/lib/photos";
 import type { Flower } from "@/lib/schemas/flower";
 
 /**
@@ -125,7 +126,15 @@ export function searchFlowers(query: FlowerQuery): Flower[] {
  * on retire la description, la symbolique et le nom d'image, qui ne servent
  * qu'aux fiches produit rendues côté serveur.
  */
-export type FlowerLite = Omit<Flower, "description" | "symbolism" | "imageUrl">;
+export type FlowerLite = Omit<Flower, "description" | "symbolism" | "imageUrl"> & {
+  /**
+   * Photo du catalogue, réduite à ce que le navigateur doit connaître : le
+   * crédit photographe ne sert que sur la fiche, rendue côté serveur.
+   * Absente tant que la bibliothèque n'illustre pas cette fleur, auquel cas
+   * les composants retombent sur l'illustration vectorielle.
+   */
+  photo?: PhotoRef;
+};
 
 export function toFlowerLite(flower: Flower): FlowerLite {
   return {
@@ -145,6 +154,7 @@ export function toFlowerLite(flower: Flower): FlowerLite {
     allergenRisk: flower.allergenRisk,
     toxicPets: flower.toxicPets,
     offSeasonImport: flower.offSeasonImport,
+    photo: photoRefOf(flower.id),
   };
 }
 

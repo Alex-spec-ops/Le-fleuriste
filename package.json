@@ -10,7 +10,8 @@
     "catalog:build": "tsx scripts/build-catalog.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "photos:fetch": "tsx scripts/fetch-photos.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

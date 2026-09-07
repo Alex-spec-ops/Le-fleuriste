@@ -6,7 +6,7 @@ import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
 
 import { QuantityControl } from "@/components/bouquet/quantity-control";
 import { FlowerFilters } from "@/components/catalogue/flower-filters";
-import { FlowerThumb } from "@/components/flower-svg/flower-svg";
+import { FlowerPhotoThumb } from "@/components/flower-photo/flower-photo";
 import { EmptySprig } from "@/components/ornament/botanical";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -175,12 +175,16 @@ export function FlowerPicker({
                           }`}
                         >
                           <span
-                            className="flex size-11 shrink-0 items-center justify-center rounded-md"
+                            className="shrink-0 rounded-md"
                             style={{
                               backgroundColor: `color-mix(in oklab, ${swatch.fill} 22%, var(--card))`,
                             }}
                           >
-                            <FlowerThumb flower={flower} className="size-9" />
+                            <FlowerPhotoThumb
+                              flower={flower}
+                              size={44}
+                              className="rounded-md"
+                            />
                           </span>
 
                           <span className="min-w-0 flex-1">

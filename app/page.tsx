@@ -9,7 +9,9 @@ import {
 } from "lucide-react";
 
 import { BouquetPreview } from "@/components/boutique/bouquet-preview";
-import { FlowerThumb } from "@/components/flower-svg/flower-svg";
+import { FlowerPhoto } from "@/components/flower-photo/flower-photo";
+import { FlowerVideo } from "@/components/media/flower-video";
+import { PexelsImage, PhotoCredit } from "@/components/media/pexels";
 import {
   CornerSprig,
   PetalBorder,
@@ -23,7 +25,8 @@ import { Button } from "@/components/ui/button";
 import { COMMITMENTS, REVIEWS } from "@/data/avis";
 import { SHOP_BOUQUETS } from "@/data/boutique";
 import { COLOR_SWATCHES, seasonForDate } from "@/lib/constants";
-import { getAllFlowers, getFlowerById } from "@/lib/flowers";
+import { getAllFlowers, getFlowerById, toFlowerLite } from "@/lib/flowers";
+import { getHomePhotos, getHomeVideos, type Photo, type Video } from "@/lib/photos";
 import { formatEuro } from "@/lib/pricing";
 import { SHOP } from "@/lib/shop";
 
@@ -77,6 +80,30 @@ function entriesOf(items: Record<string, number>) {
     );
 }
 
+/** Une tuile du mur d'images : photo ou vidéo, mêlées dans la même grille. */
+type Tile =
+  | { kind: "photo"; photo: Photo; alt: string }
+  | { kind: "video"; video: Video };
+
+/**
+ * Alterne photos et vidéos au lieu de les grouper : deux vidéos côte à côte
+ * se disputent le regard, et une rangée entière de photos fixes après elles
+ * fait retomber la page.
+ */
+function buildGallery(photos: readonly Photo[], videos: readonly Video[]): Tile[] {
+  const tiles: Tile[] = [];
+  let videoCursor = 0;
+  for (const [index, photo] of photos.entries()) {
+    tiles.push({ kind: "photo", photo, alt: photo.alt });
+    const nextVideo = videos[videoCursor];
+    if (nextVideo && index % 3 === 2) {
+      tiles.push({ kind: "video", video: nextVideo });
+      videoCursor += 1;
+    }
+  }
+  return tiles;
+}
+
 export default function HomePage() {
   const season = seasonForDate(new Date());
   const inSeason = getAllFlowers()
@@ -88,6 +115,12 @@ export default function HomePage() {
 
   const hero = SHOP_BOUQUETS[0];
   const heroEntries = hero ? entriesOf(hero.items) : [];
+
+  // La première vidéo tient le héros ; les suivantes ponctuent le mur
+  // d'images plus bas.
+  const videos = getHomeVideos();
+  const heroVideo = videos[0];
+  const gallery = buildGallery(getHomePhotos(), videos.slice(1));
 
   return (
     <>
@@ -176,22 +209,29 @@ export default function HomePage() {
           </div>
 
           <Reveal className="justify-self-center">
-            <figure className="relative">
+            <figure className="relative w-full">
               <WreathArc className="-top-6 scale-110" />
-              <div className="rounded-[2rem] border border-border bg-card p-6 shadow-[var(--shadow-petal)]">
-                <div className="rounded-[1.5rem] border border-border/60 bg-secondary/25 p-3">
-                  <BouquetPreview
-                    entries={heroEntries}
-                    wrapping={hero?.wrapping ?? "kraft simple"}
-                    className="h-[21rem] w-full sm:h-[25rem]"
-                    label="Illustration d'un bouquet composé à l'atelier"
+              <div className="rounded-[2rem] border border-border bg-card p-3 shadow-[var(--shadow-petal)]">
+                {heroVideo ? (
+                  <FlowerVideo
+                    video={heroVideo}
+                    className="h-[21rem] w-full rounded-[1.5rem] sm:h-[27rem]"
                   />
-                </div>
+                ) : (
+                  <div className="rounded-[1.5rem] border border-border/60 bg-secondary/25 p-3">
+                    <BouquetPreview
+                      entries={heroEntries}
+                      wrapping={hero?.wrapping ?? "kraft simple"}
+                      className="h-[21rem] w-full sm:h-[25rem]"
+                      label="Illustration d'un bouquet composé à l'atelier"
+                    />
+                  </div>
+                )}
               </div>
-              {hero ? (
-                <figcaption className="mt-3 text-center text-xs text-muted-foreground">
-                  « {hero.name} » — illustration d&apos;après la composition
-                  réelle
+              {heroVideo ? (
+                <figcaption className="mt-3 flex flex-wrap items-baseline justify-center gap-x-2 text-center text-xs text-muted-foreground">
+                  <span>Les fleurs, en vrai.</span>
+                  <PhotoCredit credit={heroVideo} />
                 </figcaption>
               ) : null}
             </figure>
@@ -259,12 +299,15 @@ export default function HomePage() {
                     className="card-lift card-petal block rounded-xl border border-border bg-card p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                   >
                     <span
-                      className="relative z-10 flex h-24 items-center justify-center rounded-lg"
+                      className="relative z-10 block h-28 overflow-hidden rounded-lg"
                       style={{
                         backgroundColor: `color-mix(in oklab, ${COLOR_SWATCHES[flower.colors[0]].fill} 20%, var(--card))`,
                       }}
                     >
-                      <FlowerThumb flower={flower} className="h-20 w-auto" />
+                      <FlowerPhoto
+                        flower={toFlowerLite(flower)}
+                        sizes="(min-width: 1024px) 14vw, (min-width: 640px) 28vw, 44vw"
+                      />
                     </span>
                     <span className="relative z-10 mt-2.5 block truncate text-sm">
                       {flower.nameFr}
@@ -330,6 +373,65 @@ export default function HomePage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* ------------------------------------------------ l'atelier en images */}
+      <section className="border-t border-border bg-[#241a12] text-[#fff7ec]">
+        <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
+          <SectionHeading
+            eyebrow="En images"
+            title="Ce à quoi ressemble une matinée ici"
+            lead="Les fleurs arrivent tôt, on les nettoie, on les monte. Voilà l'atelier tel qu'il est."
+          />
+
+          {/* `dense` remplit les trous : sans lui, une tuile large qui ne
+              rentre pas en fin de rangée laisse une case vide derrière elle. */}
+          <ul className="mt-8 grid grid-flow-row-dense grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {gallery.map((item, index) => (
+              <li
+                key={item.kind === "video" ? `v-${item.video.pexelsId}` : `p-${item.photo.pexelsId}`}
+                // Une tuile sur six occupe deux colonnes : une grille
+                // parfaitement régulière ressemble à un tableur, pas à un mur
+                // de photos.
+                className={index % 6 === 0 ? "sm:col-span-2" : undefined}
+              >
+                <Reveal delayMs={(index % 4) * 60}>
+                  {/* Hauteur fixe plutôt que ratio : une tuile large garderait
+                      sinon une hauteur double et disloquerait la rangée. */}
+                  <figure className="group relative h-40 overflow-hidden rounded-xl bg-white/5 sm:h-52">
+                    {item.kind === "video" ? (
+                      <FlowerVideo video={item.video} className="size-full" posterWidth={800} />
+                    ) : (
+                      <PexelsImage
+                        photo={item.photo}
+                        alt={item.alt}
+                        sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 48vw"
+                        className="transition-transform duration-700 group-hover:scale-105"
+                      />
+                    )}
+                  </figure>
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-6 text-[0.72rem] leading-relaxed text-[#fff7ec]/55">
+            Photographies et vidéos&nbsp;:{" "}
+            {gallery
+              .map((item) => (item.kind === "video" ? item.video : item.photo).photographer)
+              .join(", ")}{" "}
+            —{" "}
+            <a
+              href="https://www.pexels.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-dotted underline-offset-2 hover:text-[#fff7ec]"
+            >
+              Pexels
+            </a>
+            .
+          </p>
+        </div>
       </section>
 
       {/* --------------------------------------------- avis ou engagements */}

@@ -92,7 +92,16 @@ export function SiteFooter() {
           </p>
           <p>
             Les prix affichés en ligne sont estimatifs et varient selon les arrivages du marché
-            aux fleurs.
+            aux fleurs. Photographies{" "}
+            <a
+              href="https://www.pexels.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-dotted underline-offset-2 hover:text-[#fff7ec]"
+            >
+              Pexels
+            </a>
+            , à titre d&apos;illustration.
           </p>
         </div>
       </div>

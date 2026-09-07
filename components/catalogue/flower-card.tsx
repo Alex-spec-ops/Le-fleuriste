@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Cat, Wind } from "lucide-react";
 
 import { QuantityControl } from "@/components/bouquet/quantity-control";
-import { FlowerThumb } from "@/components/flower-svg/flower-svg";
+import { FlowerPhoto } from "@/components/flower-photo/flower-photo";
 import { COLOR_SWATCHES, type Season } from "@/lib/constants";
 import type { FlowerLite } from "@/lib/flowers";
 import { availabilityOf, formatEuro } from "@/lib/pricing";
@@ -35,10 +35,14 @@ export function FlowerCard({ flower, season }: { flower: FlowerLite; season: Sea
         className="relative block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <div
-          className="flex h-44 items-center justify-center px-6"
+          className="relative h-52 overflow-hidden"
           style={{ backgroundColor: `color-mix(in oklab, ${swatch.fill} 22%, var(--card))` }}
         >
-          <FlowerThumb flower={flower} className="max-h-36 w-auto py-3" />
+          <FlowerPhoto
+            flower={flower}
+            sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 92vw"
+            className="transition-transform duration-500 hover:scale-[1.04]"
+          />
         </div>
         <span
           className={`chip absolute left-3 top-3 text-[0.62rem] uppercase tracking-[0.05em] ${badge.className}`}

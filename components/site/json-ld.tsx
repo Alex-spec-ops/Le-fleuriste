@@ -1,3 +1,5 @@
+import pexelsLoader from "@/lib/pexels-loader";
+import { getFlowerPhoto } from "@/lib/photos";
 import { SHOP } from "@/lib/shop";
 import type { Flower } from "@/lib/schemas/flower";
 
@@ -51,6 +53,7 @@ export function LocalBusinessJsonLd() {
 
 /** Fiche produit d'une fleur du catalogue. */
 export function FlowerJsonLd({ flower }: { flower: Flower }) {
+  const photo = getFlowerPhoto(flower.id);
   return (
     <JsonLd
       data={{
@@ -60,7 +63,11 @@ export function FlowerJsonLd({ flower }: { flower: Flower }) {
         alternateName: flower.nameLatin,
         description: flower.description,
         category: flower.category,
-        image: `${SHOP.siteUrl}${flower.imageUrl}`,
+        // La photo si elle existe, l'illustration sinon : Google privilégie
+        // une image de produit réelle dans ses résultats enrichis.
+        image: photo
+          ? pexelsLoader({ src: photo.src, width: 1200 })
+          : `${SHOP.siteUrl}${flower.imageUrl}`,
         brand: { "@type": "Brand", name: SHOP.name },
         offers: {
           "@type": "Offer",

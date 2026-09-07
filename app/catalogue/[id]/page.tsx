@@ -13,6 +13,7 @@ import {
 import { QuantityControl } from "@/components/bouquet/quantity-control";
 import { FlowerCard } from "@/components/catalogue/flower-card";
 import { FlowerSvg } from "@/components/flower-svg/flower-svg";
+import { PexelsImage, PhotoCredit } from "@/components/media/pexels";
 import {
   BotanicalRule,
   CornerSprig,
@@ -24,6 +25,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { COLOR_SWATCHES, seasonForDate } from "@/lib/constants";
 import { getAllFlowers, getFlowerById, toFlowerLite } from "@/lib/flowers";
+import pexelsLoader from "@/lib/pexels-loader";
+import { flowerPhotoAlt, getFlowerPhoto } from "@/lib/photos";
 import { formatEuro } from "@/lib/pricing";
 
 export function generateStaticParams(): { id: string }[] {
@@ -39,6 +42,13 @@ export async function generateMetadata({
   const flower = getFlowerById(id);
   if (!flower) return { title: "Fleur introuvable" };
 
+  // La photo passe devant l'illustration : c'est elle que les réseaux
+  // sociaux et les moteurs affichent en aperçu.
+  const photo = getFlowerPhoto(flower.id);
+  const image = photo
+    ? { url: pexelsLoader({ src: photo.src, width: 1200 }), width: 1200, height: 1500 }
+    : { url: flower.imageUrl, width: 200, height: 320 };
+
   return {
     title: flower.nameFr,
     description: flower.description,
@@ -46,9 +56,7 @@ export async function generateMetadata({
     openGraph: {
       title: `${flower.nameFr} — ${flower.nameLatin}`,
       description: flower.description,
-      images: [
-        { url: flower.imageUrl, width: 200, height: 320, alt: flower.nameFr },
-      ],
+      images: [{ ...image, alt: flower.nameFr }],
     },
   };
 }
@@ -63,6 +71,7 @@ export default async function FlowerPage({
   if (!flower) notFound();
 
   const swatch = COLOR_SWATCHES[flower.colors[0]];
+  const photo = getFlowerPhoto(flower.id);
   const related = getAllFlowers()
     .filter(
       (candidate) =>
@@ -117,33 +126,57 @@ export default async function FlowerPage({
       </div>
 
       <article className="mx-auto grid w-full max-w-6xl gap-12 px-5 pb-16 pt-6 sm:px-8 lg:grid-cols-[minmax(0,420px)_1fr]">
-        <div className="botanical self-start">
+        <figure className="botanical self-start">
           <div
-            className="botanical flex items-center justify-center overflow-hidden rounded-2xl border border-border p-8"
+            className="botanical relative aspect-[4/5] overflow-hidden rounded-2xl border border-border"
             style={{
               backgroundColor: `color-mix(in oklab, ${swatch.fill} 18%, var(--card))`,
             }}
           >
-            <CornerSprig
-              corner="top-left"
-              seed={`fiche-${flower.id}`}
-              size={124}
-              className="opacity-[0.16]"
-            />
-            <CornerSprig
-              corner="bottom-right"
-              seed={`fiche-bas-${flower.id}`}
-              size={104}
-              className="opacity-[0.13]"
-            />
-            <FlowerSvg
-              flower={flower}
-              label={`Illustration de ${flower.nameFr}`}
-              className="relative h-[26rem] w-auto max-w-full"
-            />
+            {photo ? (
+              <PexelsImage
+                photo={photo}
+                alt={flowerPhotoAlt(flower)}
+                sizes="(min-width: 1024px) 420px, 92vw"
+                priority
+              />
+            ) : (
+              <>
+                <CornerSprig
+                  corner="top-left"
+                  seed={`fiche-${flower.id}`}
+                  size={124}
+                  className="opacity-[0.16]"
+                />
+                <CornerSprig
+                  corner="bottom-right"
+                  seed={`fiche-bas-${flower.id}`}
+                  size={104}
+                  className="opacity-[0.13]"
+                />
+                <FlowerSvg
+                  flower={flower}
+                  label={`Illustration de ${flower.nameFr}`}
+                  className="absolute inset-0 m-auto h-[88%] w-auto"
+                />
+              </>
+            )}
           </div>
+          {photo ? (
+            <figcaption className="mt-3 space-y-1">
+              {/* Dire ce que la photo est : une image de banque, choisie sur
+                  l'espèce et la couleur. Laisser croire qu'elle montre le
+                  cultivar exact serait une promesse que nous ne tenons pas. */}
+              <p className="text-[0.72rem] leading-relaxed text-muted-foreground">
+                Photo d&apos;illustration, choisie sur l&apos;espèce et la teinte (
+                {flower.colors[0]}) et non sur le cultivar. Les tiges livrées viennent de
+                l&apos;arrivage du jour.
+              </p>
+              <PhotoCredit credit={photo} />
+            </figcaption>
+          ) : null}
           <BotanicalRule className="mt-5" />
-        </div>
+        </figure>
 
         <div>
           <p className="eyebrow">
