@@ -8,6 +8,7 @@ import {
   countIllustratedFlowers,
   flowerPhotoAlt,
   getFlowerPhoto,
+  getHomeHero,
   getHomePhotos,
   getHomeVideos,
   photoRefOf,
@@ -55,11 +56,30 @@ describe("photothèque", () => {
     }
   });
 
+  it("fournit de quoi monter le générique d'ouverture", () => {
+    const hero = getHomeHero();
+    // Un seul plan ne fait pas un montage.
+    expect(hero.length).toBeGreaterThanOrEqual(2);
+    expect(new Set(hero.map((shot) => shot.pexelsId)).size).toBe(hero.length);
+    for (const shot of hero) {
+      // Chaque plan dure plus longtemps que le temps d'écran qu'on lui donne.
+      expect(shot.durationSeconds).toBeGreaterThanOrEqual(6);
+      expect(shot.width).toBeGreaterThanOrEqual(1200);
+    }
+  });
+
+  it("sépare les plans du héros des vidéos du mur d'images", () => {
+    const heroIds = new Set(getHomeHero().map((shot) => shot.pexelsId));
+    const wallIds = getHomeVideos().map((video) => video.pexelsId);
+    expect(wallIds.filter((id) => heroIds.has(id))).toEqual([]);
+  });
+
   it("crédite un photographe pour chaque média", () => {
     const media = [
       ...getAllFlowers().map((flower) => getFlowerPhoto(flower.id)),
       ...getHomePhotos(),
       ...getHomeVideos(),
+      ...getHomeHero(),
     ];
     for (const item of media) {
       expect(item?.photographer.length).toBeGreaterThan(0);

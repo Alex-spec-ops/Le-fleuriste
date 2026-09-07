@@ -24,6 +24,11 @@ export function getFlowerPhoto(flowerId: string): FlowerPhoto | undefined {
   return LIBRARY.flowers[flowerId];
 }
 
+/** Plans du montage d'ouverture, dans l'ordre de passage. */
+export function getHomeHero(): readonly Video[] {
+  return LIBRARY.home.hero;
+}
+
 export function getHomeVideos(): readonly Video[] {
   return LIBRARY.home.videos;
 }

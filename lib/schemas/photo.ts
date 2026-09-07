@@ -63,6 +63,9 @@ export const mediaLibrarySchema = z
     /** Une entrée par identifiant de fleur. */
     flowers: z.record(z.string(), flowerPhotoSchema),
     home: z.object({
+      /** Plans du montage d'ouverture, joués dans l'ordre. */
+      hero: z.array(videoSchema).min(2).max(6),
+      /** Vidéos glissées dans le mur d'images. */
       videos: z.array(videoSchema).min(1).max(6),
       photos: z.array(photoSchema).min(1).max(24),
     }),

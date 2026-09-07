@@ -98,6 +98,20 @@ const PEXELS_COLOR: Record<Color, string | null> = {
   bicolore: null,
 };
 
+/**
+ * Plans du montage d'ouverture, choisis à la main et repris par identifiant :
+ * une recherche par mots-clés ne garantit ni l'enchaînement ni la cohérence
+ * de lumière entre deux plans. Dans l'ordre : les mains qui nouent un bouquet,
+ * l'atelier, la macro de pétales, la brassée de champêtres.
+ */
+const HERO_VIDEO_IDS = [5399933, 5399644, 6965643, 31916185] as const;
+
+/**
+ * Le montage n'affiche que six secondes par plan : inutile de télécharger de
+ * l'UHD. 1280 px suffit au cadre du héros, même sur écran dense.
+ */
+const HERO_WIDTH = { min: 1200, max: 1400 };
+
 const HOME_VIDEO_QUERIES = [
   "flowers blooming close up",
   "florist making bouquet",
@@ -184,6 +198,15 @@ function baseSrc(original: string): string {
   return url.toString();
 }
 
+/**
+ * Nom d'auteur nettoyé : certains comptes Pexels contiennent des blancs
+ * Unicode invisibles, qui ressortent en espace flottant avant la virgule
+ * dans une liste de crédits.
+ */
+function cleanName(name: string): string {
+  return name.replace(/[\s⠀​-‍﻿]+/g, " ").trim();
+}
+
 function toPhoto(photo: PexelsPhoto) {
   return {
     pexelsId: photo.id,
@@ -192,7 +215,7 @@ function toPhoto(photo: PexelsPhoto) {
     height: photo.height,
     alt: photo.alt.slice(0, 300),
     avgColor: photo.avg_color.toUpperCase(),
-    photographer: photo.photographer,
+    photographer: cleanName(photo.photographer),
     photographerUrl: photo.photographer_url,
     pageUrl: photo.url,
   };
@@ -412,7 +435,47 @@ function pickVideoFile(video: PexelsVideo): PexelsVideoFile | undefined {
     .sort((a, b) => (a.width ?? 0) - (b.width ?? 0))[0];
 }
 
+function toVideo(video: PexelsVideo, file: PexelsVideoFile): MediaLibrary["home"]["videos"][number] {
+  return {
+    pexelsId: video.id,
+    src: file.link.split("?")[0] ?? file.link,
+    width: file.width ?? video.width,
+    height: file.height ?? video.height,
+    durationSeconds: video.duration,
+    poster: baseSrc(video.image),
+    photographer: cleanName(video.user.name),
+    photographerUrl: video.user.url,
+    pageUrl: video.url,
+  };
+}
+
+/** Les plans du montage, repris un par un à leur identifiant. */
+async function fetchHero(): Promise<MediaLibrary["home"]["hero"]> {
+  const hero: MediaLibrary["home"]["hero"] = [];
+  for (const id of HERO_VIDEO_IDS) {
+    process.stdout.write(`plan ${id}… `);
+    const video = await pexels<PexelsVideo>(`videos/videos/${id}`, {});
+    const file = video.video_files
+      .filter(
+        (candidate) =>
+          candidate.file_type === "video/mp4" &&
+          (candidate.width ?? 0) >= HERO_WIDTH.min &&
+          (candidate.width ?? 0) <= HERO_WIDTH.max,
+      )
+      .sort((a, b) => (a.width ?? 0) - (b.width ?? 0))[0];
+    if (!file) {
+      console.log("aucun fichier à la bonne définition");
+      continue;
+    }
+    hero.push(toVideo(video, file));
+    console.log(`${video.duration} s, ${file.width}×${file.height}, ${video.user.name}`);
+    await new Promise((done) => setTimeout(done, 120));
+  }
+  return hero;
+}
+
 async function fetchHome(): Promise<MediaLibrary["home"]> {
+  const hero = await fetchHero();
   const videos: MediaLibrary["home"]["videos"] = [];
   const seenVideos = new Set<number>();
 
@@ -436,17 +499,7 @@ async function fetchHome(): Promise<MediaLibrary["home"]> {
     const file = pickVideoFile(chosen);
     if (!file) continue;
     seenVideos.add(chosen.id);
-    videos.push({
-      pexelsId: chosen.id,
-      src: file.link.split("?")[0] ?? file.link,
-      width: file.width ?? chosen.width,
-      height: file.height ?? chosen.height,
-      durationSeconds: chosen.duration,
-      poster: baseSrc(chosen.image),
-      photographer: chosen.user.name,
-      photographerUrl: chosen.user.url,
-      pageUrl: chosen.url,
-    });
+    videos.push(toVideo(chosen, file));
     console.log(`${chosen.duration} s, ${file.width}×${file.height}`);
     await new Promise((done) => setTimeout(done, 120));
   }
@@ -470,7 +523,7 @@ async function fetchHome(): Promise<MediaLibrary["home"]> {
     await new Promise((done) => setTimeout(done, 120));
   }
 
-  return { videos, photos };
+  return { hero, videos, photos };
 }
 
 // -------------------------------------------------------------------- main
@@ -493,7 +546,8 @@ async function main(): Promise<void> {
   }
 
   const flowerPhotos = homeOnly ? kept : await fetchFlowerPhotos(flowers, kept);
-  const home = homeOnly || !previous.home ? await fetchHome() : previous.home;
+  // On refait l'accueil si la bibliothèque date d'avant le montage.
+  const home = homeOnly || !previous.home?.hero ? await fetchHome() : previous.home;
 
   const library: MediaLibrary = {
     fetchedAt: new Date().toISOString(),

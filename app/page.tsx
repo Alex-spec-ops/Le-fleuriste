@@ -11,7 +11,8 @@ import {
 import { BouquetPreview } from "@/components/boutique/bouquet-preview";
 import { FlowerPhoto } from "@/components/flower-photo/flower-photo";
 import { FlowerVideo } from "@/components/media/flower-video";
-import { PexelsImage, PhotoCredit } from "@/components/media/pexels";
+import { PexelsImage } from "@/components/media/pexels";
+import { VideoMontage } from "@/components/media/video-montage";
 import {
   CornerSprig,
   PetalBorder,
@@ -26,7 +27,7 @@ import { COMMITMENTS, REVIEWS } from "@/data/avis";
 import { SHOP_BOUQUETS } from "@/data/boutique";
 import { COLOR_SWATCHES, seasonForDate } from "@/lib/constants";
 import { getAllFlowers, getFlowerById, toFlowerLite } from "@/lib/flowers";
-import { getHomePhotos, getHomeVideos, type Photo, type Video } from "@/lib/photos";
+import { getHomeHero, getHomePhotos, getHomeVideos, type Photo, type Video } from "@/lib/photos";
 import { formatEuro } from "@/lib/pricing";
 import { SHOP } from "@/lib/shop";
 
@@ -116,11 +117,10 @@ export default function HomePage() {
   const hero = SHOP_BOUQUETS[0];
   const heroEntries = hero ? entriesOf(hero.items) : [];
 
-  // La première vidéo tient le héros ; les suivantes ponctuent le mur
-  // d'images plus bas.
-  const videos = getHomeVideos();
-  const heroVideo = videos[0];
-  const gallery = buildGallery(getHomePhotos(), videos.slice(1));
+  // Le montage d'ouverture a ses propres plans ; les vidéos de la
+  // photothèque ponctuent le mur d'images plus bas.
+  const heroShots = getHomeHero();
+  const gallery = buildGallery(getHomePhotos(), getHomeVideos());
 
   return (
     <>
@@ -208,13 +208,16 @@ export default function HomePage() {
             </dl>
           </div>
 
-          <Reveal className="justify-self-center">
+          {/* `w-full` explicite : les plans du montage sont en position
+              absolue, ils ne donnent donc aucune largeur intrinsèque à la
+              colonne, qui se réduirait sinon au rembourrage de la carte. */}
+          <Reveal className="w-full justify-self-center">
             <figure className="relative w-full">
               <WreathArc className="-top-6 scale-110" />
               <div className="rounded-[2rem] border border-border bg-card p-3 shadow-[var(--shadow-petal)]">
-                {heroVideo ? (
-                  <FlowerVideo
-                    video={heroVideo}
+                {heroShots.length > 1 ? (
+                  <VideoMontage
+                    shots={heroShots}
                     className="h-[21rem] w-full rounded-[1.5rem] sm:h-[27rem]"
                   />
                 ) : (
@@ -228,10 +231,19 @@ export default function HomePage() {
                   </div>
                 )}
               </div>
-              {heroVideo ? (
-                <figcaption className="mt-3 flex flex-wrap items-baseline justify-center gap-x-2 text-center text-xs text-muted-foreground">
-                  <span>Les fleurs, en vrai.</span>
-                  <PhotoCredit credit={heroVideo} />
+              {heroShots.length > 1 ? (
+                <figcaption className="mt-3 text-center text-xs text-muted-foreground">
+                  Les fleurs, en vrai. Vidéos{" "}
+                  {[...new Set(heroShots.map((shot) => shot.photographer))].join(", ")} sur{" "}
+                  <a
+                    href="https://www.pexels.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline decoration-dotted underline-offset-2 hover:text-foreground"
+                  >
+                    Pexels
+                  </a>
+                  .
                 </figcaption>
               ) : null}
             </figure>

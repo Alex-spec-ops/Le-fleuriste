@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Pause, Play } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 import { useReducedMotion } from "@/lib/hooks/use-reduced-motion";
 import pexelsLoader from "@/lib/pexels-loader";
@@ -10,11 +9,11 @@ import type { Video } from "@/lib/photos";
 /**
  * Vidéo d'ambiance en lecture automatique.
  *
- * Deux règles la gouvernent, toutes deux d'accessibilité :
- *   — `prefers-reduced-motion` coupe la lecture et laisse l'image fixe, comme
- *     partout ailleurs sur le site ;
- *   — une animation qui dure plus de cinq secondes doit pouvoir être arrêtée
- *     (WCAG 2.2.2), d'où le bouton, visible et non pas seulement au survol.
+ * `prefers-reduced-motion` coupe la lecture et laisse l'image fixe, comme
+ * partout ailleurs sur le site. C'est le seul moyen d'arrêter le mouvement :
+ * le bouton de pause a été retiré à la demande. WCAG 2.2.2 demande qu'une
+ * animation de plus de cinq secondes puisse être stoppée ; sans commande
+ * visible, seuls les visiteurs ayant réglé leur système sont servis.
  *
  * La vidéo est muette et purement décorative : elle ne porte aucune
  * information que le texte alentour ne donne pas, donc pas de piste audio à
@@ -32,11 +31,7 @@ export function FlowerVideo({
 }) {
   const reduced = useReducedMotion();
   const ref = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
 
-  // L'effet ne fait que piloter l'élément ; l'état, lui, est mis à jour par
-  // les événements `play` et `pause` de la vidéo. C'est elle qui sait si elle
-  // joue — un navigateur peut refuser la lecture automatique sans prévenir.
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
@@ -44,15 +39,10 @@ export function FlowerVideo({
       element.pause();
       return;
     }
+    // Un navigateur peut refuser la lecture automatique : on retombe alors
+    // sur l'affiche, sans erreur non traitée dans la console.
     void element.play().catch(() => undefined);
   }, [reduced]);
-
-  const toggle = () => {
-    const element = ref.current;
-    if (!element) return;
-    if (element.paused) void element.play().catch(() => undefined);
-    else element.pause();
-  };
 
   return (
     <div className={`relative overflow-hidden ${className ?? ""}`}>
@@ -65,27 +55,12 @@ export function FlowerVideo({
         loop
         playsInline
         preload="metadata"
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
         aria-hidden
         tabIndex={-1}
         className="size-full object-cover"
       >
         <source src={video.src} type="video/mp4" />
       </video>
-
-      <button
-        type="button"
-        onClick={toggle}
-        aria-label={playing ? "Mettre la vidéo en pause" : "Lancer la vidéo"}
-        className="absolute bottom-3 right-3 grid size-9 place-items-center rounded-full bg-black/45 text-white backdrop-blur-sm transition-colors hover:bg-black/65 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-      >
-        {playing ? (
-          <Pause className="size-4" aria-hidden />
-        ) : (
-          <Play className="size-4 translate-x-px" aria-hidden />
-        )}
-      </button>
     </div>
   );
 }

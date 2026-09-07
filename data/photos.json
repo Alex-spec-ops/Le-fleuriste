@@ -1,5 +1,5 @@
 {
- "fetchedAt": "2026-09-07T08:12:41.231Z",
+ "fetchedAt": "2026-09-07T08:34:21.668Z",
  "flowers": {
   "chrysantheme-anastasia-bronze": {
    "pexelsId": 17617624,
@@ -3363,6 +3363,52 @@
   }
  },
  "home": {
+  "hero": [
+   {
+    "pexelsId": 5399933,
+    "src": "https://videos.pexels.com/video-files/5399933/5399933-hd_1280_720_25fps.mp4",
+    "width": 1280,
+    "height": 720,
+    "durationSeconds": 8,
+    "poster": "https://images.pexels.com/videos/5399933/pexels-photo-5399933.jpeg",
+    "photographer": "Amina Filkins",
+    "photographerUrl": "https://www.pexels.com/@amina-filkins",
+    "pageUrl": "https://www.pexels.com/video/female-hands-tying-flower-bouquet-close-up-5399933/"
+   },
+   {
+    "pexelsId": 5399644,
+    "src": "https://videos.pexels.com/video-files/5399644/5399644-hd_1280_720_25fps.mp4",
+    "width": 1280,
+    "height": 720,
+    "durationSeconds": 15,
+    "poster": "https://images.pexels.com/videos/5399644/pexels-photo-5399644.jpeg",
+    "photographer": "Amina Filkins",
+    "photographerUrl": "https://www.pexels.com/@amina-filkins",
+    "pageUrl": "https://www.pexels.com/video/a-female-florist-arranging-flowers-5399644/"
+   },
+   {
+    "pexelsId": 6965643,
+    "src": "https://videos.pexels.com/video-files/6965643/6965643-hd_1280_720_25fps.mp4",
+    "width": 1280,
+    "height": 720,
+    "durationSeconds": 12,
+    "poster": "https://images.pexels.com/videos/6965643/4k-video-april-beautiful-flowers-beauty-6965643.jpeg",
+    "photographer": "Polina",
+    "photographerUrl": "https://www.pexels.com/@polina-kovaleva",
+    "pageUrl": "https://www.pexels.com/video/dropping-petals-on-water-6965643/"
+   },
+   {
+    "pexelsId": 31916185,
+    "src": "https://videos.pexels.com/video-files/31916185/13595322_1280_720_24fps.mp4",
+    "width": 1280,
+    "height": 720,
+    "durationSeconds": 20,
+    "poster": "https://images.pexels.com/videos/31916185/pexels-photo-31916185.jpeg",
+    "photographer": "K",
+    "photographerUrl": "https://www.pexels.com/@kelly",
+    "pageUrl": "https://www.pexels.com/video/vibrant-wildflower-bouquet-with-blue-and-pink-blossoms-31916185/"
+   }
+  ],
   "videos": [
    {
     "pexelsId": 1313540,
@@ -3483,7 +3529,7 @@
     "height": 3744,
     "alt": "Colorful flower bouquets in glass vases, perfect for decor and celebrations.",
     "avgColor": "#7A7B6B",
-    "photographer": "Cup of  Couple",
+    "photographer": "Cup of Couple",
     "photographerUrl": "https://www.pexels.com/@cup-of-couple",
     "pageUrl": "https://www.pexels.com/photo/flowers-bouquets-in-vases-8471651/"
    }
