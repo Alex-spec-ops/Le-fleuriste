@@ -2,16 +2,9 @@
 
 import { forwardRef } from "react";
 
-import { FlowerShapes } from "@/components/flower-svg/flower-svg";
-import { WrapBack, WrapFront } from "@/components/bouquet/wrapping";
+import { BouquetScene } from "@/components/bouquet/bouquet-scene";
 import { Sprig } from "@/components/ornament/botanical";
-import { buildFlowerArt } from "@/lib/flower-art";
-import {
-  CANVAS,
-  layoutBouquet,
-  stemPath,
-  type BouquetEntry,
-} from "@/lib/bouquet-layout";
+import { CANVAS, layoutBouquet, type BouquetEntry } from "@/lib/bouquet-layout";
 import type { Wrapping } from "@/lib/constants";
 
 /**
@@ -49,46 +42,12 @@ export const BouquetCanvas = forwardRef<SVGSVGElement, Props>(
             : `Aperçu du bouquet, ${layout.totalStems} tige${layout.totalStems > 1 ? "s" : ""}.`
         }
       >
-        <WrapBack wrapping={wrapping} />
-
-        <g aria-hidden>
-          {layout.stems.map((stem) => (
-            <path
-              key={`tige-${stem.key}`}
-              d={stemPath(stem)}
-              fill="none"
-              stroke="#2C6B45"
-              strokeWidth={1.4 + stem.depth * 0.8}
-              strokeLinecap="round"
-              opacity={0.5 + stem.depth * 0.4}
-            />
-          ))}
-        </g>
-
-        {empty ? null : <WrapFront wrapping={wrapping} />}
-
-        <g aria-hidden>
-          {layout.stems.map((stem) => {
-            const art = buildFlowerArt(stem.flower, false, "compact");
-            return (
-              <g
-                key={stem.key}
-                transform={`translate(${stem.x.toFixed(1)} ${stem.y.toFixed(1)}) rotate(${stem.rotate.toFixed(1)}) scale(${stem.scale.toFixed(3)}) translate(-50 -46)`}
-                opacity={stem.opacity.toFixed(2)}
-                style={
-                  animated
-                    ? {
-                        transition:
-                          "transform 320ms cubic-bezier(0.22, 1, 0.36, 1)",
-                      }
-                    : undefined
-                }
-              >
-                <FlowerShapes shapes={art.shapes} />
-              </g>
-            );
-          })}
-        </g>
+        <BouquetScene
+          layout={layout}
+          seed={seed}
+          wrapping={wrapping}
+          animated={animated}
+        />
 
         {empty ? (
           <>
