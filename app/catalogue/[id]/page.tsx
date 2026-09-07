@@ -13,7 +13,7 @@ import {
 import { QuantityControl } from "@/components/bouquet/quantity-control";
 import { FlowerCard } from "@/components/catalogue/flower-card";
 import { FlowerSvg } from "@/components/flower-svg/flower-svg";
-import { PexelsImage, PhotoCredit } from "@/components/media/pexels";
+import { PexelsImage } from "@/components/media/pexels";
 import {
   BotanicalRule,
   CornerSprig,
@@ -162,19 +162,9 @@ export default async function FlowerPage({
               </>
             )}
           </div>
-          {photo ? (
-            <figcaption className="mt-3 space-y-1">
-              {/* Dire ce que la photo est : une image de banque, choisie sur
-                  l'espèce et la couleur. Laisser croire qu'elle montre le
-                  cultivar exact serait une promesse que nous ne tenons pas. */}
-              <p className="text-[0.72rem] leading-relaxed text-muted-foreground">
-                Photo d&apos;illustration, choisie sur l&apos;espèce et la teinte (
-                {flower.colors[0]}) et non sur le cultivar. Les tiges livrées viennent de
-                l&apos;arrivage du jour.
-              </p>
-              <PhotoCredit credit={photo} />
-            </figcaption>
-          ) : null}
+          {/* Aucune légende sous la photo, à la demande. L'origine des images
+              et leur statut d'illustration sont dits une fois, en pied de
+              page, plutôt que répétés sous chaque fleur. */}
           <BotanicalRule className="mt-5" />
         </figure>
 

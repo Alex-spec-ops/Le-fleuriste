@@ -3,40 +3,12 @@ import Image from "next/image";
 import { colorPlaceholder, type Photo, type Video } from "@/lib/photos";
 
 /**
- * Affichage des médias Pexels et de leur crédit.
+ * Affichage des photos Pexels.
  *
- * La licence Pexels n'impose pas la mention, mais leurs conditions la
- * recommandent explicitement et un site marchand qui vit d'images empruntées
- * se doit de nommer ses auteurs. Chaque photo affichée porte donc son crédit,
- * ou le renvoie à une liste groupée quand elles sont nombreuses.
+ * Aucun crédit n'accompagne les images : le pied de page mentionne une
+ * seule fois leur origine et leur statut d'illustration, plutôt que de
+ * répéter une légende sous chaque fleur.
  */
-
-type Credit = Pick<Photo, "photographer" | "photographerUrl" | "pageUrl">;
-
-export function PhotoCredit({ credit, className }: { credit: Credit; className?: string }) {
-  return (
-    <p className={`text-[0.7rem] text-muted-soft ${className ?? ""}`}>
-      Photo{" "}
-      <a
-        href={credit.photographerUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="underline decoration-dotted underline-offset-2 hover:text-foreground"
-      >
-        {credit.photographer}
-      </a>{" "}
-      sur{" "}
-      <a
-        href={credit.pageUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="underline decoration-dotted underline-offset-2 hover:text-foreground"
-      >
-        Pexels
-      </a>
-    </p>
-  );
-}
 
 /** Photo qui remplit son conteneur : le parent doit être `relative` et dimensionné. */
 export function PexelsImage({
@@ -66,4 +38,4 @@ export function PexelsImage({
   );
 }
 
-export type { Credit, Photo, Video };
+export type { Photo, Video };

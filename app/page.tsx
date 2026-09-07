@@ -238,23 +238,8 @@ export default function HomePage() {
                   </div>
                 )}
               </div>
-              {heroShots.length > 1 ? (
-                <figcaption className="mt-3 text-center text-xs text-muted-foreground">
-                  {/* Les auteurs des vidéos ne sont pas nommés, à la demande.
-                      La licence Pexels ne l'impose pas ; le lien vers la
-                      banque reste, lui, la moindre des choses. */}
-                  Les fleurs, en vrai. Vidéos{" "}
-                  <a
-                    href="https://www.pexels.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline decoration-dotted underline-offset-2 hover:text-foreground"
-                  >
-                    Pexels
-                  </a>
-                  .
-                </figcaption>
-              ) : null}
+              {/* Aucune légende sous les médias, à la demande. L'origine des
+                  images est mentionnée une seule fois, en pied de page. */}
             </figure>
           </Reveal>
         </div>
@@ -440,28 +425,6 @@ export default function HomePage() {
             ))}
           </ul>
 
-          <p className="mt-6 text-[0.72rem] leading-relaxed text-[#fff7ec]/55">
-            {/* Les photographes restent nommés, les auteurs des vidéos non :
-                c'est la demande. */}
-            Photographies&nbsp;:{" "}
-            {[
-              ...new Set(
-                gallery
-                  .filter((item) => item.kind === "photo")
-                  .map((item) => item.photo.photographer),
-              ),
-            ].join(", ")}
-            . Toutes les images et vidéos viennent de{" "}
-            <a
-              href="https://www.pexels.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline decoration-dotted underline-offset-2 hover:text-[#fff7ec]"
-            >
-              Pexels
-            </a>
-            .
-          </p>
         </div>
       </section>
 
