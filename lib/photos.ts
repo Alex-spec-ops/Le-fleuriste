@@ -1,6 +1,6 @@
 import photosJson from "@/data/photos.json";
 import type { Flower } from "@/lib/schemas/flower";
-import type { FlowerPhoto, MediaLibrary, Photo, Video } from "@/lib/schemas/photo";
+import type { SourcedPhoto, MediaLibrary, Photo, Video } from "@/lib/schemas/photo";
 
 /**
  * Couche d'accès aux médias, sur le modèle de `lib/flowers.ts`.
@@ -18,10 +18,28 @@ import type { FlowerPhoto, MediaLibrary, Photo, Video } from "@/lib/schemas/phot
 
 const LIBRARY = photosJson as MediaLibrary;
 
-export type { FlowerPhoto, Photo, Video };
+export type { SourcedPhoto, Photo, Video };
 
-export function getFlowerPhoto(flowerId: string): FlowerPhoto | undefined {
+export function getFlowerPhoto(flowerId: string): SourcedPhoto | undefined {
   return LIBRARY.flowers[flowerId];
+}
+
+/**
+ * Photo d'une composition : bouquet de la sélection ou réalisation
+ * événementielle.
+ *
+ * Elle en montre l'allure — palette, style, format, emballage —, jamais la
+ * liste exacte des tiges : aucune banque d'images ne référence « 5 roses
+ * Peach Avalanche et 3 œillets Marimo ». C'est pourquoi les cartes gardent la
+ * composition écrite juste en dessous, elle seule fait foi.
+ */
+export function getBouquetPhoto(bouquetId: string): SourcedPhoto | undefined {
+  return LIBRARY.bouquets[bouquetId];
+}
+
+/** Nombre de compositions illustrées, pour les tests et le diagnostic. */
+export function countIllustratedBouquets(): number {
+  return Object.keys(LIBRARY.bouquets).length;
 }
 
 /**

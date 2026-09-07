@@ -137,3 +137,63 @@ export const SHOP_BOUQUETS: ShopBouquet[] = [
     },
   },
 ];
+
+/**
+ * Réalisations événementielles montrées sur /evenements. Même forme que la
+ * sélection, sans prix : ce sont des exemples, pas des articles au panier.
+ */
+export type EventPiece = {
+  id: string;
+  title: string;
+  caption: string;
+  /** Même vocabulaire que la sélection : sert au visuel comme à la recherche d'image. */
+  style: Style;
+  wrapping: Wrapping;
+  items: Record<string, number>;
+};
+
+export const EVENT_SHOWCASE: EventPiece[] = [
+  {
+    id: "mariage-champetre",
+    title: "Mariage champêtre, juin",
+    style: "champêtre",
+    caption:
+      "Roses de jardin, renoncules papillon et beaucoup de verdure. Palette pêche et crème.",
+    wrapping: "kraft simple",
+    items: {
+      "rose-peach-avalanche": 9,
+      "renoncule-butterfly-charlotte": 6,
+      "chrysantheme-country": 6,
+      "oeillet-lege-marimo": 4,
+    },
+  },
+  {
+    id: "ceremonie-blanche",
+    title: "Cérémonie blanc et vert, septembre",
+    style: "minimaliste",
+    caption:
+      "Hortensia jade, roses Avalanche et santini. Une composition qui tient toute la journée.",
+    wrapping: "vase inclus",
+    items: {
+      "hortensia-magical-jade": 2,
+      "rose-avalanche": 8,
+      "chrysantheme-shamrock": 4,
+      "oeillet-prado-mint": 5,
+    },
+  },
+  {
+    id: "table-automne",
+    title: "Table d'automne, octobre",
+    style: "luxuriant",
+    caption:
+      "Dahlias Café au Lait, roses Toffee et chrysanthèmes araignée bronze.",
+    wrapping: "papier de soie",
+    items: {
+      "dahlia-cafe-au-lait": 3,
+      "rose-toffee": 5,
+      "chrysantheme-anastasia-bronze": 3,
+      "dahlia-cornel-bronze": 4,
+    },
+  },
+];
+

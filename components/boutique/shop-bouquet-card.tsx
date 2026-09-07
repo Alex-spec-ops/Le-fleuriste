@@ -1,12 +1,14 @@
 import Link from "next/link";
 
 import { BouquetPreview } from "@/components/boutique/bouquet-preview";
+import { PexelsImage } from "@/components/media/pexels";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ShopBouquet } from "@/data/boutique";
 import { encodeBouquet } from "@/lib/bouquet-share";
 import { seasonForDate } from "@/lib/constants";
 import { getFlowerById } from "@/lib/flowers";
+import { getBouquetPhoto } from "@/lib/photos";
 import { formatEuro, priceBouquet } from "@/lib/pricing";
 
 /**
@@ -15,6 +17,7 @@ import { formatEuro, priceBouquet } from "@/lib/pricing";
  * composition pour la personnaliser.
  */
 export function ShopBouquetCard({ bouquet }: { bouquet: ShopBouquet }) {
+  const photo = getBouquetPhoto(bouquet.id);
   const entries = Object.entries(bouquet.items)
     .map(([id, quantity]) => {
       const flower = getFlowerById(id);
@@ -52,13 +55,26 @@ export function ShopBouquetCard({ bouquet }: { bouquet: ShopBouquet }) {
 
   return (
     <article className="card-lift card-petal flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card">
-      <div className="bg-secondary/40 px-4 pt-4">
-        <BouquetPreview
-          entries={entries}
-          wrapping={bouquet.wrapping}
-          className="h-56 w-full"
-        />
-      </div>
+      {/* La photo dit l'allure, la liste des tiges juste dessous dit ce qui
+          est réellement livré. L'illustration vectorielle reprend la main si
+          la photothèque n'a rien pour cette composition. */}
+      {photo ? (
+        <div className="relative h-56 w-full overflow-hidden bg-secondary/40">
+          <PexelsImage
+            photo={photo}
+            alt={`${bouquet.name} — photo d'illustration`}
+            sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
+          />
+        </div>
+      ) : (
+        <div className="bg-secondary/40 px-4 pt-4">
+          <BouquetPreview
+            entries={entries}
+            wrapping={bouquet.wrapping}
+            className="h-56 w-full"
+          />
+        </div>
+      )}
 
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div>

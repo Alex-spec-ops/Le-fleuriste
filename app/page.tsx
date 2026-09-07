@@ -28,6 +28,7 @@ import { SHOP_BOUQUETS } from "@/data/boutique";
 import { COLOR_SWATCHES, seasonForDate } from "@/lib/constants";
 import { getAllFlowers, getFlowerById, toFlowerLite } from "@/lib/flowers";
 import {
+  getBouquetPhoto,
   getHomeHero,
   getHomePhotos,
   getHomeVideos,
@@ -351,21 +352,33 @@ export default function HomePage() {
         </Reveal>
 
         <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {SHOP_BOUQUETS.slice(1, 4).map((bouquet, index) => (
+          {SHOP_BOUQUETS.slice(1, 4).map((bouquet, index) => {
+            const photo = getBouquetPhoto(bouquet.id);
+            return (
             <li key={bouquet.id}>
               <Reveal delayMs={index * 70}>
                 <Link
                   href="/boutique"
                   className="card-lift card-petal block h-full overflow-hidden rounded-xl border border-border bg-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
-                  <span className="relative z-10 block bg-secondary/40 px-4 pt-4">
-                    <BouquetPreview
-                      entries={entriesOf(bouquet.items)}
-                      wrapping={bouquet.wrapping}
-                      seed={index * 9 + 5}
-                      className="h-48 w-full"
-                    />
-                  </span>
+                  {photo ? (
+                    <span className="relative z-10 block h-48 w-full overflow-hidden bg-secondary/40">
+                      <PexelsImage
+                        photo={photo}
+                        alt={`${bouquet.name} — photo d'illustration`}
+                        sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
+                      />
+                    </span>
+                  ) : (
+                    <span className="relative z-10 block bg-secondary/40 px-4 pt-4">
+                      <BouquetPreview
+                        entries={entriesOf(bouquet.items)}
+                        wrapping={bouquet.wrapping}
+                        seed={index * 9 + 5}
+                        className="h-48 w-full"
+                      />
+                    </span>
+                  )}
                   <span className="relative z-10 block p-5">
                     <span className="block font-heading text-xl">
                       {bouquet.name}
@@ -377,7 +390,8 @@ export default function HomePage() {
                 </Link>
               </Reveal>
             </li>
-          ))}
+            );
+          })}
         </ul>
       </section>
 

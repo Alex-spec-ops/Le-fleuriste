@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import photosJson from "@/data/photos.json";
+import { EVENT_SHOWCASE, SHOP_BOUQUETS } from "@/data/boutique";
 import { getAllFlowers, getCatalogForClient } from "@/lib/flowers";
 import pexelsLoader from "@/lib/pexels-loader";
 import {
   colorPlaceholder,
+  countIllustratedBouquets,
   countIllustratedFlowers,
+  getBouquetPhoto,
   flowerPhotoAlt,
   getFlowerPhoto,
   getHomeHero,
@@ -40,8 +43,22 @@ describe("photothèque", () => {
   it("n'attribue jamais deux fois la même photo", () => {
     // Deux cultivars voisins doivent rester distinguables : une photo
     // partagée laisserait croire à un doublon dans le catalogue.
-    const ids = getAllFlowers().map((flower) => getFlowerPhoto(flower.id)?.pexelsId);
+    const ids = [
+      ...getAllFlowers().map((flower) => getFlowerPhoto(flower.id)?.pexelsId),
+      ...[...SHOP_BOUQUETS, ...EVENT_SHOWCASE].map(
+        (composition) => getBouquetPhoto(composition.id)?.pexelsId,
+      ),
+    ];
     expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("illustre chaque composition, sélection et réalisations", () => {
+    const compositions = [...SHOP_BOUQUETS, ...EVENT_SHOWCASE];
+    const missing = compositions
+      .filter((composition) => !getBouquetPhoto(composition.id))
+      .map((composition) => composition.id);
+    expect(missing).toEqual([]);
+    expect(countIllustratedBouquets()).toBe(compositions.length);
   });
 
   it("ne sert que des URL Pexels, sans paramètre de taille", () => {

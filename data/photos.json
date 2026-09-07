@@ -1,5 +1,5 @@
 {
- "fetchedAt": "2026-09-07T08:34:21.668Z",
+ "fetchedAt": "2026-09-07T09:32:05.453Z",
  "flowers": {
   "chrysantheme-anastasia-bronze": {
    "pexelsId": 17617624,
@@ -3360,6 +3360,140 @@
    "photographerUrl": "https://www.pexels.com/@stuffedbox-ng-513424808",
    "pageUrl": "https://www.pexels.com/photo/red-and-white-tulips-16734630/",
    "query": "white tulip flower"
+  }
+ },
+ "bouquets": {
+  "bouquet-du-samedi": {
+   "pexelsId": 30891124,
+   "src": "https://images.pexels.com/photos/30891124/pexels-photo-30891124.jpeg",
+   "width": 8192,
+   "height": 5464,
+   "alt": "A bouquet featuring peach roses and white chrysanthemums wrapped elegantly.",
+   "avgColor": "#8B7A72",
+   "photographer": "The Bhullar",
+   "photographerUrl": "https://www.pexels.com/@rsbhullar",
+   "pageUrl": "https://www.pexels.com/photo/peach-roses-and-white-chrysanthemums-bouquet-30891124/",
+   "query": "peach rustic wildflower flower bouquet"
+  },
+  "premier-rendez-vous": {
+   "pexelsId": 34463058,
+   "src": "https://images.pexels.com/photos/34463058/pexels-photo-34463058.jpeg",
+   "width": 5089,
+   "height": 3393,
+   "alt": "Beautiful arrangement of pink carnations and white flowers, perfect for weddings or decorations.",
+   "avgColor": "#ADA49D",
+   "photographer": "betül nur akyürek",
+   "photographerUrl": "https://www.pexels.com/@cileklipalet",
+   "pageUrl": "https://www.pexels.com/photo/elegant-bouquet-of-pink-carnations-and-white-flowers-34463058/",
+   "query": "pale pink romantic flower bouquet"
+  },
+  "un-grand-merci": {
+   "pexelsId": 4466650,
+   "src": "https://images.pexels.com/photos/4466650/pexels-photo-4466650.jpeg",
+   "width": 6720,
+   "height": 4480,
+   "alt": "Elegant bouquet of yellow and white mum flowers on dark brown lumber table",
+   "avgColor": "#998A6A",
+   "photographer": "https://kaboompics.com/",
+   "photographerUrl": "https://www.pexels.com/@karola-g",
+   "pageUrl": "https://www.pexels.com/photo/bouquet-of-yellow-and-white-chrysanthemums-on-wooden-table-4466650/",
+   "query": "yellow rustic wildflower flower bouquet"
+  },
+  "blanc-hommage": {
+   "pexelsId": 36706983,
+   "src": "https://images.pexels.com/photos/36706983/pexels-photo-36706983.jpeg",
+   "width": 6541,
+   "height": 4672,
+   "alt": "Beautiful white floral bouquet elegantly arranged with fresh greenery in a vibrant setting.",
+   "avgColor": "#7F6D57",
+   "photographer": "Ssümçiğ",
+   "photographerUrl": "https://www.pexels.com/@sumcig",
+   "pageUrl": "https://www.pexels.com/photo/elegant-white-floral-bouquet-on-display-36706983/",
+   "query": "white minimalist flower bouquet"
+  },
+  "le-grand-rouge": {
+   "pexelsId": 33856515,
+   "src": "https://images.pexels.com/photos/33856515/pexels-photo-33856515.jpeg",
+   "width": 5712,
+   "height": 4284,
+   "alt": "A beautiful bouquet of red roses wrapped in paper, placed on a plush gray sofa near a sunlit window.",
+   "avgColor": "#8F8472",
+   "photographer": "Sevda Seyidova",
+   "photographerUrl": "https://www.pexels.com/@sevda-seyidova-930567529",
+   "pageUrl": "https://www.pexels.com/photo/elegant-red-roses-bouquet-on-cozy-sofa-33856515/",
+   "query": "red romantic flower bouquet"
+  },
+  "automne-a-l-atelier": {
+   "pexelsId": 11968003,
+   "src": "https://images.pexels.com/photos/11968003/pexels-photo-11968003.jpeg",
+   "width": 6000,
+   "height": 4000,
+   "alt": "Bright bouquet of red and orange flowers with green leaves in a mirrored vase.",
+   "avgColor": "#6D684B",
+   "photographer": "Mahmuda Fauziah",
+   "photographerUrl": "https://www.pexels.com/@mahmuda-fauziah-223565211",
+   "pageUrl": "https://www.pexels.com/photo/ornamental-flowers-arrangement-in-close-up-shot-11968003/",
+   "query": "burgundy copper autumn flower bouquet"
+  },
+  "pour-une-naissance": {
+   "pexelsId": 13219286,
+   "src": "https://images.pexels.com/photos/13219286/pexels-photo-13219286.jpeg",
+   "width": 8272,
+   "height": 6200,
+   "alt": "A vibrant and elegant floral arrangement featuring pink lilies and white lilies in a minimalist indoor setting.",
+   "avgColor": "#808281",
+   "photographer": "Egor Komarov",
+   "photographerUrl": "https://www.pexels.com/@egorkomarov",
+   "pageUrl": "https://www.pexels.com/photo/flowers-in-white-pot-13219286/",
+   "query": "pale pink soft pastel flower bouquet in a vase"
+  },
+  "table-d-entreprise": {
+   "pexelsId": 34385354,
+   "src": "https://images.pexels.com/photos/34385354/pexels-photo-34385354.jpeg",
+   "width": 8192,
+   "height": 5464,
+   "alt": "Elegant arrangement of green and white flowers with a soft focus on textures.",
+   "avgColor": "#4C5540",
+   "photographer": "Andy Lee",
+   "photographerUrl": "https://www.pexels.com/@andy-lee-222330306",
+   "pageUrl": "https://www.pexels.com/photo/vibrant-green-and-white-flower-arrangement-34385354/",
+   "query": "green modern flower bouquet in a vase"
+  },
+  "mariage-champetre": {
+   "pexelsId": 30891131,
+   "src": "https://images.pexels.com/photos/30891131/pexels-photo-30891131.jpeg",
+   "width": 8192,
+   "height": 5464,
+   "alt": "Beautiful bouquet with peach roses and white chrysanthemums.",
+   "avgColor": "#88756E",
+   "photographer": "The Bhullar",
+   "photographerUrl": "https://www.pexels.com/@rsbhullar",
+   "pageUrl": "https://www.pexels.com/photo/elegant-bouquet-with-roses-and-chrysanthemums-30891131/",
+   "query": "peach rustic wildflower flower bouquet"
+  },
+  "ceremonie-blanche": {
+   "pexelsId": 29244257,
+   "src": "https://images.pexels.com/photos/29244257/pexels-photo-29244257.jpeg",
+   "width": 6275,
+   "height": 4188,
+   "alt": "Detailed photograph of a white flower arrangement in a silver pot against a dark background.",
+   "avgColor": "#292816",
+   "photographer": "Tri Warno",
+   "photographerUrl": "https://www.pexels.com/@triew0814",
+   "pageUrl": "https://www.pexels.com/photo/close-up-of-white-flower-in-a-silver-pot-29244257/",
+   "query": "green minimalist flower bouquet in a vase"
+  },
+  "table-automne": {
+   "pexelsId": 1334144,
+   "src": "https://images.pexels.com/photos/1334144/pexels-photo-1334144.jpeg",
+   "width": 6000,
+   "height": 4000,
+   "alt": "Beautiful cream dahlias in a clear glass vase, offering a soft and elegant floral arrangement.",
+   "avgColor": "#433522",
+   "photographer": "Irina Iriser",
+   "photographerUrl": "https://www.pexels.com/@iriser",
+   "pageUrl": "https://www.pexels.com/photo/selective-focus-photography-of-yellow-petaled-flowers-1334144/",
+   "query": "cafe au lait dahlia autumn flower bouquet"
   }
  },
  "home": {

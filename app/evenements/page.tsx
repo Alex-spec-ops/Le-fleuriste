@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { BouquetPreview } from "@/components/boutique/bouquet-preview";
+import { PexelsImage } from "@/components/media/pexels";
 import { CornerSprig, PetalMark } from "@/components/ornament/botanical";
 import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { Reveal } from "@/components/site/reveal";
 import { Button } from "@/components/ui/button";
-import type { Wrapping } from "@/lib/constants";
+import { EVENT_SHOWCASE } from "@/data/boutique";
 import { getFlowerById } from "@/lib/flowers";
+import { getBouquetPhoto } from "@/lib/photos";
 import { EVENT_PIECES, formatEuro } from "@/lib/pricing";
 
 export const metadata: Metadata = {
@@ -33,56 +35,6 @@ const STEPS = [
   {
     title: "Nous installons",
     body: "Livraison et mise en place sur site, la veille ou le matin même selon l'accès au lieu.",
-  },
-];
-
-type GalleryPiece = {
-  id: string;
-  title: string;
-  caption: string;
-  wrapping: Wrapping;
-  items: Record<string, number>;
-};
-
-const GALLERY: GalleryPiece[] = [
-  {
-    id: "mariage-champetre",
-    title: "Mariage champêtre, juin",
-    caption:
-      "Roses de jardin, renoncules papillon et beaucoup de verdure. Palette pêche et crème.",
-    wrapping: "kraft simple",
-    items: {
-      "rose-peach-avalanche": 9,
-      "renoncule-butterfly-charlotte": 6,
-      "chrysantheme-country": 6,
-      "oeillet-lege-marimo": 4,
-    },
-  },
-  {
-    id: "ceremonie-blanche",
-    title: "Cérémonie blanc et vert, septembre",
-    caption:
-      "Hortensia jade, roses Avalanche et santini. Une composition qui tient toute la journée.",
-    wrapping: "vase inclus",
-    items: {
-      "hortensia-magical-jade": 2,
-      "rose-avalanche": 8,
-      "chrysantheme-shamrock": 4,
-      "oeillet-prado-mint": 5,
-    },
-  },
-  {
-    id: "table-automne",
-    title: "Table d'automne, octobre",
-    caption:
-      "Dahlias Café au Lait, roses Toffee et chrysanthèmes araignée bronze.",
-    wrapping: "papier de soie",
-    items: {
-      "dahlia-cafe-au-lait": 3,
-      "rose-toffee": 5,
-      "chrysantheme-anastasia-bronze": 3,
-      "dahlia-cornel-bronze": 4,
-    },
   },
 ];
 
@@ -139,11 +91,12 @@ export default function EvenementsPage() {
             title="Trois réalisations types"
           />
           <p className="mt-2 max-w-xl text-muted-foreground">
-            Illustrations produites à partir des compositions réelles : chaque
-            fleur dessinée existe au catalogue, avec son prix.
+            Photos d&apos;illustration : elles montrent la palette et le style de
+            chaque composition. Les fleurs listées, elles, existent bien au
+            catalogue, avec leur prix.
           </p>
           <ul className="mt-8 grid gap-6 sm:grid-cols-3">
-            {GALLERY.map((piece, index) => {
+            {EVENT_SHOWCASE.map((piece, index) => {
               const entries = Object.entries(piece.items)
                 .map(([id, quantity]) => {
                   const flower = getFlowerById(id);
@@ -157,18 +110,29 @@ export default function EvenementsPage() {
                     quantity: number;
                   } => entry !== null,
                 );
+              const photo = getBouquetPhoto(piece.id);
 
               return (
                 <li key={piece.id}>
                   <Reveal delayMs={index * 80}>
                     <figure className="overflow-hidden rounded-xl border border-border bg-card">
-                      <BouquetPreview
-                        entries={entries}
-                        wrapping={piece.wrapping}
-                        seed={index * 13 + 3}
-                        className="h-64 w-full"
-                        label={piece.title}
-                      />
+                      {photo ? (
+                        <div className="relative h-64 w-full overflow-hidden bg-secondary/40">
+                          <PexelsImage
+                            photo={photo}
+                            alt={`${piece.title} — photo d'illustration`}
+                            sizes="(min-width: 640px) 30vw, 92vw"
+                          />
+                        </div>
+                      ) : (
+                        <BouquetPreview
+                          entries={entries}
+                          wrapping={piece.wrapping}
+                          seed={index * 13 + 3}
+                          className="h-64 w-full"
+                          label={piece.title}
+                        />
+                      )}
                       <figcaption className="border-t border-border p-4">
                         <p className="font-heading text-lg">{piece.title}</p>
                         <p className="mt-1 text-sm text-muted-foreground">

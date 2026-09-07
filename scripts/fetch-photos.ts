@@ -2,24 +2,32 @@
  * Récupère sur Pexels une photo par fleur du catalogue, plus les vidéos et
  * photos d'ambiance de la page d'accueil, et écrit data/photos.json.
  *
- *   npm run photos:fetch              met à jour ce qui manque
- *   npm run photos:fetch -- --refresh reprend tout à zéro
- *   npm run photos:fetch -- --home    seulement l'accueil
+ *   npm run photos:fetch                met à jour ce qui manque
+ *   npm run photos:fetch -- --refresh   reprend tout à zéro
+ *   npm run photos:fetch -- --home      seulement l'accueil
+ *   npm run photos:fetch -- --bouquets  seulement les compositions
  *
  * La clé n'est lue que par ce script, exécuté à la main : elle ne traverse
  * jamais le bundle et le site n'appelle pas Pexels à l'exécution.
  *
- * Ce que ce script ne peut pas faire : trouver la photo du cultivar exact.
- * Une banque d'images ne référence pas « Rosa 'Avalanche' », elle référence
- * des roses blanches. La requête est donc bâtie sur la catégorie et la
- * couleur dominante, ce qui donne une photo botaniquement juste — la bonne
- * fleur, la bonne couleur — mais pas la garantie du cultivar.
+ * Deux choses que ce script ne peut pas faire, et qu'il ne faut pas laisser
+ * croire ailleurs :
+ *
+ *   — trouver la photo du cultivar exact. Une banque d'images ne référence pas
+ *     « Rosa 'Avalanche' », elle référence des roses blanches. La requête est
+ *     donc bâtie sur la catégorie et la couleur dominante : la bonne fleur, la
+ *     bonne teinte, pas la garantie de la variété ;
+ *   — trouver le bouquet exact. Aucune photo ne contient « 5 roses Peach
+ *     Avalanche et 3 œillets Marimo ». Pour une composition, on cherche
+ *     l'allure — palette, style, format, vase ou papier —, et la liste des
+ *     tiges reste écrite sous la carte, elle seule fait foi.
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-import type { Category, Color } from "../lib/constants";
-import { mediaLibrarySchema, type FlowerPhoto, type MediaLibrary } from "../lib/schemas/photo";
+import { EVENT_SHOWCASE, SHOP_BOUQUETS } from "../data/boutique";
+import type { Category, Color, Style, Wrapping } from "../lib/constants";
+import { mediaLibrarySchema, type SourcedPhoto, type MediaLibrary } from "../lib/schemas/photo";
 import type { Flower } from "../lib/schemas/flower";
 
 const TARGET = resolve(process.cwd(), "data/photos.json");
@@ -311,15 +319,23 @@ function ranked(family: keyof typeof HUE_WORDS | null) {
     scorePhoto(a, family) - scorePhoto(b, family) || a.id - b.id;
 }
 
-async function search(query: string, color: string | null): Promise<PexelsPhoto[]> {
+/**
+ * Recherche de photos. Les fiches produit sont hautes, les cartes de la
+ * sélection sont larges : l'orientation et le filtre de forme suivent.
+ */
+async function search(
+  query: string,
+  color: string | null,
+  orientation: "portrait" | "landscape" = "portrait",
+): Promise<PexelsPhoto[]> {
   const page = await pexels<{ photos: PexelsPhoto[] }>("v1/search", {
     query,
     per_page: "80",
-    orientation: "portrait",
+    orientation,
     size: "medium",
     ...(color ? { color } : {}),
   });
-  return page.photos.filter(usablePortrait);
+  return orientation === "portrait" ? page.photos.filter(usablePortrait) : page.photos;
 }
 
 /**
@@ -375,10 +391,10 @@ function groupFlowers(flowers: readonly Flower[]): Group[] {
 
 async function fetchFlowerPhotos(
   flowers: readonly Flower[],
-  existing: Record<string, FlowerPhoto>,
-): Promise<Record<string, FlowerPhoto>> {
+  existing: Record<string, SourcedPhoto>,
+): Promise<Record<string, SourcedPhoto>> {
   const groups = groupFlowers(flowers);
-  const assigned: Record<string, FlowerPhoto> = {};
+  const assigned: Record<string, SourcedPhoto> = {};
   // Une photo ne sert qu'une fois : deux cultivars voisins doivent rester
   // distinguables, sinon la fiche produit ment sur la variété.
   const used = new Set<number>();
@@ -420,6 +436,173 @@ async function fetchFlowerPhotos(
     if (placed < missing.length) {
       console.warn(`  ! ${missing.length - placed} fleur(s) sans photo pour « ${group.query} »`);
     }
+    await new Promise((done) => setTimeout(done, 120));
+  }
+
+  return assigned;
+}
+
+// ----------------------------------------------------------- compositions
+
+/** Le mot qui dit qu'on regarde une composition, pas une fleur isolée. */
+const ARRANGEMENT = /\b(bouquet|arrangement|posy|centerpiece|floral display)\b/i;
+
+/** Ce qui trahit un sujet unique, inutilisable pour illustrer un bouquet. */
+const SINGLE_BLOOM = /\b(a single|one flower|close[- ]?up|macro|petals?)\b/i;
+
+/** Un modèle qui tient le bouquet vole la vedette à ce qu'on vend. */
+const MODEL = /\b(woman|man|girl|boy|person|people|bride|holding|hands?|wearing)\b/i;
+
+/** Traduction du style déclaré : c'est lui qui porte l'allure de la composition. */
+const STYLE_TERM: Record<Style, string> = {
+  champêtre: "rustic wildflower",
+  romantique: "romantic",
+  minimaliste: "minimalist",
+  luxuriant: "lush abundant",
+  pastel: "soft pastel",
+  moderne: "modern",
+  sauvage: "wild garden untamed",
+};
+
+/**
+ * Requêtes écrites à la main, pour les compositions que la dérivation rate.
+ *
+ * Les palettes d'automne en font partie : « bordeaux » et « pêche » ramènent
+ * des roses rouges ou des bouquets printaniers, alors que le cuivre, le
+ * caramel et le café au lait forment un registre que les banques d'images
+ * indexent sous « autumn ». Une entrée ici remplace la requête dérivée, rien
+ * d'autre : le filtre de teinte et le classement restent les mêmes.
+ */
+const BOUQUET_QUERY_OVERRIDE: Record<string, string> = {
+  "automne-a-l-atelier": "burgundy copper autumn flower bouquet",
+  "table-automne": "cafe au lait dahlia autumn flower bouquet",
+};
+
+/**
+ * Note d'une photo de composition, la plus basse d'abord.
+ *
+ * La couleur pèse le plus lourd : une teinte étrangère à la palette se
+ * remarque immédiatement à côté de la liste des tiges, alors qu'un cadrage
+ * approximatif passe. On compare donc l'ensemble des teintes nommées par la
+ * légende à l'ensemble de celles du bouquet, et pas seulement à la dominante.
+ */
+function scoreBouquetPhoto(photo: PexelsPhoto, families: ReadonlySet<string>): number {
+  let score = 0;
+
+  const named = Object.entries(HUE_WORDS)
+    .filter(([, pattern]) => pattern.test(photo.alt))
+    .map(([name]) => name);
+  for (const name of named) score += families.has(name) ? -3 : 5;
+
+  if (ARRANGEMENT.test(photo.alt)) score -= 4;
+  if (SINGLE_BLOOM.test(photo.alt)) score += 4;
+  if (MODEL.test(photo.alt)) score += 4;
+  if (photo.alt.trim().length === 0) score += 2;
+  // Les cartes de la sélection sont larges : on vise le paysage.
+  score += Math.abs(photo.width / photo.height - 1.4);
+  return score;
+}
+
+/** Composition à illustrer, réduite à ce dont la requête a besoin. */
+type Composition = {
+  id: string;
+  style: Style;
+  wrapping: Wrapping;
+  items: Record<string, number>;
+};
+
+type BouquetSearch = {
+  query: string;
+  color: string | null;
+  /** Toutes les familles de teintes présentes dans la composition. */
+  families: Set<string>;
+};
+
+/**
+ * Requête d'une composition : sa teinte dominante, son style, et un mot pour
+ * l'emballage quand il change l'allure — un vase se voit, un kraft beaucoup
+ * moins. La catégorie botanique est volontairement omise : « chrysanthemum
+ * bouquet » ramène des gros plans de chrysanthèmes, parce que personne ne
+ * nomme l'espèce dans la légende d'une photo de bouquet.
+ */
+function bouquetSearch(composition: Composition, catalog: Map<string, Flower>): BouquetSearch {
+  const weights = new Map<Color, number>();
+  const families = new Set<string>();
+  for (const [id, quantity] of Object.entries(composition.items)) {
+    const flower = catalog.get(id);
+    if (!flower) continue;
+    for (const color of flower.colors) {
+      const family = COLOR_FAMILY[color];
+      if (family) families.add(family);
+    }
+    const main = flower.colors[0];
+    if (main) weights.set(main, (weights.get(main) ?? 0) + quantity);
+  }
+
+  // « bicolore » ne décrit aucune teinte : on passe à la couleur suivante,
+  // sans quoi la requête part sur « two tone bicolor », qui ne veut rien dire
+  // pour une banque d'images.
+  const ranking = [...weights.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .filter(([color]) => color !== "bicolore");
+  const dominant = ranking[0]?.[0];
+
+  const parts = [
+    dominant ? COLOR_TERM[dominant] : "",
+    STYLE_TERM[composition.style],
+    composition.wrapping === "vase inclus" ? "flower bouquet in a vase" : "flower bouquet",
+  ].filter(Boolean);
+
+  return {
+    query: BOUQUET_QUERY_OVERRIDE[composition.id] ?? parts.join(" "),
+    color: dominant ? PEXELS_COLOR[dominant] : null,
+    families,
+  };
+}
+
+async function fetchBouquetPhotos(
+  compositions: readonly Composition[],
+  catalog: Map<string, Flower>,
+  used: Set<number>,
+  existing: Record<string, SourcedPhoto>,
+): Promise<Record<string, SourcedPhoto>> {
+  const assigned: Record<string, SourcedPhoto> = {};
+
+  for (const composition of compositions) {
+    const kept = existing[composition.id];
+    if (kept && !used.has(kept.pexelsId)) {
+      assigned[composition.id] = kept;
+      used.add(kept.pexelsId);
+      continue;
+    }
+
+    const { query, color, families } = bouquetSearch(composition, catalog);
+    process.stdout.write(`${composition.id.padEnd(22)} « ${query} »… `);
+
+    // Le filtre de teinte d'abord, la recherche libre en complément : sur des
+    // requêtes aussi étroites, la teinte seule vide souvent le panier.
+    const tinted = await search(query, color, "landscape");
+    await new Promise((done) => setTimeout(done, 120));
+    const loose = color ? await search(query, null, "landscape") : [];
+    const seen = new Set<number>();
+    const candidates = [...tinted, ...loose]
+      .filter((photo) => {
+        if (used.has(photo.id) || seen.has(photo.id) || photo.width < 900) return false;
+        seen.add(photo.id);
+        return true;
+      })
+      .sort(
+        (a, b) => scoreBouquetPhoto(a, families) - scoreBouquetPhoto(b, families) || a.id - b.id,
+      );
+
+    const chosen = candidates[0];
+    if (!chosen) {
+      console.log("aucun résultat exploitable");
+      continue;
+    }
+    used.add(chosen.id);
+    assigned[composition.id] = { ...toPhoto(chosen), query };
+    console.log(`${chosen.id} — ${chosen.alt.slice(0, 56)}`);
     await new Promise((done) => setTimeout(done, 120));
   }
 
@@ -532,6 +715,9 @@ async function main(): Promise<void> {
   const args = new Set(process.argv.slice(2));
   const refresh = args.has("--refresh");
   const homeOnly = args.has("--home");
+  // Les compositions se rejouent seules : reprendre les 280 fleurs pour
+  // corriger huit bouquets rebrasserait tout le catalogue pour rien.
+  const bouquetsOnly = args.has("--bouquets");
 
   const flowers = JSON.parse(readFileSync(CATALOG, "utf8")) as Flower[];
   const previous =
@@ -540,20 +726,53 @@ async function main(): Promise<void> {
       : {};
 
   const knownIds = new Set(flowers.map((flower) => flower.id));
-  const kept: Record<string, FlowerPhoto> = {};
+  const kept: Record<string, SourcedPhoto> = {};
   for (const [id, photo] of Object.entries(previous.flowers ?? {})) {
     if (knownIds.has(id)) kept[id] = photo;
   }
 
-  const flowerPhotos = homeOnly ? kept : await fetchFlowerPhotos(flowers, kept);
+  const flowerPhotos = homeOnly || bouquetsOnly ? kept : await fetchFlowerPhotos(flowers, kept);
+
+  // Les compositions puisent dans le même vivier que les fleurs : une photo
+  // déjà employée ailleurs est écartée.
+  const catalog = new Map(flowers.map((flower) => [flower.id, flower]));
+  const compositions: Composition[] = [
+    ...SHOP_BOUQUETS.map((bouquet) => ({
+      id: bouquet.id,
+      style: bouquet.style,
+      wrapping: bouquet.wrapping,
+      items: bouquet.items,
+    })),
+    ...EVENT_SHOWCASE.map((piece) => ({
+      id: piece.id,
+      style: piece.style,
+      wrapping: piece.wrapping,
+      items: piece.items,
+    })),
+  ];
+  const usedPhotos = new Set(Object.values(flowerPhotos).map((photo) => photo.pexelsId));
+  const bouquetPhotos = homeOnly
+    ? (previous.bouquets ?? {})
+    : await fetchBouquetPhotos(
+        compositions,
+        catalog,
+        usedPhotos,
+        bouquetsOnly ? {} : (previous.bouquets ?? {}),
+      );
+
   // On refait l'accueil si la bibliothèque date d'avant le montage.
-  const home = homeOnly || !previous.home?.hero ? await fetchHome() : previous.home;
+  const previousHome = previous.home;
+  const home =
+    previousHome && (bouquetsOnly || (!homeOnly && previousHome.hero))
+      ? previousHome
+      : await fetchHome();
 
   const library: MediaLibrary = {
     fetchedAt: new Date().toISOString(),
     flowers: Object.fromEntries(
       Object.entries(flowerPhotos).sort(([a], [b]) => a.localeCompare(b)),
     ),
+    bouquets: bouquetPhotos,
     home,
   };
 
@@ -571,6 +790,7 @@ async function main(): Promise<void> {
   const withoutPhoto = flowers.filter((flower) => !result.data.flowers[flower.id]);
   console.log(
     `\n${Object.keys(result.data.flowers).length}/${flowers.length} fleurs illustrées · ` +
+      `${Object.keys(result.data.bouquets).length}/${compositions.length} compositions · ` +
       `${result.data.home.videos.length} vidéos · ${result.data.home.photos.length} photos d'accueil · ` +
       `${requests} requêtes`,
   );

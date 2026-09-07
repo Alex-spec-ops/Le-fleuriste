@@ -48,20 +48,26 @@ export const videoSchema = z.object({
 
 export type Video = z.infer<typeof videoSchema>;
 
-/** Photo attribuée à une fleur, avec la requête qui l'a trouvée. */
-export const flowerPhotoSchema = photoSchema.extend({
+/** Photo retenue par le script, avec la requête qui l'a trouvée. */
+export const sourcedPhotoSchema = photoSchema.extend({
   /** Requête Pexels employée, conservée pour pouvoir auditer un mauvais choix. */
   query: z.string().min(1).max(80),
 });
 
-export type FlowerPhoto = z.infer<typeof flowerPhotoSchema>;
+export type SourcedPhoto = z.infer<typeof sourcedPhotoSchema>;
 
 export const mediaLibrarySchema = z
   .object({
     /** Horodatage de la dernière récupération, en ISO 8601. */
     fetchedAt: z.iso.datetime(),
     /** Une entrée par identifiant de fleur. */
-    flowers: z.record(z.string(), flowerPhotoSchema),
+    flowers: z.record(z.string(), sourcedPhotoSchema),
+    /**
+     * Une entrée par composition : bouquets de la sélection et réalisations
+     * événementielles. La photo dit l'allure — palette, style, format — mais
+     * jamais la liste exacte des tiges, qui reste écrite sous la carte.
+     */
+    bouquets: z.record(z.string(), sourcedPhotoSchema),
     home: z.object({
       /** Plans du montage d'ouverture, joués dans l'ordre. */
       hero: z.array(videoSchema).min(2).max(6),
@@ -72,16 +78,21 @@ export const mediaLibrarySchema = z
   })
   .strict()
   .superRefine((library, ctx) => {
+    // Une même photo ne doit illustrer qu'une seule entrée, fleur ou
+    // composition : deux cartes identiques donnent l'impression d'un doublon
+    // dans le catalogue.
     const seen = new Set<number>();
-    for (const [id, photo] of Object.entries(library.flowers)) {
-      if (seen.has(photo.pexelsId)) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["flowers", id],
-          message: `Photo réutilisée par deux fleurs : ${photo.pexelsId}`,
-        });
+    for (const field of ["flowers", "bouquets"] as const) {
+      for (const [id, photo] of Object.entries(library[field])) {
+        if (seen.has(photo.pexelsId)) {
+          ctx.addIssue({
+            code: "custom",
+            path: [field, id],
+            message: `Photo déjà utilisée ailleurs : ${photo.pexelsId}`,
+          });
+        }
+        seen.add(photo.pexelsId);
       }
-      seen.add(photo.pexelsId);
     }
   });
 
